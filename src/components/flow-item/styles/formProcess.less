@@ -1,0 +1,22 @@
+@import './index.less';
+
+@size: 64px;
+@polygon-size: 40px;
+
+.flow-form-process {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @size;
+  height: @size;
+  &-polygon {
+    display: flex;
+    width: @polygon-size;
+    height: @polygon-size;
+    background-color: @green-6;
+    font-size: calc(@polygon-size / 2);;
+    align-items: center;
+    justify-content: center;
+    color: @green-2;
+  }
+}

@@ -1,0 +1,17 @@
+@import '../../../styles/theme.less';
+
+@header-hight: 40px;
+
+.flow-editor {
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  .tool-bar {
+    width: 280px;
+    height: 100%;
+    border-right: @border-color-split @border-style-base @border-width-base;
+  }
+  &-canvas {
+    flex: 1;
+  }
+}

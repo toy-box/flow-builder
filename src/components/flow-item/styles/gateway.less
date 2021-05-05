@@ -1,0 +1,23 @@
+@import './index.less';
+
+@size: 64px;
+@polygon-size: 32px;
+
+.flow-gateway {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: @size;
+  height: @size;
+  &-polygon {
+    display: flex;
+    width: @polygon-size;
+    height: @polygon-size;
+    background-color: @gold-6;
+    transform: rotate(45deg);
+    font-size: calc(@polygon-size / 2);;
+    align-items: center;
+    justify-content: center;
+    color: @gold-2;
+  }
+}
