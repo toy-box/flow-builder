@@ -1,6 +1,7 @@
 import React from 'react'
 import { Tabs } from 'antd'
 import FlowItemStore from '../flow-item-store'
+import './styles';
 
 const { TabPane } = Tabs
 
