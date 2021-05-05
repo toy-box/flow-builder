@@ -1,5 +1,5 @@
 import React from 'react'
-import { Popover } from 'antd'
+import { Tooltip } from 'antd'
 import {
   CompressOutlined,
   OneToOneOutlined,
@@ -23,42 +23,42 @@ const CanvasHandler: React.FC<Props> = (props) => {
 
   return (
     <ul className={classNames('canvas-handler', className)}>
-      <Popover
+      <Tooltip
         overlayClassName="canvas-handler-popover"
-        content="放大"
+        title="放大"
         placement="left"
       >
         <li onClick={onZoomIn} className="canvas-handler-item">
           <ZoomInOutlined />
         </li>
-      </Popover>
-      <Popover
+      </Tooltip>
+      <Tooltip
         overlayClassName="canvas-handler-popover"
-        content="缩小"
+        title="缩小"
         placement="left"
       >
         <li onClick={onZoomOut} className="canvas-handler-item">
           <ZoomOutOutlined />
         </li>
-      </Popover>
-      <Popover
+      </Tooltip>
+      <Tooltip
         overlayClassName="canvas-handler-popover"
-        content="实际尺寸"
+        title="实际尺寸"
         placement="left"
       >
         <li onClick={onRealContent} className="canvas-handler-item">
           <OneToOneOutlined />
         </li>
-      </Popover>
-      <Popover
+      </Tooltip>
+      <Tooltip
         overlayClassName="canvas-handler-popover"
-        content="适应画布"
+        title="适应画布"
         placement="left"
       >
         <li onClick={onFitContent} className="canvas-handler-item">
           <CompressOutlined />
         </li>
-      </Popover>
+      </Tooltip>
     </ul>
   )
 }

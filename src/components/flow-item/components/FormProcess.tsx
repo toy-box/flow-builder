@@ -18,6 +18,7 @@ const FormProcess: FC<FlowItemProps> = observer((props) => {
       <div className="flow-item-polygon flow-form-process-polygon">
         <MdiDocument />
       </div>
+      <div className="flow-item__label">Form Process</div>
     </div>
   )
 })
