@@ -94,13 +94,11 @@ export class FlowNode {
   }
 
   setOutPortVisible(visible: boolean) {
-    console.log('setOutPortVisible', visible)
     if (visible) {
       this.node.addPort({
         group: 'out',
       })
     } else {
-      console.log('remove ports')
       this.node.removePorts()
     }
   }

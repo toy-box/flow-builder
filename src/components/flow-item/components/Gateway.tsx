@@ -45,7 +45,7 @@ export const flowNodeMeta: FlowNodeMetaFn = (id: string, portId: string, x: numb
         out: {
           position: {
             name: 'absolute',
-            args: { x: 32, y: 60 }
+            args: { x: 32, y: 52 }
           },
           attrs: portAttrs
         }

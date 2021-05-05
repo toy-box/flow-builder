@@ -17,7 +17,6 @@ MenuTool.config({
 Graph.registerEdgeTool('contextmenu', MenuTool, true)
 Graph.registerNodeTool('contextmenu', MenuTool, true)
 
-
 const FlowGround: FC = () => {
   const flowGraph = useFlowGraph()
 

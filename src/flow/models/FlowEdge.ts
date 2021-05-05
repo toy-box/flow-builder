@@ -53,6 +53,7 @@ export class FlowEdge {
       setSource: batch,
       setTarget: batch,
       fixEdgeSource: batch,
+      fixEdgeTarget: batch,
       fixConnectedStyle: batch,
       checkEdge: batch,
     })
@@ -60,8 +61,13 @@ export class FlowEdge {
 
   fixEdgeSource() {
     this.fixDragStyle()
-    const sourceNode = this.edge.getSourceNode();
+    const sourceNode = this.edge.getSourceNode()
     sourceNode && this.edge.setSource(sourceNode)
+  }
+
+  fixEdgeTarget() {
+    const targetNode = this.edge.getTargetNode()
+    targetNode && this.edge.setTarget(targetNode)
   }
 
   fixDragStyle() {
@@ -87,9 +93,11 @@ export class FlowEdge {
 
   checkEdge() {
     if (this.edge.getTargetCellId()) {
-      return this.fixConnectedStyle()
+      this.fixEdgeTarget();
+      this.fixConnectedStyle()
+    } else {
+      this.remove()
     }
-    this.remove()
   }
 
 

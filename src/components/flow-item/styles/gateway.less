@@ -1,7 +1,7 @@
 @import './index.less';
 
 @size: 64px;
-@polygon-size: 32px;
+@polygon-size: 40px;
 
 .flow-gateway {
   display: flex;
@@ -9,12 +9,13 @@
   justify-content: center;
   width: @size;
   height: @size;
+  border-radius: 2px;
   &-polygon {
     display: flex;
     width: @polygon-size;
     height: @polygon-size;
     background-color: @gold-6;
-    transform: rotate(45deg);
+    border-radius: 2px;
     font-size: calc(@polygon-size / 2);;
     align-items: center;
     justify-content: center;

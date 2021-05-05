@@ -70,7 +70,6 @@ export const runEffects = <Context>(
   context: Context,
   ...args: ((context: Context) => void)[]
 ): LifeCycle[] => {
-  console.log('runEffects', FlowGraphEffectState)
   FlowGraphEffectState.lifecycles = []
   FlowGraphEffectState.context = []
   FlowGraphEffectState.effectStart = true

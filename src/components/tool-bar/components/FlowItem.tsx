@@ -1,17 +1,19 @@
 import React, { FC } from 'react'
 import { ConnectDragSource, DragSourceMonitor, DragSource, DragSourceConnector } from 'react-dnd'
 
-interface FlowStoreItemProps {
+interface FlowItemProps {
   title: string
   type: string
 }
 
-interface StoreItemProps extends FlowStoreItemProps {
+interface StoreItemProps extends FlowItemProps {
   connectDragSource: ConnectDragSource
 }
 
+const prefixCls = 'flow-item'
+
+
 const StoreItem: FC<StoreItemProps> = ({ title, type, connectDragSource, children }) => {
-  const prefixCls = 'flow-store-item'
   return connectDragSource(
     <div className={prefixCls}>
       <div className={`${prefixCls}__icon`}>
@@ -35,12 +37,10 @@ const DragSourceItem = DragSource(
   }),
 )(StoreItem)
 
-const FlowStoreItem: FC<FlowStoreItemProps> = (props) => {
-  return <div className="flow-store-item-wrap">
+const FlowStoreItem: FC<FlowItemProps> = (props) => {
+  return <div className={`${prefixCls}-wrap`}>
     <DragSourceItem {...props} />
   </div>
 }
 
 export default FlowStoreItem
-
-
