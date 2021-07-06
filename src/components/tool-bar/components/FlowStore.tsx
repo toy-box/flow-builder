@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { FormProcess, Gateway } from '../../flow-item/components';
+import { FormProcess, Gateway, Assignment } from '../../flow-item/components';
 import FlowItem from './FlowItem';
 
 import '../styles/flowStore.less';
@@ -12,6 +12,9 @@ const FlowStore: FC = () => {
       </FlowItem>
       <FlowItem title="FormProcess" type="formProcess" key="formProcess">
         <FormProcess />
+      </FlowItem>
+      <FlowItem title="分配" type="assignment" key="assignment">
+        <Assignment />
       </FlowItem>
     </div>
   );

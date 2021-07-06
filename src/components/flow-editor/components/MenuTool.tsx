@@ -8,6 +8,7 @@ export interface MenuToolOptions extends ToolsView.ToolItem.Options {
   x: number
   y: number
   onRemove?: () => void
+  onEdit?: () => void
   onHide?: (this: MenuTool) => void
 }
 
@@ -32,7 +33,7 @@ class MenuTool extends ToolsView.ToolItem<EdgeView, MenuToolOptions>  {
       document.removeEventListener('mousedown', this.onMouseDown)
       const menu = (
         <Menu>
-          <Menu.Item>配置</Menu.Item>
+          <Menu.Item onClick={this.options.onEdit}>配置</Menu.Item>
           <Menu.Item danger onClick={this.options.onRemove}>删除</Menu.Item>
         </Menu>
       )

@@ -1,13 +1,17 @@
-import React, { FC, useCallback, useEffect } from 'react'
+import React, { FC, useCallback, useEffect, useState } from 'react'
 import { Graph } from '@antv/x6'
 import '@antv/x6-react-shape'
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
 import { useFlowGraphEffects } from '../../../flow/hooks/useFlowGraphEffect'
 import { onFlowGraphMount, onFlowGraphEditable } from '../../../flow/effects'
 import MenuTool from './MenuTool'
+import { makeNodeFromPack } from '../makeFlowItem'
 
 import '../styles/flowGround.less'
 import CanvasHandler from './CanvasHandle'
+
+import { processTypes } from "../../../flow/types"
+import { AssignmentModel } from '../../form-model';
 
 MenuTool.config({
   tagName: 'div',
@@ -19,10 +23,75 @@ Graph.registerNodeTool('contextmenu', MenuTool, true)
 
 const FlowGround: FC = () => {
   const flowGraph = useFlowGraph()
+  const [assignmentModel, setAssignmentModel] = useState(false)
+
+  // useFlowGraphEffects(() => {
+  //   onFlowGraphEditable((flowGraph) => {
+  //     const { graph } = flowGraph
+  //     graph && graph.on('edge:added', ({ edge }) => {
+  //       flowGraph.createEdge({
+  //         id: edge.id,
+  //         name: '',
+  //         source: edge.getSourceCellId(),
+  //         target: edge.getTargetCellId(),
+  //         edge,
+  //       })
+  //     })
+  //     graph && graph.on('edge:mouseup', ({ edge }) => {
+  //       const flowEdge = flowGraph.edges.find(e => e.id === edge.id)
+  //       flowEdge && flowEdge.checkEdge()
+  //       flowGraph.updataEdges(edge.id, edge.getTargetCellId());
+  //     })
+  //     graph && graph.on('edge:contextmenu', ({ cell, e }) => {
+  //       const p = graph.clientToGraph(e.clientX, e.clientY)
+  //       cell.addTools([
+  //         {
+  //           name: 'contextmenu',
+  //           args: {
+  //             x: p.x,
+  //             y: p.y,
+  //             onRemove() {
+  //               const flowEdge = flowGraph.getEdge(cell.id)
+  //               flowEdge?.remove()
+  //               flowGraph.removeEdge(cell.id)
+  //             },
+  //             onHide() {
+  //               this.cell.removeTools()
+  //             },
+  //           },
+  //         },
+  //       ])
+  //     })
+  //     graph && graph.on('node:contextmenu', ({ node, e }) => {
+  //       const p = graph.clientToGraph(e.clientX, e.clientY)
+  //       node.addTools([
+  //         {
+  //           name: 'contextmenu',
+  //           args: {
+  //             x: p.x,
+  //             y: p.y,
+  //             onRemove() {
+  //               const flowNode = flowGraph.getNode(node.id)
+  //               flowNode?.remove()
+  //             },
+  //             onHide() {
+  //               this.cell.removeTools()
+  //             },
+  //           },
+  //         },
+  //       ])
+  //     })
+  //   })
+  // })
 
   useFlowGraphEffects(() => {
-    onFlowGraphEditable((flowGraph) => {
+    onFlowGraphMount((flowGraph) => {
       const { graph } = flowGraph
+      graph && flowGraph.initialNodeMetas.forEach(node => {
+        flowGraph.createNode(node)
+      })
+      graph && graph.centerContent()
+      // flowGraph.onEditable()
       graph && graph.on('edge:added', ({ edge }) => {
         flowGraph.createEdge({
           id: edge.id,
@@ -35,6 +104,7 @@ const FlowGround: FC = () => {
       graph && graph.on('edge:mouseup', ({ edge }) => {
         const flowEdge = flowGraph.edges.find(e => e.id === edge.id)
         flowEdge && flowEdge.checkEdge()
+        flowGraph.updataEdges(edge.id, edge.getTargetCellId());
       })
       graph && graph.on('edge:contextmenu', ({ cell, e }) => {
         const p = graph.clientToGraph(e.clientX, e.clientY)
@@ -47,6 +117,7 @@ const FlowGround: FC = () => {
               onRemove() {
                 const flowEdge = flowGraph.getEdge(cell.id)
                 flowEdge?.remove()
+                flowGraph.removeEdge(cell.id)
               },
               onHide() {
                 this.cell.removeTools()
@@ -67,6 +138,12 @@ const FlowGround: FC = () => {
                 const flowNode = flowGraph.getNode(node.id)
                 flowNode?.remove()
               },
+              onEdit() {
+                const flowNode = flowGraph.getNode(node.id)
+                if (flowNode?.type === processTypes.ASSIGNMENT) {
+                  setAssignmentModel(true)
+                }
+              },
               onHide() {
                 this.cell.removeTools()
               },
@@ -74,17 +151,6 @@ const FlowGround: FC = () => {
           },
         ])
       })
-    })
-  })
-
-  useFlowGraphEffects(() => {
-    onFlowGraphMount((flowGraph) => {
-      const { graph } = flowGraph
-      graph && flowGraph.initialNodeMetas.forEach(node => {
-        flowGraph.createNode(node)
-      })
-      graph && graph.centerContent()
-      flowGraph.onEditable()
     })
   })
 
@@ -101,6 +167,7 @@ const FlowGround: FC = () => {
         }
       })
     )
+    flowGraph.createNode(makeNodeFromPack(-500, -290, 'record', flowGraph))
   }, [flowGraph])
 
   const onHandleSideToolbar = useCallback(
@@ -127,6 +194,13 @@ const FlowGround: FC = () => {
     [flowGraph],
   )
 
+  const assignmentCallBack = useCallback(
+    (bool) => {
+      setAssignmentModel(bool)
+    },
+    [],
+  )
+
   return (
     <React.Fragment>
       <div id="flow-ground">
@@ -137,6 +211,7 @@ const FlowGround: FC = () => {
         onFitContent={onHandleSideToolbar('fit')}
         onRealContent={onHandleSideToolbar('real')}
       />
+      <AssignmentModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)}/>
     </React.Fragment>
   )
 }

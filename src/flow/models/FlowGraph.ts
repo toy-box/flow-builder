@@ -34,7 +34,7 @@ export class FlowGraph {
     this.heart = new Heart({ lifecycles: [], context: this})
     this.makeObservable()
     this.makeReactive()
-    this.onInit()
+    // this.onInit()
   }
 
   protected makeObservable() {
@@ -46,7 +46,7 @@ export class FlowGraph {
       unmounted: observable.ref,
       initialMeta: observable,
       setId: batch,
-      onInit: batch,
+      // onInit: batch,
     })
   }
 
@@ -100,9 +100,14 @@ export class FlowGraph {
     return flowEdge
   }
 
+  updataEdges = (id: string, targetId: string) => {
+    if (targetId) return;
+    this.edges = this.edges.filter(edge => edge.id !== id)
+  }
+
   removeEdge = (id: string) => {
-    const idx = this.edges.findIndex(edge => edge.id === id)
-    this.edges.splice(idx, 1)
+    this.edges = this.edges.filter(edge => edge.id !== id)
+    // this.edges.splice(idx, 1)
   }
 
   addEffects = (id: any, effects?: FlowGraphEffects) => {

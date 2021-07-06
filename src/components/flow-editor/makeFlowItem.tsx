@@ -9,6 +9,7 @@ import { uid } from '../../utils'
 export const makeNodeFromPack = (x: number, y: number, type: string, flowGraph: FlowGraph): FlowNodeMeta => {
   const id = uid()
   const portId = uid()
+  console.log(type);
   return flowItemsPack[type].flowNodeMeta(id, portId, x, y)
 }
 
