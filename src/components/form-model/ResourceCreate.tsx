@@ -5,8 +5,9 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { Button, Modal } from 'antd'
 import { action } from '@formily/reactive'
 import { IFlowResourceType } from '../../flow/types'
-import { MetaValueType } from '@toy-box/meta-schema';
+import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
 import { GatherInput } from '../formily/index'
+import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 
 const SchemaField = createSchemaField({
   components: {
@@ -14,6 +15,8 @@ const SchemaField = createSchemaField({
     Input,
     Select,
     GatherInput,
+    FormulaEdit,
+    BraftEditorTemplate,
   },
 })
 
@@ -119,16 +122,47 @@ const schema = {
         placeholder: '请选择数据类型...'
       },
     },
-    value: {
+    defaultValue: {
       type: 'string',
       title: '默认值',
       'x-decorator': 'FormItem',
       'x-component': 'GatherInput',
       'x-component-props': {
         placeholder: '请输入值...',
-        onChange: (value: any) => {
-          formData.values.value = value
-        },
+        options: [{
+          label: '默认记录',
+          value: 'record',
+        }],
+      },
+    },
+    text: {
+      type: 'string',
+      title: '模板',
+      required: true,
+      'x-disabled': true,
+      'x-validator': {
+        required: true,
+        message: '模板是必填项'
+      },
+      'x-visible': false,
+      'x-decorator': 'FormItem',
+      'x-component': 'BraftEditorTemplate',
+      'x-component-props': {
+      },
+    },
+    expression: {
+      type: 'string',
+      title: '公式',
+      required: true,
+      // readOnly: true,
+      'x-validator': {
+        required: true,
+        message: '公式是必填项'
+      },
+      'x-visible': false,
+      'x-decorator': 'FormItem',
+      'x-component': 'FormulaEdit',
+      'x-component-props': {
       },
     },
   },
@@ -145,9 +179,12 @@ const useAsyncDataSource = (
     fieldObj.loading = true
     const flowTypeValue = field.query('flowType').value()
     const isShow = flowTypeValue && flowTypeValue !== IFlowResourceType.TEMPLATE
+    const isShowDefault = flowTypeValue === IFlowResourceType.VARIABLE || flowTypeValue === IFlowResourceType.CONSTANT
     field.display = isShow ? 'visible' : 'none'
-    formData.setFieldState('value', (state) => {
-      state.display = fieldObj.value ? 'visible' : 'none'
+    formData.setFieldState('defaultValue', (state) => {
+      const valFlag = fieldObj.value && fieldObj.value !== MetaValueType.MULTI_OPTION
+        && fieldObj.value !== MetaValueType.SINGLE_OPTION;
+      state.display = isShowDefault && valFlag ? 'visible' : 'none'
     })
     service(fieldObj).then(
       action((data) => {
@@ -164,6 +201,12 @@ const formData = createForm({
     onFieldValueChange('flowType', (field) => {
       formData.setFieldState('type', (state) => {
         state.value = null
+      })
+      formData.setFieldState('text', (state) => {
+        state.display = field.value === IFlowResourceType.TEMPLATE ? 'visible' : 'none'
+      })
+      formData.setFieldState('expression', (state) => {
+        state.display = field.value === IFlowResourceType.FORMULA ? 'visible' : 'none'
       })
     })
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -190,14 +233,22 @@ const formData = createForm({
       })
     })
     onFieldValueChange('type', (field) => {
-      formData.setFieldState('value', (state) => {
+      formData.setFieldState('defaultValue', (state) => {
         state.value = null
       })
     })
   },
 })
 
-export const ResourceCreate:FC<any> = () => {
+interface ResourceCreateProps {
+  submit: (value: any) => void
+  fieldMetas?: ICompareOperation[] 
+}
+
+export const ResourceCreate:FC<ResourceCreateProps> = ({
+  submit,
+  fieldMetas = [],
+}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form, setForm] = useState(formData)
 
@@ -209,9 +260,32 @@ export const ResourceCreate:FC<any> = () => {
   };
 
   const handleOk = () => {
-    console.log(formData);
+    const obj: any = formData.values;
+    console.log(obj, '123232')
+    const resourceData: any = {
+      description: obj.description,
+      exclusiveMaximum: null,
+      exclusiveMinimum: null,
+      format: null,
+      key: obj.name,
+      maxLength: null,
+      maximum: null,
+      minLength: null,
+      minimum: null,
+      name: obj.name,
+      options: null,
+      pattern: null,
+      primary: null,
+      properties: null,
+      required: null,
+      type: obj.type,
+      defaultValue: obj.defaultValue,
+      text: obj.text,
+      expression: obj.expression,
+    }
     form.submit((resolve) => {
       setIsModalVisible(false);
+      submit(resourceData)
     }).catch((rejected) => {
     })
   };
@@ -222,8 +296,8 @@ export const ResourceCreate:FC<any> = () => {
 
   return (
     <>
-      <div onClick={showModal}>
-        <Button>添加资源</Button>
+      <div>
+        <Button onClick={showModal} size="small">添加资源</Button>
       </div>
       <Modal width={900} title="添加资源" visible={isModalVisible} cancelText="取消" okText="确认" onOk={handleOk} onCancel={handleCancel}>
         <FormLayout layout='vertical' colon={false}>

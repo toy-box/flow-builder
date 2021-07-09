@@ -16,21 +16,24 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@toy-box/form-formula": "^1.0.26",
+    "@toy-box/meta-components": "^1.0.38",
     "@toy-box/meta-schema": "^1.0.28",
     "@toy-box/toybox-lib": "^0.1.66",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
+    "@types/react": "^16.14.10",
+    "@types/react-dom": "^16.9.13",
     "antd": "^4.15.4",
+    "braft-editor": "^2.3.9",
     "classnames": "^2.3.1",
     "codemirror": "^5.62.0",
     "craco-antd": "^1.19.0",
     "craco-less": "^1.17.1",
-    "react": "^17.0.2",
+    "react": "^16.14.0",
     "react-dnd": "^14.0.2",
     "react-dnd-html5-backend": "^14.0.0",
-    "react-dom": "^17.0.2",
+    "react-dom": "^16.14.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
@@ -59,5 +62,8 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/draft-js": "^0.11.4",
+    "braft-convert": "^2.3.0"
+  }
 }
