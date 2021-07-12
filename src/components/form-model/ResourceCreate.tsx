@@ -8,6 +8,7 @@ import { IFlowResourceType } from '../../flow/types'
 import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
 import { GatherInput } from '../formily/index'
 import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
+import { uid } from '../../utils'
 
 const SchemaField = createSchemaField({
   components: {
@@ -261,13 +262,12 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
 
   const handleOk = () => {
     const obj: any = formData.values;
-    console.log(obj, '123232')
     const resourceData: any = {
       description: obj.description,
       exclusiveMaximum: null,
       exclusiveMinimum: null,
       format: null,
-      key: obj.name,
+      key: uid(),
       maxLength: null,
       maximum: null,
       minLength: null,
