@@ -44,7 +44,6 @@ export const GatherInput: FC = observer((props: any) => {
                   }
                 }
                 value={props.value}
-                showSearch
                 onChange={handleSelectOptions}
               />
       case MetaValueType.DATE:

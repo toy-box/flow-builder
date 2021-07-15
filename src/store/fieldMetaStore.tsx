@@ -1,7 +1,7 @@
-import { makeAutoObservable } from 'mobx'
+import { observable } from '@formily/reactive'
 import { IFieldMeta } from '@toy-box/meta-schema';
 
-export const fieldMetaStore = makeAutoObservable({
+export const fieldMetaStore = observable.deep({
   fieldMetas: [] as IFieldMeta[],
   initFieldMetas(data: IFieldMeta[]) {
     fieldMetaStore.fieldMetas = data

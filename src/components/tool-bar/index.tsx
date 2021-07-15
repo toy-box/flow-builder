@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { Tabs } from 'antd'
 import FlowStore from './components/FlowStore'
 import { fieldMetaStore } from '../../store'
-import { observer } from 'mobx-react';
+import { observer } from '@formily/reactive-react'
 
 
 import './styles'

@@ -1,0 +1,63 @@
+.branch-arrays {
+  &-tip {
+    display: flex;
+    align-items: center;
+    .name {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    .tip {
+      font-size: 12px;
+    }
+  }
+  &-content {
+    border: solid 1px #ccc;
+    border-radius: 5px;
+    display: flex;
+    &-item {
+      padding: 5px 10px;
+      border-bottom: solid 1px #ccc;
+      cursor: pointer;
+      line-height: 25px;
+      &:hover {
+        background: #ddd;
+      }
+      &.active {
+        background: #fff;
+        color: #37b0e9;
+        &:hover {
+          background: #fff;
+        }
+      }
+    }
+    &-left {
+      width: 190px;
+      background: #fafafa;
+      padding: 0px 1px;
+      border-right: solid 1px #ccc;
+      &-top {
+        border-bottom: solid 1px #ccc;
+        .left-title {
+          padding: 5px 10px;
+          & > span {
+            margin-right: 5px;
+          }
+        }
+      }
+      &-body {
+        max-height: 256px;
+        overflow-y: auto;
+        
+      }
+    }
+    &-right {
+      flex: 1;
+      padding: 5px 10px;
+      height: 300px;
+      overflow-y: auto;
+    }
+  }
+  &-remove-btn {
+    text-align: right;
+  }
+}

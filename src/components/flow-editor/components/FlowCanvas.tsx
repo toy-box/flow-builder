@@ -11,7 +11,7 @@ import '../styles/flowGround.less'
 import CanvasHandler from './CanvasHandle'
 
 import { processTypes } from "../../../flow/types"
-import { AssignmentModel } from '../../form-model';
+import { AssignmentModel, DecisionModel, SuspendModel } from '../../form-model';
 
 MenuTool.config({
   tagName: 'div',
@@ -24,6 +24,7 @@ Graph.registerNodeTool('contextmenu', MenuTool, true)
 const FlowGround: FC = () => {
   const flowGraph = useFlowGraph()
   const [assignmentModel, setAssignmentModel] = useState(false)
+  const [decisionModel, setDecisionModel] = useState(false)
 
   // useFlowGraphEffects(() => {
   //   onFlowGraphEditable((flowGraph) => {
@@ -142,6 +143,8 @@ const FlowGround: FC = () => {
                 const flowNode = flowGraph.getNode(node.id)
                 if (flowNode?.type === processTypes.ASSIGNMENT) {
                   setAssignmentModel(true)
+                } else {
+                  setDecisionModel(true)
                 }
               },
               onHide() {
@@ -212,6 +215,8 @@ const FlowGround: FC = () => {
         onRealContent={onHandleSideToolbar('real')}
       />
       <AssignmentModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)}/>
+      {decisionModel && <DecisionModel showModel={decisionModel} callbackFunc={(bool: boolean) => setDecisionModel(bool)} />}
+      {/* <SuspendModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)}/> */}
     </React.Fragment>
   )
 }

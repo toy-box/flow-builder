@@ -29,8 +29,6 @@
     "codemirror": "^5.62.0",
     "craco-antd": "^1.19.0",
     "craco-less": "^1.17.1",
-    "mobx": "^6.3.2",
-    "mobx-react": "^7.2.0",
     "react": "^16.14.0",
     "react-dnd": "^14.0.2",
     "react-dnd-html5-backend": "^14.0.0",

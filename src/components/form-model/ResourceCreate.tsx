@@ -67,180 +67,6 @@ const formulaMetaOps = [
   MetaValueType.DATETIME,
 ]
 
-const schema = {
-  type: 'object',
-  properties: {
-    flowType: {
-      type: 'string',
-      title: '资源类型',
-      required: true,
-      'x-validator': {
-        required: true,
-        message: '资源类型是必填项'
-      },
-      'x-decorator': 'FormItem',
-      'x-component': 'Select',
-      enum: [
-        { label: '变量', value: IFlowResourceType.VARIABLE },
-        { label: '常量', value: IFlowResourceType.CONSTANT },
-        { label: '公式', value: IFlowResourceType.FORMULA },
-        { label: '文本模板', value: IFlowResourceType.TEMPLATE },
-      ],
-      'x-component-props': {
-        placeholder: '请选择...'
-      },
-    },
-    name: {
-      type: 'string',
-      title: 'api名称',
-      required: true,
-      'x-decorator': 'FormItem',
-      'x-component': 'Input',
-      'x-component-props': {
-        placeholder: '请输入名称...'
-      },
-    },
-    description: {
-      type: 'string',
-      title: '描述',
-      'x-decorator': 'FormItem',
-      'x-component': 'Input.TextArea',
-      "x-component-props": {
-        placeholder: '请输入描述...'
-      },
-    },
-    type: {
-      type: 'string',
-      title: '数据类型',
-      required: true,
-      'x-validator': {
-        required: true,
-        message: '数据类型是必填项'
-      },
-      'x-decorator': 'FormItem',
-      'x-component': 'Select',
-      'x-component-props': {
-        placeholder: '请选择数据类型...'
-      },
-    },
-    defaultValue: {
-      type: 'string',
-      title: '默认值',
-      'x-decorator': 'FormItem',
-      'x-component': 'GatherInput',
-      'x-component-props': {
-        placeholder: '请输入值...',
-        options: [{
-          label: '默认记录',
-          value: 'record',
-        }],
-      },
-    },
-    text: {
-      type: 'string',
-      title: '模板',
-      required: true,
-      'x-disabled': true,
-      'x-validator': {
-        required: true,
-        message: '模板是必填项'
-      },
-      'x-visible': false,
-      'x-decorator': 'FormItem',
-      'x-component': 'BraftEditorTemplate',
-      'x-component-props': {
-      },
-    },
-    expression: {
-      type: 'string',
-      title: '公式',
-      required: true,
-      // readOnly: true,
-      'x-validator': {
-        required: true,
-        message: '公式是必填项'
-      },
-      'x-visible': false,
-      'x-decorator': 'FormItem',
-      'x-component': 'FormulaEdit',
-      'x-component-props': {
-      },
-    },
-  },
-}
-
-const useAsyncDataSource = (
-  pattern: Formily.Core.Types.FormPathPattern,
-  service: (
-    field: Formily.Core.Models.Field
-  ) => Promise<{ label: string; value: any }[]>
-) => {
-  onFieldReact(pattern, (field) => {
-    const fieldObj = field as any
-    fieldObj.loading = true
-    const flowTypeValue = field.query('flowType').value()
-    const isShow = flowTypeValue && flowTypeValue !== IFlowResourceType.TEMPLATE
-    const isShowDefault = flowTypeValue === IFlowResourceType.VARIABLE || flowTypeValue === IFlowResourceType.CONSTANT
-    field.display = isShow ? 'visible' : 'none'
-    formData.setFieldState('defaultValue', (state) => {
-      const valFlag = fieldObj.value && fieldObj.value !== MetaValueType.MULTI_OPTION
-        && fieldObj.value !== MetaValueType.SINGLE_OPTION;
-      state.display = isShowDefault && valFlag ? 'visible' : 'none'
-    })
-    service(fieldObj).then(
-      action((data) => {
-        fieldObj.dataSource = data
-        fieldObj.inputValue = null
-        fieldObj.loading = false
-      })
-    )
-  })
-}
-
-const formData = createForm({
-  effects: () => {
-    onFieldValueChange('flowType', (field) => {
-      formData.setFieldState('type', (state) => {
-        state.value = null
-      })
-      formData.setFieldState('text', (state) => {
-        state.display = field.value === IFlowResourceType.TEMPLATE ? 'visible' : 'none'
-      })
-      formData.setFieldState('expression', (state) => {
-        state.display = field.value === IFlowResourceType.FORMULA ? 'visible' : 'none'
-      })
-    })
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useAsyncDataSource('type', async (field) => {
-      const flowType = field.query('flowType').get('value')
-      if (!flowType) return []
-      return new Promise((resolve) => {
-        switch (flowType) {
-          case IFlowResourceType.VARIABLE:
-            return resolve(metaDataOps);
-          case IFlowResourceType.CONSTANT:
-            const ops = constMetaOps.map((op) => {
-              return metaDataOps.find((metaData) => metaData.value === op) 
-            });
-            return resolve(ops as any[]);
-          case IFlowResourceType.FORMULA:
-            const Fops = formulaMetaOps.map((op) => {
-              return metaDataOps.find((metaData) => metaData.value === op) 
-            });
-            return resolve(Fops as any[]);
-          default:
-            return resolve([]);
-        }
-      })
-    })
-    onFieldValueChange('type', (field) => {
-      formData.setFieldState('defaultValue', (state) => {
-        state.value = null
-      })
-    })
-  },
-})
-
 interface ResourceCreateProps {
   submit: (value: any) => void
   fieldMetas?: ICompareOperation[] 
@@ -250,6 +76,193 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   submit,
   fieldMetas = [],
 }) => {
+  const useAsyncDataSource = (
+    pattern: Formily.Core.Types.FormPathPattern,
+    service: (
+      field: Formily.Core.Models.Field
+    ) => Promise<{ label: string; value: any }[]>
+  ) => {
+    onFieldReact(pattern, (field) => {
+      const fieldObj = field as any
+      fieldObj.loading = true
+      const flowTypeValue = field.query('flowType').value()
+      const isShow = flowTypeValue && flowTypeValue !== IFlowResourceType.TEMPLATE
+      const isShowDefault = flowTypeValue === IFlowResourceType.VARIABLE || flowTypeValue === IFlowResourceType.CONSTANT
+      field.display = isShow ? 'visible' : 'none'
+      formData.setFieldState('defaultValue', (state) => {
+        const valFlag = fieldObj.value && fieldObj.value !== MetaValueType.MULTI_OPTION
+          && fieldObj.value !== MetaValueType.SINGLE_OPTION;
+        state.display = isShowDefault && valFlag ? 'visible' : 'none'
+      })
+      service(fieldObj).then(
+        action((data) => {
+          fieldObj.dataSource = data
+          fieldObj.inputValue = null
+          fieldObj.loading = false
+        })
+      )
+    })
+  }
+
+  const formData = createForm({
+    effects: () => {
+      onFieldValueChange('flowType', (field) => {
+        formData.setFieldState('type', (state) => {
+          state.value = null
+        })
+        formData.setFieldState('text', (state) => {
+          state.display = field.value === IFlowResourceType.TEMPLATE ? 'visible' : 'none'
+        })
+        formData.setFieldState('expression', (state) => {
+          state.display = field.value === IFlowResourceType.FORMULA ? 'visible' : 'none'
+        })
+      })
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useAsyncDataSource('type', async (field) => {
+        const flowType = field.query('flowType').get('value')
+        if (!flowType) return []
+        return new Promise((resolve) => {
+          switch (flowType) {
+            case IFlowResourceType.VARIABLE:
+              return resolve(metaDataOps);
+            case IFlowResourceType.CONSTANT:
+              const ops = constMetaOps.map((op) => {
+                return metaDataOps.find((metaData) => metaData.value === op) 
+              });
+              return resolve(ops as any[]);
+            case IFlowResourceType.FORMULA:
+              const Fops = formulaMetaOps.map((op) => {
+                return metaDataOps.find((metaData) => metaData.value === op) 
+              });
+              return resolve(Fops as any[]);
+            default:
+              return resolve([]);
+          }
+        })
+      })
+      onFieldValueChange('type', (field) => {
+        formData.setFieldState('defaultValue', (state) => {
+          console.log(111111111)
+          state.value = null
+        })
+      })
+    },
+  })
+
+  const schema = {
+    type: 'object',
+    properties: {
+      flowType: {
+        type: 'string',
+        title: '资源类型',
+        required: true,
+        'x-validator': {
+          required: true,
+          message: '资源类型是必填项'
+        },
+        'x-decorator': 'FormItem',
+        'x-component': 'Select',
+        enum: [
+          { label: '变量', value: IFlowResourceType.VARIABLE },
+          { label: '常量', value: IFlowResourceType.CONSTANT },
+          { label: '公式', value: IFlowResourceType.FORMULA },
+          { label: '文本模板', value: IFlowResourceType.TEMPLATE },
+        ],
+        'x-component-props': {
+          placeholder: '请选择...'
+        },
+      },
+      name: {
+        type: 'string',
+        title: '资源名称',
+        required: true,
+        'x-validator': [{
+          triggerType: 'onBlur',
+          required: true,
+          message: '资源名称是必填项',
+          
+        }, {
+          triggerType: 'onBlur',
+          validator: (value: string) => {
+            if (!value) return null
+            const idx = fieldMetas?.findIndex((meta: any) => meta.name === value)
+            if(idx > -1) return '资源名称重复'
+          }
+        }],
+        'x-decorator': 'FormItem',
+        'x-component': 'Input',
+        'x-component-props': {
+          placeholder: '请输入名称...',
+        },
+      },
+      description: {
+        type: 'string',
+        title: '描述',
+        'x-decorator': 'FormItem',
+        'x-component': 'Input.TextArea',
+        "x-component-props": {
+          placeholder: '请输入描述...'
+        },
+      },
+      type: {
+        type: 'string',
+        title: '数据类型',
+        required: true,
+        'x-validator': {
+          required: true,
+          message: '数据类型是必填项'
+        },
+        'x-decorator': 'FormItem',
+        'x-component': 'Select',
+        'x-component-props': {
+          placeholder: '请选择数据类型...'
+        },
+      },
+      defaultValue: {
+        type: 'string',
+        title: '默认值',
+        'x-decorator': 'FormItem',
+        'x-component': 'GatherInput',
+        'x-component-props': {
+          placeholder: '请输入值...',
+          options: [{
+            label: '默认记录',
+            value: 'record',
+          }],
+        },
+      },
+      text: {
+        type: 'string',
+        title: '模板',
+        required: true,
+        'x-disabled': true,
+        'x-validator': {
+          required: true,
+          message: '模板是必填项'
+        },
+        'x-visible': false,
+        'x-decorator': 'FormItem',
+        'x-component': 'BraftEditorTemplate',
+        'x-component-props': {
+        },
+      },
+      expression: {
+        type: 'string',
+        title: '公式',
+        required: true,
+        'x-validator': {
+          required: true,
+          message: '公式是必填项'
+        },
+        'x-visible': false,
+        'x-decorator': 'FormItem',
+        'x-component': 'FormulaEdit',
+        'x-component-props': {
+        },
+      },
+    },
+  }
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form, setForm] = useState(formData)
 
@@ -261,7 +274,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   };
 
   const handleOk = () => {
-    const obj: any = formData.values;
+    const obj: any = form.values;
     const resourceData: any = {
       description: obj.description,
       exclusiveMaximum: null,

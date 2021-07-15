@@ -11,15 +11,17 @@ import {
   ICompareOperation,
 } from '@toy-box/meta-schema'
 import { fieldMetaStore } from '../../store'
-import { observer } from 'mobx-react';
+import { observer } from '@formily/reactive-react'
 export interface AssignmentModelPorps {
   showModel: boolean
   callbackFunc: (bool: boolean) => void
+  title?: string
 }
 
 export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   showModel = false,
-  callbackFunc
+  callbackFunc,
+  title= "新建分配"
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const { fieldMetas, updateFieldMetas, fieldServices } = fieldMetaStore.fieldMetaStore;
@@ -74,21 +76,21 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
       //     layout: 'vertical'
       //   },
         properties: {
-          input: {
+          name: {
             type: 'string',
             title: '标签',
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
-          input1: {
+          id: {
             type: 'string',
             title: 'API名称',
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
-          textarea: {
+          description: {
             type: 'string',
             title: '描述',
             'x-decorator': 'FormItem',
@@ -125,9 +127,20 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
     [fieldMetas, updateFieldMetas]
   )
 
+  const specialOptions = [
+    {
+      label: '引用变量',
+      value: 'REFERENCE',
+    },
+    {
+      label: '直接输入',
+      value: 'INPUT',
+    },
+  ]
+
   return (
     <>
-      <Modal width={900} title="编辑分配" visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
         <div className="assignment-index">
           <PreviewText.Placeholder value="暂无数据">
             <FormLayout layout='vertical' colon={false}>
@@ -155,6 +168,8 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
                 fieldMetas={fieldMetas}
                 value={value as any[]}
                 filterFieldService={fieldServices}
+                specialOptions={specialOptions}
+                specialMode
                 onChange={(filterItem: Partial<ICompareOperation>[]) =>
                   handleFilter(filterItem)
                 }
