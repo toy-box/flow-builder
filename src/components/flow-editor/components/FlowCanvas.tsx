@@ -11,7 +11,9 @@ import '../styles/flowGround.less'
 import CanvasHandler from './CanvasHandle'
 
 import { processTypes } from "../../../flow/types"
-import { AssignmentModel, DecisionModel, SuspendModel } from '../../form-model';
+import { AssignmentModel, DecisionModel, SuspendModel, LoopModel,
+  SortCollectionModel, RecordCreateModel, RecordUpdateModel,
+  RecordRemoveModel, RecordLookUpModel } from '../../form-model';
 
 MenuTool.config({
   tagName: 'div',
@@ -214,9 +216,15 @@ const FlowGround: FC = () => {
         onFitContent={onHandleSideToolbar('fit')}
         onRealContent={onHandleSideToolbar('real')}
       />
-      <AssignmentModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)}/>
+      {/* <AssignmentModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)}/> */}
       {decisionModel && <DecisionModel showModel={decisionModel} callbackFunc={(bool: boolean) => setDecisionModel(bool)} />}
       {/* <SuspendModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)}/> */}
+      {/* <LoopModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)} /> */}
+      {/* <SortCollectionModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)} /> */}
+      {/* <RecordCreateModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)} /> */}
+      {/* <RecordUpdateModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)} /> */}
+      {/* <RecordRemoveModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)} /> */}
+      <RecordLookUpModel showModel={assignmentModel} callbackFunc={(bool: boolean) => assignmentCallBack(bool)} />
     </React.Fragment>
   )
 }

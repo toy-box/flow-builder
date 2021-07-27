@@ -3,10 +3,13 @@ import { Input } from '@formily/antd'
 import { MetaValueType } from '@toy-box/meta-schema';
 import { useForm, observer } from '@formily/react'
 import { FieldDate, FieldBoolean, FieldSelect } from '@toy-box/meta-components';
+import { fieldMetaStore } from '../../../store'
+import { isArr } from '@formily/shared';
 
 
 export const GatherInput: FC = observer((props: any) => {
   const form = useForm()
+  const { registers } = fieldMetaStore.fieldMetaStore;
 
   const changeValue = useCallback((e) => {
     form.setFieldState('defaultValue', (state) => {
@@ -21,10 +24,23 @@ export const GatherInput: FC = observer((props: any) => {
   }, [form])
 
   const handleSelectOptions = useCallback((value) => {
-    form.setFieldState('defaultValue', (state) => {
+    form.setFieldState('refObjectId', (state) => {
       state.value = value
     })
   }, [form])
+
+  const registerOptions = useMemo(() => {
+    if (isArr(registers)) {
+      const options = registers.map((r) => {
+        return {
+          label: r.name,
+          value: r.id,
+        }
+      })
+      return options
+    }
+    return []
+  }, [registers])
 
   const filterValueInput = useMemo(() => {
     switch (form.values.type) {
@@ -32,10 +48,10 @@ export const GatherInput: FC = observer((props: any) => {
       case MetaValueType.STRING:
       case MetaValueType.NUMBER:
         return <Input placeholder="请输入值" type={form.values.type} onChange={changeValue} value={props.value} />
-      case MetaValueType.OBJECT:
+      case MetaValueType.OBJECT_ID:
         return <FieldSelect
                 placeholder='请选择值'
-                options={props.options}
+                options={registerOptions}
                 field={
                   {
                     type: form.values.type,

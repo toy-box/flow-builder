@@ -53,7 +53,6 @@ export const FormilyFilterBuilder: FC<FormilyFilterBuilderProps> = observer(({
     <div>
       <div className={`${prefixCls}-content-resource`}>
         <ResourceCreate 
-          submit={submitResource}
           fieldMetas={fieldMetas as any[]}
         />
       </div>

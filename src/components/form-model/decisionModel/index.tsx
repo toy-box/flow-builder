@@ -5,6 +5,7 @@ import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { BranchArrays } from '../../formily/components/index'
 import { uid } from '../../../utils';
+import { isObj } from '@formily/shared';
 
 export interface DecisionModelPorps {
   showModel: boolean
@@ -18,8 +19,6 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   title= "新建决策"
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
-  const [selectIndex, setSelectIndex] = useState(0);
-
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -28,6 +27,24 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   const handleOk = () => {
     console.log(form.values)
     form.submit((resolve) => {
+      const value = form.values;
+      value.rules.forEach((rule: any) => {
+        if (!isObj(rule.connector)) {
+          rule.connector = {
+            targetReference: null
+          }
+        }
+      })
+      const paramData = {
+        id: value.id,
+        name: value.name,
+        defaultConnector: {
+          targetReference: null,
+        },
+        defaultConnectorName: '默认分支',
+        rules: value.rules,
+      }
+      console.log(paramData);
       setIsModalVisible(false);
       callbackFunc(false)
     }).catch((rejected) => {
@@ -119,9 +136,6 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
               title: '新结果',
               descTipHtml: descTipHtml,
               addDescription: '结果顺序',
-              changeIndex: (index: number) => {
-                setSelectIndex(index)
-              },
             },
             items: {
               type: 'object',

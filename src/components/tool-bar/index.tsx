@@ -17,7 +17,12 @@ const ToolBar: FC = observer(() => {
           <FlowStore />
         </TabPane>
         <TabPane tab="管理" key="manger">
-          {fieldMetaStore.fieldMetaStore.fieldMetas.map((data) => <div>{data.name}</div>)}
+        {
+          fieldMetaStore.fieldMetaStore.fieldMetas.map((data: any) =>
+          <div>
+            {data?.children ? data?.children.map((child: any) => <div>{child.name}</div>) : data.name}
+          </div>)
+        }
         </TabPane>
       </Tabs>
     </div>

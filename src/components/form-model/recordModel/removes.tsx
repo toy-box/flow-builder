@@ -1,21 +1,22 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Modal } from 'antd';
-import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
+import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
+  Space, ArrayItems, Switch, Radio, NumberPicker } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { BranchArrays } from '../../formily/components/index'
+import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { uid } from '../../../utils';
 
-export interface SuspendModelPorps {
+export interface RecordRemoveModelPorps {
   showModel: boolean
   callbackFunc: (bool: boolean) => void
   title?: string
 }
 
-export const SuspendModel: FC<SuspendModelPorps> = ({
+export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建暂停"
+  title= "新建删除记录"
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -26,6 +27,19 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   const handleOk = () => {
     console.log(form.values)
+    const value = form.values;
+    const paramData = {
+      id: value.id,
+      name: value.name,
+      connector: {
+        targetReference: null,
+      },
+      registerId: value.registerId,
+      criteria: {
+        conditions: value.criteria.conditions
+      },
+    }
+    console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
       callbackFunc(false)
@@ -46,31 +60,23 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       FormLayout,
       FormGrid,
       PreviewText,
-      FormButtonGroup,
-      BranchArrays
+      ResourceSelect,
+      Space,
+      ArrayItems,
+      Switch,
+      Radio,
+      NumberPicker,
+      FormilyFilter,
     },
   })
   
-  const form = createForm()
-
-  form.setValues(
-    {
-      rules: [{
-        name: '',
-        id: uid(),
-        criteria: {
-          conditions: [{}],
-        },
-        description: '',
-      }]
+  const form = createForm({
+    effects: () => {
     }
-  )
-
-  const descTipHtml = <div className="branch-arrays-tip">
-    <p className="tip">
-    对于每个可以恢复流的事件，添加暂停配置。此事件可以指定时间或平台事件消息。暂停条件确定是否在事件发生之前暂停流。在未满足暂停条件时，流会使用默认路径，而不暂停。
-    </p>
-  </div>
+  })
+  form.setValues({
+    sortOptions: []
+  })
 
   const schema = {
     type: 'object',
@@ -86,6 +92,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
             type: 'string',
             title: '标签',
             required: true,
+            'x-validator': {
+              required: true,
+              message: '标签是必填项'
+            },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
@@ -93,6 +103,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
             type: 'string',
             title: 'API名称',
             required: true,
+            'x-validator': {
+              required: true,
+              message: 'API名称是必填项'
+            },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
@@ -105,72 +119,59 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
               gridSpan: 2
             },
           },
-          rules: {
-            type: 'array',
+          registerId: {
+            type: 'string',
+            title: '删除对象记录',
+            required: true,
+            'x-validator': {
+              required: true,
+              message: '对象记录是必填项'
+            },
+            'x-decorator': 'FormItem',
+            'x-component': 'ResourceSelect',
+            'x-component-props': {
+              isHiddenResourceBtn: true,
+              paramKey: 'registerId',
+              mataSource: 'metaData',
+            },
+          },
+          web: {
+            type: 'string',
             title: '',
             'x-decorator': 'FormItem',
-            'x-component': 'BranchArrays',
+          },
+          'criteria.conditions': {
+            type: 'number',
+            title: '筛选记录',
+            'x-decorator': 'FormItem',
+            'x-component': 'FormilyFilter',
             "x-decorator-props": {
-              gridSpan: 2,
+              gridSpan: 2
             },
             'x-component-props': {
-              title: '新建暂停配置',
-              descTipHtml: descTipHtml,
-              addDescription: '暂停配置',
+              paramKey: 'criteria.conditions',
+              reactionKey: 'registerId',
+              mataSource: 'metaData',
+              specialMode: true,
             },
-            items: {
-              type: 'object',
-              properties: {
-                layout: {
-                  type: 'void',
-                  'x-component': 'FormLayout',
-                  'x-component-props': {
-                    gridSpan: 2,
-                    layout: 'vertical',
-                    colon: false,
-                    removeMessage: '删除暂停配置',
-                  },
-                  properties: {
-                    name: {
-                      type: 'string',
-                      title: '暂停配置标签',
-                      required: true,
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Input',
-                    },
-                    eventType: {
-                      type: 'string',
-                      title: '恢复事件类型',
-                      required: true,
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Input',
-                    },
-                    description: {
-                      type: 'string',
-                      title: '暂停配置描述',
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Input.TextArea',
-                      "x-decorator-props": {
-                        gridSpan: 2
-                      },
-                    },
-                  },
+            'x-reactions': {
+              dependencies: ['registerId'],
+              fulfill: {
+                schema: {
+                  'x-display': "{{$deps != '' ? 'visible' : 'none'}}",
                 },
               },
             },
           },
         },
       },
-    // },
     },
   }
-
-  
 
   return (
     <>
       <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
-        <div className="suspend-index">
+        <div className="loop-index">
           <PreviewText.Placeholder value="暂无数据">
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>

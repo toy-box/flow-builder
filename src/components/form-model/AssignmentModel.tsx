@@ -5,7 +5,6 @@ import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { FilterBuilder } from '@toy-box/meta-components';
 import { ResourceCreate } from './ResourceCreate'
-import update from 'immutability-helper'
 import './index.less'
 import {
   ICompareOperation,
@@ -24,7 +23,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   title= "新建分配"
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
-  const { fieldMetas, updateFieldMetas, fieldServices } = fieldMetaStore.fieldMetaStore;
+  const { fieldMetas, fieldServices } = fieldMetaStore.fieldMetaStore;
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -37,6 +36,10 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
     }).catch((rejected) => {
     })
   };
+
+  useEffect(() => {
+    console.log(fieldMetaStore.fieldMetaStore, 'fieldMetas')
+  }, [])
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -118,15 +121,6 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
     []
   )
 
-  const submitResource = useCallback(
-    (resourceData) => {
-      const metas = update(fieldMetas, { $push: [resourceData] })
-      console.log(metas, '12332');
-      updateFieldMetas(metas)
-    },
-    [fieldMetas, updateFieldMetas]
-  )
-
   const specialOptions = [
     {
       label: '引用变量',
@@ -159,7 +153,6 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
             </div>
             <div className="assignment-add-btn">
               <ResourceCreate 
-                submit={submitResource}
                 fieldMetas={fieldMetas as any[]}
               />
             </div>
