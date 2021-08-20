@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { FlowCanvas, FlowContainer } from './components'
+import { AntvCanvas } from './components'
 import { FlowGraphMeta } from '../../flow/types'
 import { FlowContext } from '../../flow/shared'
 import { FlowGraph } from '../../flow/models/FlowGraph'
@@ -350,14 +350,14 @@ const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
 
   return (
     <div className={prefixCls}>
-      <DndProvider backend={HTML5Backend}>
+      {/* <DndProvider backend={HTML5Backend}> */}
         <ToolBar />
         <FlowContext.Provider value={flowGraph}>
-          <FlowContainer>
-            <FlowCanvas />
-          </FlowContainer>
+          {/* <FlowContainer> */}
+            <AntvCanvas />
+          {/* </FlowContainer> */}
         </FlowContext.Provider>
-      </DndProvider>
+      {/* </DndProvider> */}
     </div>
   )
 }

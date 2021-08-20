@@ -72,25 +72,26 @@ export const ResourceSelect: FC = observer((props: any) => {
             })
           }
         } else {
-          metas.push(resourceFieldMetas.find((meta: any) => op.value === meta.value))
+          const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
+          if (meta) metas.push(meta)
         }
       })
     }
     return metas.map((field: any) => {
-      if (field.children) {
-        const children = field.children.map((child: any) => ({
-          label: child.name,
-          value: child.key,
+      if (field?.children) {
+        const children = field?.children.map((child: any) => ({
+          label: child?.name,
+          value: child?.key,
         }))
         return {
-          label: field.label,
-          value: field.value,
+          label: field?.label,
+          value: field?.value,
           children,
         }
       } else {
         return {
-          label: field.name,
-          value: field.key,
+          label: field?.name,
+          value: field?.key,
         }
       }
     })

@@ -20,10 +20,10 @@ const FlowContainer: FC = ({
       const diffY = sourceMouseOffset!.y - sourceElementOffset!.y
       const x = currentMouseOffset!.x - diffX
       const y = currentMouseOffset!.y - diffY
-      if (flowGraph.graph) {
-        const pos = flowGraph.graph.clientToLocal(x, y);
-        flowGraph.createNode(makeNodeFromPack(pos.x, pos.y, item.type, flowGraph))
-      }
+      // if (flowGraph.graph) {
+      //   const pos = flowGraph.graph.clientToLocal(x, y);
+      //   flowGraph.createNode(makeNodeFromPack(pos.x, pos.y, item.type, flowGraph))
+      // }
     },
   })
 

@@ -1,5 +1,6 @@
 import { Edge, Node } from "@antv/x6"
 import { FlowGraph } from "./models"
+import { IFieldMeta, ICompareOperation } from '@toy-box/meta-schema';
 
 export type AnyFunction = (...args: any[]) => any
 
@@ -7,7 +8,7 @@ export type FlowGraphEffects = (flowGraph: FlowGraph) => void
 export interface FlowGraphMeta {
   id: string
   name: string
-  nodes: FlowNodeMeta[]
+  flow: FlowMeta
 }
 
 export interface FlowNodeMeta {
@@ -76,4 +77,80 @@ export enum IFlowResourceType {
   CONSTANT = 'constant',
   FORMULA = 'formula',
   TEMPLATE = 'template'
+}
+
+export interface FlowMeta {
+  [IFlowResourceType.VARIABLE]?: IFieldMeta[]
+  [IFlowResourceType.CONSTANT]?: IFieldMeta[]
+  [IFlowResourceType.FORMULA]?: IFieldMeta[]
+  [IFlowResourceType.TEMPLATE]?: IFieldMeta[]
+  start?: FlowMetaParam
+  assignments?: FlowMetaParam
+  decisions?: FlowMetaParam[]
+  loops?: FlowMetaParam[]
+  sortCollectionProcessor?: FlowEdgeMeta[]
+  recordCreates?: FlowMetaParam[]
+  recordUpdates?: FlowMetaParam[]
+  recordDeletes?: FlowMetaParam[]
+  recordLookups?: FlowMetaParam[]
+}
+
+export enum FlowMetaTypes {
+  START = 'start',
+  ASSIGNMENTS = 'assignments',
+  DECISIONS = 'decisions',
+  SUSPENDS= 'suspends',
+  LOOPS = 'loops',
+  SORT_COLLECTION_PROCESSOR = 'sortCollectionProcessor',
+  RECORD_CREATES = 'recordCreates',
+  RECORD_UPDATES = 'recordUpdates',
+  RECORD_DELETES = 'recordDeletes',
+  RECORD_LOOKUPS = 'recordLookups'
+}
+
+export interface FlowMetaParam {
+  id: string
+  name: string
+  description?: string
+  connector?: {
+    targetReference: string | null
+  }
+  defaultConnector?: {
+    targetReference: string | null
+  }
+  nextValueConnector?: {
+    targetReference: string | null
+  }
+  defaultConnectorName?: string
+  assignmentItems?: ICompareOperation[]
+  rules?: FlowMetaParam[]
+  collectionReference?: string
+  iterationOrder?: string
+  limit?: null | number
+  sortOptions?: SortOption[]
+  registerId?: string
+  inputAssignments?: ICompareOperation[]
+  storeOutputAutomatically?: boolean
+  assignRecordIdToReference?: string
+  criteria?: {
+    conditions: ICompareOperation[]
+  }
+  outputAssignments?: ICompareOperation[]
+  outputReference?: null | string
+  queriedFields?: string[]
+  sortOrder?: SortOrder
+  sortField?: string
+  getFirstRecordOnly?: boolean
+}
+
+export interface SortOption {
+  sortField: null | string
+  sortOrder: SortOrder
+  doesPutEmptyStringAndNullFirst: boolean
+}
+
+export enum SortOrder {
+  ASC = 'asc',
+  DESC = 'desc',
+  NULL = 'null'
 }

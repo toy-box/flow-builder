@@ -10,12 +10,12 @@ export const useFlowGraphEffects = (
   const flowGraph = useFlowGraph()
   ref.current = useMemo(() => {
     const id = uid()
-    flowGraph.addEffects(id, effects)
+    // flowGraph.addEffects(id, effects)
     return id
   }, [effects, flowGraph])
   useEffect(() => {
     return () => {
-      flowGraph.removeEffects(ref.current)
+      // flowGraph.removeEffects(ref.current)
     }
   }, [flowGraph])
 }

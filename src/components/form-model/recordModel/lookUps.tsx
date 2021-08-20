@@ -6,14 +6,14 @@ import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { observer } from '@formily/react'
 import { IFieldOption, MetaValueType } from '@toy-box/meta-schema';
-import { IFlowResourceType } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
 
 export interface RecordLookUpModelPorps {
   showModel: boolean
-  callbackFunc: (bool: boolean) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
   title?: string
 }
 
@@ -60,14 +60,14 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(false)
+      callbackFunc(paramData, FlowMetaTypes.RECORD_LOOKUPS)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false)
+    callbackFunc(false, FlowMetaTypes.RECORD_LOOKUPS)
   };
 
   const SchemaField = createSchemaField({
@@ -103,7 +103,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       })
       onFieldValueChange('storeOutputAutomatically', (field) => {
         form.setFieldState('automaticallyType', (state) => {
-          state.value = true
+          state.value = !field.value ? true : undefined
         })
         form.setFieldState('outputReference', (state) => {
           state.value = undefined
@@ -113,16 +113,36 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         })
       })
       onFieldValueChange('automaticallyType', (field) => {
+        const automaticallyType = field.value
+        const outputReference = field.query('outputReference').get('value')
+        const flag = (automaticallyType === true && !outputReference) || (!automaticallyType && outputReference)
         form.setFieldState('outputReference', (state) => {
           state.value = undefined
         })
         form.setFieldState('queriedFields', (state) => {
           state.value = []
+          state.display = flag? 'visible' : 'none'
+        })
+      })
+      onFieldValueChange('address', (field) => {
+        form.setFieldState('outputReference', (state) => {
+          state.value = undefined
+        })
+        const automaticallyType = field.query('automaticallyType').get('value')
+        const outputReference = field.query('outputReference').get('value')
+        const flag = (automaticallyType === true && !outputReference) || (!automaticallyType && outputReference)
+        form.setFieldState('queriedFields', (state) => {
+          state.value = []
+          state.display = flag? 'visible' : 'none'
         })
       })
       onFieldValueChange('outputReference', (field) => {
+        const automaticallyType = field.query('automaticallyType').get('value')
+        const outputReference = field.value
+        const flag = (automaticallyType === true && !outputReference) || (!automaticallyType && outputReference)
         form.setFieldState('queriedFields', (state) => {
           state.value = []
+          state.display = flag? 'visible' : 'none'
         })
       })
     }

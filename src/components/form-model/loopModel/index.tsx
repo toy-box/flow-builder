@@ -5,11 +5,12 @@ import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType } from '../../../flow/types'
+import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
 
 export interface LoopModelPorps {
   showModel: boolean
-  callbackFunc: (bool: boolean) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
   title?: string
 }
 
@@ -43,14 +44,14 @@ export const LoopModel: FC<LoopModelPorps> = ({
       }
       console.log(paramData);
       setIsModalVisible(false);
-      callbackFunc(false)
+      callbackFunc(paramData, FlowMetaTypes.LOOPS)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false)
+    callbackFunc(false, FlowMetaTypes.LOOPS)
   };
 
   const SchemaField = createSchemaField({

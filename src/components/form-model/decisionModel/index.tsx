@@ -6,17 +6,17 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { BranchArrays } from '../../formily/components/index'
 import { uid } from '../../../utils';
 import { isObj } from '@formily/shared';
-
+import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
 export interface DecisionModelPorps {
   showModel: boolean
-  callbackFunc: (bool: boolean) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
   title?: string
 }
 
 export const DecisionModel: FC<DecisionModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建决策"
+  title= "新建决策",
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   
@@ -28,10 +28,11 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
     console.log(form.values)
     form.submit((resolve) => {
       const value = form.values;
+      const id = uid();
       value.rules.forEach((rule: any) => {
         if (!isObj(rule.connector)) {
           rule.connector = {
-            targetReference: null
+            targetReference: id
           }
         }
       })
@@ -39,21 +40,21 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         id: value.id,
         name: value.name,
         defaultConnector: {
-          targetReference: null,
+          targetReference: id,
         },
         defaultConnectorName: '默认分支',
         rules: value.rules,
       }
       console.log(paramData);
       setIsModalVisible(false);
-      callbackFunc(false)
+      callbackFunc(paramData, FlowMetaTypes.DECISIONS)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false)
+    callbackFunc(false, FlowMetaTypes.DECISIONS)
   };
 
   const SchemaField = createSchemaField({

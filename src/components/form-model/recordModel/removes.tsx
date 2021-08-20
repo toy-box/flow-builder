@@ -5,11 +5,12 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
+import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
 
 export interface RecordRemoveModelPorps {
   showModel: boolean
-  callbackFunc: (bool: boolean) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
   title?: string
 }
 
@@ -42,14 +43,14 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(false)
+      callbackFunc(paramData, FlowMetaTypes.RECORD_DELETES)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false)
+    callbackFunc(false, FlowMetaTypes.RECORD_DELETES)
   };
 
   const SchemaField = createSchemaField({

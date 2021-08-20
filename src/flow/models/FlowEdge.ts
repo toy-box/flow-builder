@@ -110,9 +110,9 @@ export class FlowEdge {
   }
 
   remove() {
-    this.flowGraph.notify(LifeCycleTypes.ON_FLOW_REMOVE_START, this)
+    // this.flowGraph.notify(LifeCycleTypes.ON_FLOW_REMOVE_START, this)
     this.edge.remove()
     this.unmounted = true
-    this.flowGraph.notify(LifeCycleTypes.ON_FLOW_REMOVE_END, this)
+    // this.flowGraph.notify(LifeCycleTypes.ON_FLOW_REMOVE_END, this)
   }
 }
