@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@airclass/icons": "^4.3.4",
     "@antv/x6": "^1.20.0",
     "@antv/x6-react-shape": "^1.4.1",
     "@craco/craco": "^6.1.2",
@@ -18,9 +19,9 @@
     "@toy-box/flow-graph": "^1.0.6",
     "@toy-box/flow-nodes": "^1.0.6",
     "@toy-box/form-formula": "^1.0.26",
-    "@toy-box/meta-components": "^1.0.38",
-    "@toy-box/meta-schema": "^1.0.28",
-    "@toy-box/toybox-lib": "^0.1.66",
+    "@toy-box/meta-components": "^1.0.69",
+    "@toy-box/meta-schema": "^1.0.56",
+    "@toy-box/toybox-shared": "^1.0.69",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react": "^16.14.10",
@@ -31,6 +32,7 @@
     "codemirror": "^5.62.0",
     "craco-antd": "^1.19.0",
     "craco-less": "^1.17.1",
+    "lodash.get": "^4.4.2",
     "react": "^16.14.0",
     "react-dnd": "^14.0.2",
     "react-dnd-html5-backend": "^14.0.0",
@@ -66,6 +68,7 @@
   },
   "devDependencies": {
     "@types/draft-js": "^0.11.4",
+    "@types/lodash.get": "^4.4.6",
     "braft-convert": "^2.3.0"
   }
 }

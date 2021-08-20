@@ -1,11 +1,9 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Graph } from '@antv/x6';
 import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
 import { connect, StartNode, ExtendNode, EndNode } from '@toy-box/flow-nodes';
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
-// import { useFlow } from '../../hooks';
-// import MenuTool from './MenuTool';
 import { ExtendPanel } from './extend-panel';
 
 const STAND_SIZE = 56;
@@ -13,11 +11,6 @@ const STAND_SIZE = 56;
 export const AntvCanvas = observer(() => {
   const flowGraph = useFlowGraph();
   const flow = flowGraph.useFlow;
-  // let graph: Graph | null = null
-  const style = {
-    width: '1240px',
-    height: '960px',
-  };
 
   const submit = useCallback(
     (id, type, data) => {
@@ -181,8 +174,6 @@ export const AntvCanvas = observer(() => {
   }, [flow, flowGraph.flowNodes])
 
   return (
-    <div>
-      <div id="flow-canvas" style={style}></div>
-    </div>
+    <div id="flow-canvas" style={{ flex: 1 }}></div>
   );
 });

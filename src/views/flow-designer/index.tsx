@@ -1,10 +1,11 @@
 import React from 'react'
-import { Layout } from 'antd'
-import FlowEditor from '../../components/flow-editor'
+import { GlobalRegistry} from '../../designer'
+import { Navbar, FlowEditor} from '../../components'
+import { DesignerContext } from '../../designer'
 import { FlowMeta } from '../../flow/types'
+
 import './style.less'
 
-const { Header } = Layout
 
 const flow: FlowMeta = {
   "start": {
@@ -37,13 +38,12 @@ const flowMeta = {
 }
 
 
-function FlowBuilder() {
+export const FlowDesigner = () => {
   return (
-    <div className="flow-builder">
-      <Header />
+    <DesignerContext.Provider value={{ prefix: 'fd', GlobalRegistry }}>
+      <Navbar />
       <FlowEditor flowMeta={flowMeta} />
-    </div>
+    </DesignerContext.Provider>
   )
 }
 
-export default FlowBuilder
