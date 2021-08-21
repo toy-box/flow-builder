@@ -1,5 +1,6 @@
 import React, { ReactNode, useState } from 'react'
 import classNames from 'classnames'
+import { Tooltip } from 'antd'
 import { CloseFill, PushpinLine, PushpinFill } from '@airclass/icons'
 import { usePrefix } from '../../hooks'
 import { TextWidget } from '../widgets'
@@ -72,22 +73,24 @@ export const CompositePanel: React.FC & {
             return item.icon
           }
           return (
-            <div
-              className={classNames(prefix + '-tabs-pane', {
-                active: activeKey === index,
-              })}
-              key={index}
-              onClick={() => {
-                if (index === activeKey) {
-                  setVisible(!visible)
-                } else {
-                  setVisible(true)
-                }
-                setActiveKey(index)
-              }}
-            >
-              {takeTab()}
-            </div>
+            <Tooltip placement="right" title={<TextWidget>{item.title}</TextWidget>}>
+              <div
+                className={classNames(prefix + '-tabs-pane', {
+                  active: activeKey === index && visible,
+                })}
+                key={index}
+                onClick={() => {
+                  if (index === activeKey) {
+                    setVisible(!visible)
+                  } else {
+                    setVisible(true)
+                  }
+                  setActiveKey(index)
+                }}
+              >
+                {takeTab()}
+              </div>
+            </Tooltip>
           )
         })}
       </div>
