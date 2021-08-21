@@ -85,7 +85,7 @@ export interface FlowMeta {
   [IFlowResourceType.FORMULA]?: IFieldMeta[]
   [IFlowResourceType.TEMPLATE]?: IFieldMeta[]
   start?: FlowMetaParam
-  assignments?: FlowMetaParam
+  assignments?: FlowMetaParam[]
   decisions?: FlowMetaParam[]
   loops?: FlowMetaParam[]
   sortCollectionProcessor?: FlowEdgeMeta[]

@@ -48,12 +48,16 @@ export interface NodeProps {
   component?: string;
 }
 
+export interface FlowMetaParamOfType extends FlowMetaParam {
+  flowType: string
+}
+
 export class FlowGraph {
   id: string
   disposers: (() => void)[] = []
   initialMeta: FlowGraphMeta
   flowNodes: any[] = []
-  metaFlowDatas: any[] = []
+  metaFlowDatas: FlowMetaParamOfType[] = []
   useFlow: any
   flowEndId: string
 
@@ -85,9 +89,12 @@ export class FlowGraph {
     const flow = this.initialMeta.flow as any
     const data = flowData
     const flowNode: any = this.flowNodes.find((node) => node.id === nodeId)
-    console.log(nodeId, 'nodeId');
+    let cycleBeginNode = null
+    if (flowNode.type === 'cycleBack') {
+      cycleBeginNode = this.flowNodes.find((node) => node.cycleBackTarget === nodeId)
+    }
     data.connector = {
-      targetReference: flowNode?.targets[0]
+      targetReference: cycleBeginNode ? cycleBeginNode.id : flowNode?.targets[0]
     }
     data.defaultConnector = {
       targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
@@ -98,18 +105,51 @@ export class FlowGraph {
       if (metaType === FlowMetaTypes.LOOPS) {
         data.connector = undefined
         data.nextValueConnector = {
-          targetReference: flowNode?.targets[0],
+          targetReference: null,
         }
         data.defaultConnector = {
-          targetReference: flowNode?.targets[0],
+          targetReference: cycleBeginNode ? cycleBeginNode.id : flowNode?.targets[0],
         }
-      } 
+      } else {
+        for (const key in flow) {
+          if (flow.hasOwnProperty(key)) {
+            if (isArr(flow[key])) {
+              flow[key].forEach((meta: FlowMetaParam) => {
+                if (meta.connector && meta.connector.targetReference === flowNode?.targets[0]) {
+                  meta.connector.targetReference = data.id
+                } else if (key === FlowMetaTypes.LOOPS) {
+                  if (flowNode.type === 'cycleBack') {
+                    const backBool = this.loopNode(nodeId, 'cycleBackTarget')
+                    if (backBool && meta.nextValueConnector) meta.nextValueConnector.targetReference = data.id
+                  } else if (flowNode.type === 'cycleEnd') {
+                    const endBool = this.loopNode(nodeId, 'cycleEndTarget')
+                    if (endBool && meta.defaultConnector) meta.defaultConnector.targetReference = data.id
+                  }
+                }
+              })
+            } else if (flow[key].connector.targetReference === flowNode?.targets[0]) {
+              flow[key].connector.targetReference = data.id
+            }
+          }
+        }
+      }
       const arr = isArr(flow[metaType]) ? flow[metaType] : []
       arr.push(data)
       flow[metaType] = arr
     }
-    console.log(data, flowNode, 'this.initialMeta.flow')
+    console.log(data, flow, 'this.initialMeta.flow')
     this.initFlowNodes(metaType, data, flowNode)
+  }
+
+  loopNode = (id: string, type: 'cycleBackTarget' | 'cycleEndTarget') => {
+    console.log(id);
+    let flag = false
+    this.flowNodes.some((node: NodeProps) => {
+      if (node?.[type] === id) {
+        return flag = true
+      }
+    })
+    return flag
   }
 
   onInit = () => {
@@ -119,20 +159,26 @@ export class FlowGraph {
       if (flowData.hasOwnProperty(key)) {
         const metaType = showMetaTypes.find(type => type === key)
         if (metaType) {
-          this.metaFlowDatas.push({
-            ...flowData[key],
-            flowType: metaType
-          })
+          if (metaType === FlowMetaTypes.START) this.flowEndId = flowData[key]?.defaultConnector.targetReference || this.flowEndId
           if (isArr(flowData[key])) {
             flowData[key].forEach((data: FlowMetaParam) => {
-              this.initFlowNodes(metaType, data)
+              // this.initFlowNodes(metaType, data)
+              this.metaFlowDatas.push({
+                ...data,
+                flowType: metaType
+              })
             })
           } else {
-            this.initFlowNodes(metaType, flowData[key])
+            // this.initFlowNodes(metaType, flowData[key])
+            this.metaFlowDatas.push({
+              ...flowData[key],
+              flowType: metaType
+            })
           }
         }
       }
     }
+    this.setFlowData(this.metaFlowDatas)
     this.flowNodes.push({
       id: this.flowEndId,
       type: 'end',
@@ -142,30 +188,79 @@ export class FlowGraph {
     })
   }
 
+  // 按targets顺序进行flowNodes实例化
+  setFlowData = (flowDatas: any[], target?: FlowMetaParamOfType) => {
+    if (!target) {
+      flowDatas.some((flowData, index) => {
+        if (flowData.flowType === FlowMetaTypes.START) {
+          this.initFlowNodes(flowData.flowType, flowData)
+          flowDatas.splice(index, 1)
+          return this.setFlowData(flowDatas, flowData);
+        } 
+      })
+    } else if (target?.flowType !== FlowMetaTypes.DECISIONS) {
+      const targetReference = target?.flowType === FlowMetaTypes.LOOPS ?
+        target?.nextValueConnector?.targetReference : target?.connector?.targetReference
+      const defaultConnector = target?.defaultConnector?.targetReference
+      const flowData = flowDatas.find(data => data.id === targetReference)
+      if (flowData && targetReference) {
+        this.filterFlowData(targetReference, flowDatas, flowData)
+      } else {
+        const flowData = flowDatas.find(data => data.id === defaultConnector)
+        if (flowData && defaultConnector) this.filterFlowData(defaultConnector, flowDatas, flowData)
+      }
+    }
+  }
+
+  filterFlowData = (targetReference: string, flowDatas: any[], flowData: any) => {
+    const filterFlowDatas = flowDatas.filter(data => data.id !== targetReference)
+    const flowNode = this.flowNodes.find(node => node.id === targetReference)
+    if (flowNode) {
+      if (filterFlowDatas.length > 0) this.setFlowData(filterFlowDatas, flowData);
+    } else if (flowData?.flowType === FlowMetaTypes.LOOPS && flowData?.nextValueConnector?.targetReference) {
+      this.initFlowNodes(flowData.flowType, flowData)
+      this.setFlowData(flowDatas, flowData);
+    } else {
+      this.initFlowNodes(flowData.flowType, flowData)
+      if (filterFlowDatas.length > 0) this.setFlowData(filterFlowDatas, flowData);
+    }
+  }
+
   initFlowNodes(metaType: FlowMetaTypes, flowData: FlowMetaParam, flowNode?: NodeProps) {
     const cycleBack = this.cycleBackNode(flowData, flowNode);
     console.log(cycleBack)
+    let loopLastData = undefined
+    if (!flowNode) {
+      loopLastData = this.flowNodes.find((data: any) => {
+        if (flowData?.connector) {
+          return flowData?.connector?.targetReference === data.id
+        } else if (flowData?.nextValueConnector) {
+          return flowData?.defaultConnector?.targetReference === data.id
+        }
+      })
+    }
+    console.log(loopLastData, flowData, 'loopLastData')
     switch (metaType) {
       case FlowMetaTypes.START:
         this.setStarts(flowData)
         break;
       case FlowMetaTypes.ASSIGNMENTS:
-        this.setBaseInfos(flowData, metaType, cycleBack)
+        this.setBaseInfos(flowData, metaType, cycleBack, loopLastData)
         break;
       case FlowMetaTypes.DECISIONS:
-        this.setDecisions(flowData, cycleBack)
+        this.setDecisions(flowData, cycleBack, loopLastData)
         break;
       case FlowMetaTypes.LOOPS:
-        this.setLoops(flowData, cycleBack)
+        this.setLoops(flowData, cycleBack, loopLastData)
         break;
       case FlowMetaTypes.SORT_COLLECTION_PROCESSOR:
-        this.setBaseInfos(flowData, metaType, cycleBack)
+        this.setBaseInfos(flowData, metaType, cycleBack, loopLastData)
         break;
       case FlowMetaTypes.RECORD_CREATES:
       case FlowMetaTypes.RECORD_DELETES:
       case FlowMetaTypes.RECORD_LOOKUPS:
       case FlowMetaTypes.RECORD_UPDATES:
-        this.setBaseInfos(flowData, metaType, cycleBack)
+        this.setBaseInfos(flowData, metaType, cycleBack, loopLastData)
         break;
       default:
         break;
@@ -191,12 +286,14 @@ export class FlowGraph {
     })
   }
 
-  setDecisions(flowData: FlowMetaParam, cycleBackNode: NodeProps | undefined) {
-    const endId = flowData.defaultConnector?.targetReference as string
+  setDecisions(flowData: FlowMetaParam, cycleBackNode: NodeProps | undefined, loopLastData?: NodeProps) {
+    const endId = flowData?.defaultConnector?.targetReference || uid()
+    const forkEndTarget = [cycleBackNode?.id ? cycleBackNode.id :
+      (loopLastData?.cycleBackTarget ? loopLastData.cycleBackTarget : endId)]
     const decisions: NodeProps[] = [{
       id: flowData.id,
       type: 'forkBegin',
-      forkEndTarget: cycleBackNode ? cycleBackNode.id : endId,
+      forkEndTarget: forkEndTarget.join(''),
       width: STAND_SIZE,
       height: STAND_SIZE,
       targets: [],
@@ -210,7 +307,8 @@ export class FlowGraph {
         type: 'forward',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: [cycleBackNode ? cycleBackNode.id : rule?.connector?.targetReference as string],
+        targets: [cycleBackNode ? cycleBackNode.id :
+          (loopLastData?.cycleBackTarget ? loopLastData.cycleBackTarget : rule?.connector?.targetReference as string || endId)],
         component: 'ExtendNode',
       })
     })
@@ -222,11 +320,11 @@ export class FlowGraph {
         type: 'forward',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: [cycleBackNode ? cycleBackNode.id : endId],
+        targets: forkEndTarget,
         component: 'ExtendNode',
       }
     )
-    if (!cycleBackNode) {
+    if (!cycleBackNode && !loopLastData) {
       decisions.push({
         id: endId,
         type: 'forkEnd',
@@ -241,26 +339,41 @@ export class FlowGraph {
     console.log(this.flowNodes, '111111111222222')
   }
 
-  setLoops(flowData: FlowMetaParam, cycleBackNode: NodeProps | undefined) {
+  setLoops(flowData: FlowMetaParam, cycleBackNode: NodeProps | undefined, loopLastData?: NodeProps) {
     const backId = uid()
     const endId = uid()
-    const loops = [{
+    const id = uid()
+    const cycleEndTarget = [cycleBackNode?.id ? cycleBackNode.id :
+      (loopLastData?.cycleBackTarget ? loopLastData.cycleBackTarget : endId)]
+    const loops: NodeProps[] = [{
       id: flowData.id,
       type: 'cycleBegin',
       cycleBackTarget: backId,
-      cycleEndTarget: cycleBackNode ? cycleBackNode.id : endId,
+      cycleEndTarget: cycleEndTarget.join(''),
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [backId],
-    }, {
+      targets: [flowData?.nextValueConnector?.targetReference ? id : backId],
+    }]
+    if (flowData?.nextValueConnector?.targetReference) {
+      const extendNode: NodeProps = {
+        id,
+        type: 'forward',
+        width: STAND_SIZE,
+        height: STAND_SIZE,
+        targets: [flowData?.nextValueConnector?.targetReference],
+        component: 'ExtendNode',
+      }
+      loops.push(extendNode);
+    }
+    loops.push({
       id: backId,
       type: 'cycleBack',
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [cycleBackNode ? cycleBackNode.id : endId],
+      targets: cycleEndTarget,
       component: 'ExtendNode',
-    }]
-    if (!cycleBackNode) {
+    })
+    if (!cycleBackNode && !loopLastData) {
       loops.push({
         id: endId,
         type: 'cycleEnd',
@@ -273,16 +386,17 @@ export class FlowGraph {
     this.flowNodes.push(...loops)
   }
 
-  setBaseInfos(targetNode: FlowMetaParam, metaType: FlowMetaTypes, cycleBackNode: NodeProps | undefined) {
+  setBaseInfos(targetNode: FlowMetaParam, metaType: FlowMetaTypes, cycleBackNode: NodeProps | undefined, loopLastData?: NodeProps) {
     const id = uid()
     const recordCreates: NodeProps[] = [{
       id: targetNode.id,
       type: 'forward',
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [cycleBackNode ? cycleBackNode.id : id],
+      targets: [cycleBackNode ? cycleBackNode.id :
+        (loopLastData?.cycleBackTarget ? loopLastData.cycleBackTarget : id)],
     }]
-    if (!cycleBackNode) {
+    if (!cycleBackNode && !loopLastData) {
       recordCreates.push({
         id: id,
         type: 'forward',
