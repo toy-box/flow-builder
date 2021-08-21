@@ -1,0 +1,119 @@
+@import '../../../styles/theme.less';
+
+.@{prefix-cls}-composite-panel {
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  position: relative;
+  user-select: none;
+  z-index: 2;
+
+  &-tabs {
+    display: flex;
+    flex-direction: column;
+    background-color: @white;
+    border-right: 1px solid @border-color-base;
+    z-index: 2;
+    position: relative;
+
+    &-pane {
+      color: @text-color-secondary;
+      height: 48px;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      font-size: 20px;
+
+      &:hover {
+        color: @primary-color;
+      }
+
+      &.active {
+        color: @primary-color;
+
+        &::after {
+          position: absolute;
+          top: 0;
+          left: 0;
+          display: block;
+          content: '';
+          width: 2px;
+          height: 100%;
+          background-color: @primary-color;
+        }
+      }
+    }
+
+    &-content {
+      width: 300px;
+      border-right: 1px solid @border-color-base;
+      background: @white;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: content-box;
+
+      &.pinning {
+        position: absolute;
+        z-index: 1;
+        left: 100%;
+        top: 0;
+        border-right: 1px solid transparent;
+        box-shadow: -2px 5px 10px rgba(102, 102, 102, 0.42);
+      }
+    }
+
+    &-header {
+      padding: 12px;
+      color: @text-color-secondary;
+      line-height: 18px;
+      font-size: 15px;
+      border-bottom: 1px solid @border-color-base;
+      display: flex;
+      justify-content: space-between;
+
+      &-actions {
+        display: flex;
+        align-items: center;
+
+        & > * {
+          margin-right: 8px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+
+      &-pin {
+        transition: all 0.15s ease-in-out;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+
+      &-title {
+        font-size: 16px;
+      }
+
+      &-close {
+        transition: all 0.15s ease-in-out;
+
+        &:hover {
+          transform: rotate(90deg);
+        }
+      }
+    }
+
+    &-body {
+      flex-grow: 2;
+      flex-shrink: 2;
+      overflow: overlay;
+      height: 100%;
+    }
+  }
+}

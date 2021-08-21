@@ -1,17 +1,27 @@
-.extend-panel {
-  &-ul {
+@import '../../../styles/theme.less';
+
+.@{prefix-cls}-extend-panel {
+  width: 180px;
+  &-title {
+    padding: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    background: @background-color-base;
+  }
+  &-list {
     list-style: none;
     padding: 5px 0px;
     max-height: 220px;
     overflow: auto;
-    .extend-panel-li {
+    > li {
       cursor: pointer;
       &:hover {
         background: #fafafa;
       }
-      &-item {
-        padding: 5px 8px;
-      }
+    }
+    &__item {
+      padding: 5px 8px;
     }
   }
 }

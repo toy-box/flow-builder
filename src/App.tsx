@@ -1,12 +1,12 @@
 import React from 'react';
-import FlowBuilder from './views/flow-builder';
+import { FlowDesigner} from './views/flow-designer';
 
 import './App.less';
 
 function App() {
   return (
     <div className="App">
-      <FlowBuilder />
+      <FlowDesigner />
     </div>
   );
 }

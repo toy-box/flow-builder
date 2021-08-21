@@ -1,82 +1,82 @@
-import React, { FC, useState, useCallback, useMemo } from 'react';
-import { useNode } from '@toy-box/flow-nodes';
+import React, { FC, useState, useCallback, useMemo } from 'react'
+import { useNode } from '@toy-box/flow-nodes'
+import { isBool } from '@toy-box/toybox-shared'
 import { AssignmentModel, DecisionModel, SuspendModel, LoopModel,
   SortCollectionModel, RecordCreateModel, RecordUpdateModel,
-  RecordRemoveModel, RecordLookUpModel } from '../../form-model';
+  RecordRemoveModel, RecordLookUpModel } from '../../form-model'
 import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
+import { TextWidget } from '../../widgets'
+import { usePrefix } from '../../../hooks'
+
 import '../styles/extendPanel.less'
-import { isBool } from '@formily/shared';
 
 interface ExtendPanelProps {
   callbackFunc: (id: string, type: FlowMetaTypes, data: any) => void,
+  closeExtend?: () => void,
 }
 
 const MetaTypes = [
   {
-    label: '分配',
+    label: <TextWidget>flow.extend.assign</TextWidget>,
     value: FlowMetaTypes.ASSIGNMENTS,
   },
   {
-    label: '决策',
+    label: <TextWidget>flow.extend.decision</TextWidget>,
     value: FlowMetaTypes.DECISIONS,
   },
   {
-    label: '暂停',
+    label: <TextWidget>flow.extend.suppend</TextWidget>,
     value: FlowMetaTypes.SUSPENDS,
   },
   {
-    label: '循环',
+    label: <TextWidget>flow.extend.loop</TextWidget>,
     value: FlowMetaTypes.LOOPS,
   },
   {
-    label: '集合排序',
+    label: <TextWidget>flow.extend.collection</TextWidget>,
     value: FlowMetaTypes.SORT_COLLECTION_PROCESSOR,
   },
   {
-    label: '创建记录',
+    label: <TextWidget>flow.extend.recordCreate</TextWidget>,
     value: FlowMetaTypes.RECORD_CREATES,
   },
   {
-    label: '更新记录',
+    label: <TextWidget>flow.extend.recordUpdate</TextWidget>,
     value: FlowMetaTypes.RECORD_UPDATES,
   },
   {
-    label: '获取记录',
+    label: <TextWidget>flow.extend.recordLookup</TextWidget>,
     value: FlowMetaTypes.RECORD_LOOKUPS,
   },
   {
-    label: '删除记录',
+    label: <TextWidget>flow.extend.recordDelete</TextWidget>,
     value: FlowMetaTypes.RECORD_DELETES,
   },
-];
+]
 
-export const ExtendPanel: FC<ExtendPanelProps> = ({
-  callbackFunc,
-}) => {
-  const node = useNode();
+export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, closeExtend }) => {
+  const prefixCls = usePrefix('-extend-panel')
+  const node = useNode()
   const [showModel, setShowModel] = useState(false)
   const [flowMetaType, setFlowMetaType] = useState<FlowMetaTypes>()
-  const style = {
-    width: '150px',
-    // padding: '8px',
-  };
+
   const assignmentCallBack = useCallback(
     (data, type) => {
       if (!isBool(data)) {
         callbackFunc(node.node.id, type, data)
       }
       setShowModel(false)
-      console.log(data, type)
     },
     [callbackFunc, node.node.id],
-  );
+  )
   const onSubmit = useCallback(
     (type) => {
+      closeExtend && closeExtend()
       setFlowMetaType(type)
       setShowModel(true)
     },
-    [],
-  );
+    [closeExtend],
+  )
   const models = useMemo(() => {
     switch (flowMetaType) {
       case FlowMetaTypes.ASSIGNMENTS:
@@ -102,17 +102,23 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({
     }
   }, [assignmentCallBack, flowMetaType, showModel])
   return (
-    <div className="extend-panel" style={style}>
-      {/* <div>{node.node.id}</div> */}
-      <ul className="extend-panel-ul">
-        {MetaTypes.map((data) => <li key={data.value} className="extend-panel-li">
-          <div onClick={() => onSubmit(data.value)} className="extend-panel-li-item">
-            {data.label}
-          </div>
-        </li>
-        )}
+    <div className={prefixCls}>
+      <div className={`${prefixCls}-title`}>
+        <TextWidget>flow.extend.title</TextWidget>
+      </div>
+      <ul className={`${prefixCls}-list`}>
+        {
+          MetaTypes.map(
+            (data) => (
+              <li key={data.value}>
+                <div onClick={() => onSubmit(data.value)} className={`${prefixCls}-list__item`}>
+                  {data.label}
+                </div>
+              </li>
+          ))
+        }
       </ul>
       {models}
     </div>
-  );
-};
+  )
+}
