@@ -48,7 +48,7 @@ export const CompositePanel: React.FC & {
               {currentItem.extra}
             </div>
             {!pinning && (
-              <PushpinLine onClick={() => setPinning(pinning)} />
+              <PushpinLine onClick={() => setPinning(!pinning)} />
             )}
             {pinning && (
               <PushpinFill onClick={() => setPinning(!pinning)} />

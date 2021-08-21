@@ -350,10 +350,10 @@ export const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
   return (
     <div className={prefixCls}>
       <CompositePanel>
-        <CompositePanel.Item title="panels.Component" icon={<FlowChart />}>
+        <CompositePanel.Item title="panels.Flow" icon={<FlowChart />}>
           FlowChart
         </CompositePanel.Item>
-        <CompositePanel.Item title="panels.Component" icon={<ListUnordered />}>
+        <CompositePanel.Item title="panels.Data" icon={<ListUnordered />}>
           Resource
         </CompositePanel.Item>
       </CompositePanel>

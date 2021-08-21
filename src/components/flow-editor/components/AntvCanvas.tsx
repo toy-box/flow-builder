@@ -4,7 +4,7 @@ import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
 import { connect, StartNode, ExtendNode, EndNode } from '@toy-box/flow-nodes';
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
-import { ExtendPanel } from './extend-panel';
+import { ExtendPanel } from './ExtendPanel';
 
 const STAND_SIZE = 56;
 

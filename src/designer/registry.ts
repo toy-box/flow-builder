@@ -42,13 +42,13 @@ const cleanSpace = (str: string) => {
 }
 
 
-const mergeLocales = (target: any, source: any) => {
+const mergeLocales = (target: any, source: any): any => {
   if (isPlainObj(target) && isPlainObj(source)) {
-    each(source, function (value, key) {
-      const token = cleanSpace(key)
-      const messages: any = mergeLocales((target as any)[key] || (target as any)[token], value);
-      (target as Record<string, any>)[token] = messages
-      (target as Record<string, any>)[key] = messages
+    each(source, (value, key) => {
+      const token = cleanSpace(key);
+      const messages = mergeLocales((target as any)[key] || (target as any)[token], value);
+      (target as Record<string, any>)[key] = messages;
+      (target as Record<string, any>)[token] = messages;
     })
     return target
   } else if (isPlainObj(source)) {

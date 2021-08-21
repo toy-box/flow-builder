@@ -1,20 +1,19 @@
-import { Layout } from 'antd'
 import { ReactNode, FC } from 'react'
+import { usePrefix } from '../../hooks'
 import './styles'
 
-const { Header } = Layout
 
 export type NavbarProps = {
   brand?: ReactNode
 }
 
 export const Navbar: FC<NavbarProps> = ({ brand = 'FlowDesigner' }) => {
-  const prefix = 'flow-designer-navbar'
+  const prefixCls = usePrefix('-navbar')
   return (
-    <Header className={prefix}>
-      <div className={`${prefix}-brand`}>
+    <header className={prefixCls}>
+      <div className={`${prefixCls}-brand`}>
         {brand}
       </div>
-    </Header>
+    </header>
   )
 }

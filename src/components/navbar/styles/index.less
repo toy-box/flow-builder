@@ -1,11 +1,13 @@
 @import '../../../styles/theme.less';
 
-.flow-designer-navbar {
+.@{prefix-cls}-navbar {
   display: flex;
   justify-content: space-between;
+  padding: 0;
   height: 56px;
   line-height: 56px;
-  padding: 0;
+  background: @white !important;
+  border-bottom: 1px solid @border-color-base;
   &-brand {
     font-weight: 500;
     margin: 0 16px;

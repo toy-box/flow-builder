@@ -6,6 +6,30 @@ import { FlowMeta } from '../../flow/types'
 
 import './style.less'
 
+GlobalRegistry.registerDesignerLocales({
+  'zh-CN': {
+    panels: {
+      Flow: '流程节点',
+      Data: '数据',
+    },
+    flow: {
+      extend: {
+        title: '添加流程节点',
+        assign: '分配',
+        decision: '决策',
+        suppend: '暂停',
+        loop: '循环',
+        collection: '集合排序',
+        recordCreate: '创建记录',
+        recordUpdate: '更新记录',
+        recordLookup: '记录查询',
+        recordDelete: '记录删除',
+      }
+    }
+  }
+})
+
+GlobalRegistry.setDesignerLanguage('zh-CN')
 
 const flow: FlowMeta = {
   "start": {
@@ -36,7 +60,6 @@ const flowMeta = {
   name: 'flow',
   flow: flow,
 }
-
 
 export const FlowDesigner = () => {
   return (
