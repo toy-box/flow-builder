@@ -12,6 +12,7 @@ import '../styles/extendPanel.less'
 
 interface ExtendPanelProps {
   callbackFunc: (id: string, type: FlowMetaTypes, data: any) => void,
+  closeExtend?: () => void,
 }
 
 const MetaTypes = [
@@ -53,7 +54,7 @@ const MetaTypes = [
   },
 ]
 
-export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc }) => {
+export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, closeExtend }) => {
   const prefixCls = usePrefix('-extend-panel')
   const node = useNode()
   const [showModel, setShowModel] = useState(false)
@@ -70,10 +71,11 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc }) => {
   )
   const onSubmit = useCallback(
     (type) => {
+      closeExtend && closeExtend()
       setFlowMetaType(type)
       setShowModel(true)
     },
-    [],
+    [closeExtend],
   )
   const models = useMemo(() => {
     switch (flowMetaType) {
