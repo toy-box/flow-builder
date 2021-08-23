@@ -28,11 +28,10 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
     console.log(form.values)
     form.submit((resolve) => {
       const value = form.values;
-      const id = uid();
       value.rules.forEach((rule: any) => {
         if (!isObj(rule.connector)) {
           rule.connector = {
-            targetReference: id
+            targetReference: null
           }
         }
       })
@@ -40,7 +39,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         id: value.id,
         name: value.name,
         defaultConnector: {
-          targetReference: id,
+          targetReference: null,
         },
         defaultConnectorName: '默认分支',
         rules: value.rules,
