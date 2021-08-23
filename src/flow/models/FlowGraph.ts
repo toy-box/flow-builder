@@ -41,6 +41,7 @@ export interface NodeProps {
   width: number;
   height: number;
   type: FlowNodeType;
+  label?: string;
   targets: string[];
   forkEndTarget?: string;
   cycleBackTarget?: string;
@@ -200,7 +201,8 @@ export class FlowGraph {
       width: STAND_SIZE,
       height: STAND_SIZE,
       targets: [],
-      component: 'ForkBegin'
+      label: flowData.id,
+      component: 'DecisionNode'
     }]
     const ids: string[] = []
     flowData.rules?.forEach((rule) => {

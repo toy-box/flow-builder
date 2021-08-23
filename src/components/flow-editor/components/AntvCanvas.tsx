@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Graph } from '@antv/x6';
 import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
-import { connect, StartNode, ExtendNode, EndNode } from '@toy-box/flow-nodes';
+import { connect, StartNode, ExtendNode, EndNode, makeDecisionNode } from '@toy-box/flow-nodes';
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
 import { ExtendPanel } from './ExtendPanel';
 
@@ -14,7 +14,6 @@ export const AntvCanvas = observer(() => {
 
   const submit = useCallback(
     (id, type, data) => {
-      console.log(id)
       flowGraph.updateInitialMeta(id, type, data)
       const graph = new Graph({
         container: document.getElementById('flow-canvas') || undefined,
@@ -33,9 +32,12 @@ export const AntvCanvas = observer(() => {
             StartNode: connect(StartNode, () => {
               return <div>start</div>;
             }),
-            ExtendNode: connect(ExtendNode, <ExtendPanel callbackFunc={(id: string, type, data) =>submit(id, type, data)}></ExtendPanel>),
+            ExtendNode: connect(ExtendNode, <ExtendPanel callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
             EndNode: connect(EndNode),
           },
+          svgNodes: {
+            DecisionNode: makeDecisionNode
+          }
         })
       );
       flow.setFlowNode(flowGraph.flowNodes)
@@ -62,9 +64,12 @@ export const AntvCanvas = observer(() => {
           StartNode: connect(StartNode, () => {
             return <div>start</div>;
           }),
-          ExtendNode: connect(ExtendNode, <ExtendPanel callbackFunc={(id: string, type, data) =>submit(id, type, data)}></ExtendPanel>),
+          ExtendNode: connect(ExtendNode, <ExtendPanel callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
           EndNode: connect(EndNode),
         },
+        svgNodes: {
+          DecisionNode: makeDecisionNode
+        }
       })
     );
   }, [flow, submit]);
