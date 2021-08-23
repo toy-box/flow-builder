@@ -147,8 +147,14 @@ export class FlowGraph {
   updataFlowMetaData = (flowNode: NodeProps, metaType: FlowMetaTypes, flowData: FlowMetaParam, currentUpdataData?: FlowMetaParam) => {
     const flow = this.initialMeta.flow as any
     const data = { ...flowData }
-    data.connector = {
-      targetReference: null
+    if (metaType === FlowMetaTypes.LOOPS) {
+      data.nextValueConnector = {
+        targetReference: null
+      }
+    } else {
+      data.connector = {
+        targetReference: null
+      }
     }
     data.defaultConnector = {
       targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
