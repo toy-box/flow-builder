@@ -42,18 +42,19 @@ export interface NodeProps {
   height: number;
   type: FlowNodeType;
   label?: string;
-  targets: string[];
+  targets?: string[];
   forkEndTarget?: string;
   cycleBackTarget?: string;
   cycleEndTarget?: string;
   component?: string;
+  onClick?: () => void;
 }
 
 export class FlowGraph {
   id: string
   disposers: (() => void)[] = []
   initialMeta: FlowGraphMeta
-  flowNodes: any[] = []
+  flowNodes: NodeProps[] = []
   metaFlowDatas: any[] = []
   useFlow: any
   flowEndId: string
@@ -202,7 +203,8 @@ export class FlowGraph {
       height: STAND_SIZE,
       targets: [],
       label: flowData.id,
-      component: 'DecisionNode'
+      component: 'DecisionNode',
+      onClick: () => console.log('this is', flowData.id)
     }]
     const ids: string[] = []
     flowData.rules?.forEach((rule) => {
@@ -246,7 +248,7 @@ export class FlowGraph {
   setLoops(flowData: FlowMetaParam, cycleBackNode: NodeProps | undefined) {
     const backId = uid()
     const endId = uid()
-    const loops = [{
+    const loops: NodeProps[] = [{
       id: flowData.id,
       type: 'cycleBegin',
       cycleBackTarget: backId,
@@ -300,11 +302,11 @@ export class FlowGraph {
   cycleBackNode(targetNode: FlowMetaParam, flowNode?: NodeProps) {
     if (flowNode?.type === 'cycleBack') {
       const id = uid()
-      let type: string = 'forward'
+      let type: FlowNodeType = 'forward'
       this.flowNodes?.forEach((node) => {
         const targets = node.targets
         node?.targets?.forEach((target: string, index: number) => {
-          if (target === flowNode?.id) targets.splice(index, 1, id);
+          if (target === flowNode?.id) targets?.splice(index, 1, id);
         })
         node.targets = targets
         if (node.cycleEndTarget === flowNode?.id) {
@@ -315,7 +317,7 @@ export class FlowGraph {
           node.forkEndTarget = id
         }
       })
-      const extendNode = {
+      const extendNode: NodeProps = {
         id,
         type,
         width: STAND_SIZE,
