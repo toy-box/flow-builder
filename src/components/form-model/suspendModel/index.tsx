@@ -1,9 +1,9 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal } from 'antd';
-import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
+import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup, Radio, NumberPicker } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { BranchArrays } from '../../formily/components/index'
+import { BranchArrays, ResourceSelect } from '../../formily/components/index'
 import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
 
@@ -48,7 +48,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       FormGrid,
       PreviewText,
       FormButtonGroup,
-      BranchArrays
+      BranchArrays,
+      Radio,
+      ResourceSelect,
+      NumberPicker
     },
   })
   
@@ -66,6 +69,13 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       }]
     }
   )
+
+  const myReaction = useCallback((bool, field) => {
+    const val = form.values
+    const idx = field?.path?.segments[1];
+    const sourceTime = idx > -1 && val?.rules[idx]?.sourceTime
+    field.display = sourceTime === bool ? 'visible' : 'none';
+  }, [form.values])
 
   const descTipHtml = <div className="branch-arrays-tip">
     <p className="tip">
@@ -87,6 +97,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
             type: 'string',
             title: '标签',
             required: true,
+            'x-validator': {
+              required: true,
+              message: '标签是必填项'
+            },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
@@ -94,6 +108,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
             type: 'string',
             title: 'API名称',
             required: true,
+            'x-validator': {
+              required: true,
+              message: 'API名称是必填项'
+            },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
@@ -136,24 +154,114 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       type: 'string',
                       title: '暂停配置标签',
                       required: true,
+                      'x-validator': {
+                        required: true,
+                        message: '暂停配置标签是必填项'
+                      },
                       'x-decorator': 'FormItem',
                       'x-component': 'Input',
                     },
-                    eventType: {
-                      type: 'string',
-                      title: '恢复事件类型',
+                    sourceTime: {
+                      type: 'boolean',
+                      title: '时间源',
+                      default: true,
                       required: true,
+                      enum: [
+                        {
+                          label: '特定时间',
+                          value: true,
+                        },
+                        {
+                          label: '记录时间',
+                          value: false,
+                        },
+                      ],
                       'x-decorator': 'FormItem',
-                      'x-component': 'Input',
-                    },
-                    description: {
-                      type: 'string',
-                      title: '暂停配置描述',
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Input.TextArea',
+                      'x-component': 'Radio.Group',
                       "x-decorator-props": {
                         gridSpan: 2
                       },
+                    },
+                    registerId: {
+                      type: 'string',
+                      title: '获取对象记录',
+                      required: true,
+                      'x-validator': {
+                        required: true,
+                        message: '对象记录是必填项'
+                      },
+                      'x-decorator': 'FormItem',
+                      'x-component': 'ResourceSelect',
+                      'x-component-props': {
+                        isHiddenResourceBtn: true,
+                        mataSource: 'metaData',
+                      },
+                      'x-reactions': myReaction.bind(this, false),
+                    },
+                    field: {
+                      type: 'string',
+                      title: '字段',
+                      required: true,
+                      'x-validator': {
+                        required: true,
+                        message: '字段是必填项'
+                      },
+                      'x-decorator': 'FormItem',
+                      'x-component': 'Input',
+                      'x-reactions': myReaction.bind(this, false),
+                    },
+                    recordIdValue: {
+                      type: 'string',
+                      title: '记录',
+                      required: true,
+                      'x-validator': {
+                        required: true,
+                        message: '记录是必填项'
+                      },
+                      'x-decorator': 'FormItem',
+                      'x-component': 'ResourceSelect',
+                      'x-component-props': {
+                        isHiddenResourceBtn: false,
+                        mataSource: 'flowJson',
+                        placeholder: '请选择记录'
+                      },
+                      'x-reactions': myReaction.bind(this, false),
+                    },
+                    dataValue: {
+                      type: 'string',
+                      title: '基本时间',
+                      required: true,
+                      'x-validator': {
+                        required: true,
+                        message: '基本时间是必填项'
+                      },
+                      'x-decorator': 'FormItem',
+                      'x-component': 'ResourceSelect',
+                      'x-component-props': {
+                        isHiddenResourceBtn: false,
+                        mataSource: 'flowJson',
+                        placeholder: '请选择时间数据'
+                      },
+                      'x-reactions': myReaction.bind(this, true),
+                    },
+                    offsetNum: {
+                      type: 'number',
+                      title: '偏移数字',
+                      'x-decorator': 'FormItem',
+                      'x-component': 'NumberPicker',
+                    },
+                    offsetUnit: {
+                      type: 'string',
+                      title: '偏移单位（小时或天数）',
+                      'x-decorator': 'FormItem',
+                      'x-component': 'Input',
+                      'x-validator': [{
+                        triggerType: 'onBlur',
+                        validator: (value: string) => {
+                          if (!value || value === 'Hours' || value === 'Days') return null
+                          return '请输入“Hours”或“Days”'
+                        }
+                      }],
                     },
                   },
                 },

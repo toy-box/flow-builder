@@ -249,7 +249,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-component': 'ResourceSelect',
             'x-component-props': {
               isHiddenResourceBtn: true,
-              paramKey: 'registerId',
               mataSource: 'metaData',
             },
           },
@@ -338,7 +337,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-reactions': myReaction.bind(this, 'sortField'),
             'x-component-props': {
               isHiddenResourceBtn: true,
-              paramKey: 'sortField',
               mataSource: 'metaData',
               reactionKey: 'registerId',
             },
@@ -466,7 +464,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
             'x-component-props': {
-              paramKey: 'outputReference',
               mataSource: 'flowJson',
               placeholder: '选择记录变量',
               flowJsonTypes: [{ 

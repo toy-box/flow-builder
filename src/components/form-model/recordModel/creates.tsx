@@ -149,7 +149,6 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
             'x-component': 'ResourceSelect',
             'x-component-props': {
               isHiddenResourceBtn: true,
-              paramKey: 'registerId',
               mataSource: 'metaData',
             },
           },
@@ -205,7 +204,6 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
             'x-component-props': {
-              paramKey: 'assignRecordIdToReference',
               mataSource: 'flowJson',
               placeholder: '请选择变量',
               flowJsonTypes: [{
