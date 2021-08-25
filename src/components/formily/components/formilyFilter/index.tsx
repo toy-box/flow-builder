@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState, useMemo } from 'react'
-import { useForm, observer } from '@formily/react'
+import { useForm, observer, useField } from '@formily/react'
 import { FilterBuilder } from '@toy-box/meta-components';
 import { ICompareOperation, IFieldOption } from '@toy-box/meta-schema'
 import { fieldMetaStore } from '../../../../store'
@@ -7,14 +7,16 @@ import { fieldMetaStore } from '../../../../store'
 export const FormilyFilter: FC = observer((props: any) => {
   const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
   const form = useForm()
+  const formilyField = useField()
   const handleFilter = useCallback(
     (value) => {
       setValue(value)
       form.setFieldState(props.paramKey, (state) => {
         state.value = value
+        formilyField.form.validate()
       })
     },
-    [form, props.paramKey],
+    [form, formilyField.form, props.paramKey],
   )
   const specialOptions = [
     {

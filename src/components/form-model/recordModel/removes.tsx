@@ -132,7 +132,6 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
             'x-component': 'ResourceSelect',
             'x-component-props': {
               isHiddenResourceBtn: true,
-              paramKey: 'registerId',
               mataSource: 'metaData',
             },
           },

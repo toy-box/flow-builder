@@ -109,7 +109,6 @@ export const LoopModel: FC<LoopModelPorps> = ({
             'x-component': 'ResourceSelect',
             'x-component-props': {
               isHiddenResourceBtn: false,
-              paramKey: 'collectionReference',
               mataSource: 'flowJson',
               flowJsonTypes: [{
                 value: IFlowResourceType.VARIABLE_ARRAY

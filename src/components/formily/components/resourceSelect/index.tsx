@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo } from 'react'
-import { useForm, observer, useFieldSchema } from '@formily/react'
+import { useForm, observer, useFieldSchema, useField } from '@formily/react'
 import { Select } from 'antd'
 import { IFieldOption } from '@toy-box/meta-schema'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
@@ -13,13 +13,15 @@ export const ResourceSelect: FC = observer((props: any) => {
   const schema = useFieldSchema()
 
   const form = useForm()
+  const formilyField = useField()
   const onChange = useCallback(
     (value) => {
-      form.setFieldState(props.paramKey, (state) => {
+      form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
+        formilyField.form.validate()
       })
     },
-    [form, props.paramKey],
+    [form, formilyField.form, formilyField?.path?.entire],
   )
 
   const metaOptions = useMemo(() => {

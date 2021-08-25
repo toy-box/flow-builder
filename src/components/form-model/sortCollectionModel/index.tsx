@@ -211,7 +211,6 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
             'x-component': 'ResourceSelect',
             'x-component-props': {
               isHiddenResourceBtn: false,
-              paramKey: 'collectionReference',
               mataSource: 'flowJson',
               flowJsonTypes: [{
                 value: IFlowResourceType.VARIABLE_ARRAY

@@ -10,7 +10,7 @@ const STAND_SIZE = 56;
 
 export const AntvCanvas = observer(() => {
   const flowGraph = useFlowGraph();
-  const flow = flowGraph.useFlow;
+  const flow = flowGraph.flowGraph;
 
   const submit = useCallback(
     (id, type, data) => {
@@ -36,9 +36,12 @@ export const AntvCanvas = observer(() => {
             EndNode: connect(EndNode),
             DecisionNode: connect(DecisionNode, <ExtendPanel callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           },
+          // svgNodes: {
+          //   DecisionNode: makeDecisionNode
+          // }
         })
       );
-      flow.setFlowNode(flowGraph.flowNodes)
+      flow.setFlowNode(flowGraph.flowNodes as any[])
     },
     [flow, flowGraph],
   )
@@ -72,7 +75,7 @@ export const AntvCanvas = observer(() => {
 
   useEffect(() => {
     console.log(111111111111)
-    flow.setFlowNode(flowGraph.flowNodes)
+    flow.setFlowNode(flowGraph.flowNodes as any[])
     // flow.setFlowNode([
     //   {
     //     id: '001',

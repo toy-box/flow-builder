@@ -146,7 +146,6 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
             'x-component': 'ResourceSelect',
             'x-component-props': {
               isHiddenResourceBtn: true,
-              paramKey: 'registerId',
               mataSource: 'metaData',
             },
           },
