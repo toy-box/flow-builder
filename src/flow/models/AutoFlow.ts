@@ -1,9 +1,7 @@
-import { Graph } from '@antv/x6'
 import {
   define,
   observable,
   batch,
-  observe,
 } from '@formily/reactive'
 import { Flow, FlowNodeType } from '@toy-box/flow-graph';
 import { FlowGraphMeta, FlowMetaTypes, FlowMetaParam } from '../types'
