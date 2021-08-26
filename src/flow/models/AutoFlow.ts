@@ -45,7 +45,7 @@ export interface FlowMetaParamOfType extends FlowMetaParam {
   flowType: FlowMetaTypes
 }
 
-export class FlowGraph {
+export class AutoFlow {
   id: string
   disposers: (() => void)[] = []
   initialMeta: FlowGraphMeta

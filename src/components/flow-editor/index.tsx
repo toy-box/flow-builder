@@ -3,7 +3,7 @@ import { FlowChart, ListUnordered } from '@airclass/icons'
 import { AntvCanvas } from './components'
 import { FlowGraphMeta } from '../../flow/types'
 import { FlowContext } from '../../flow/shared'
-import { FlowGraph } from '../../flow/models/FlowGraph'
+import { AutoFlow } from '../../flow/models/AutoFlow'
 import { fieldMetaStore } from '../../store'
 import { CompositePanel } from '../composite-panel'
 import { usePrefix } from '../../hooks'
@@ -338,7 +338,7 @@ const registers = [{
 
 export const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
   const prefixCls = usePrefix('-editor')
-  const flowGraph = new FlowGraph(flowMeta)
+  const flowGraph = new AutoFlow(flowMeta)
   const { initFieldMetas, initFieldServices, initRegisters} = fieldMetaStore.fieldMetaStore
 
   useEffect(() => {

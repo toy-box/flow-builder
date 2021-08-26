@@ -1,4 +1,4 @@
 import React from 'react';
-import { FlowGraph } from '../models';
+import { AutoFlow } from '../models';
 
-export const FlowContext = React.createContext<FlowGraph | null>(null)
+export const FlowContext = React.createContext<AutoFlow | null>(null)

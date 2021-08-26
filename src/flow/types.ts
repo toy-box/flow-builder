@@ -1,10 +1,10 @@
 import { Edge, Node } from "@antv/x6"
-import { FlowGraph } from "./models"
+import { AutoFlow } from "./models"
 import { IFieldMeta, ICompareOperation } from '@toy-box/meta-schema';
 
 export type AnyFunction = (...args: any[]) => any
 
-export type FlowGraphEffects = (flowGraph: FlowGraph) => void
+export type FlowGraphEffects = (flowGraph: AutoFlow) => void
 export interface FlowGraphMeta {
   id: string
   name: string
