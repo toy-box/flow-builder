@@ -1,5 +1,5 @@
 import { Edge, Node } from "@antv/x6"
-import { AutoFlow } from "./models"
+import { AutoFlow } from "./models/AutoFlow"
 import { IFieldMeta, ICompareOperation } from '@toy-box/meta-schema';
 
 export type AnyFunction = (...args: any[]) => any
@@ -71,12 +71,12 @@ export type LifeCyclePayload<T> = (
 ) => void
 
 export enum IFlowResourceType {
-  VARIABLE = 'variable',
+  VARIABLE = 'variables',
   VARIABLE_ARRAY = 'variable_array',
   VARIABLE_ARRAY_RECORD = 'variable_array_record',
-  CONSTANT = 'constant',
-  FORMULA = 'formula',
-  TEMPLATE = 'template'
+  CONSTANT = 'constants',
+  FORMULA = 'formulas',
+  TEMPLATE = 'templates'
 }
 
 export interface FlowMeta {
@@ -87,6 +87,7 @@ export interface FlowMeta {
   start?: FlowMetaParam
   assignments?: FlowMetaParam[]
   decisions?: FlowMetaParam[]
+  suspends?: FlowMetaParam[]
   loops?: FlowMetaParam[]
   sortCollectionProcessor?: FlowEdgeMeta[]
   recordCreates?: FlowMetaParam[]
