@@ -56,10 +56,6 @@ export enum LifeCycleTypes {
   ON_FLOW_REMOVE_END = 'onFlowRemoveENd',
 }
 
-export enum processTypes {
-  ASSIGNMENT = 'assignment',
-}
-
 export type LifeCycleHandler<T> = (payload: T, context: any) => void
 
 export type LifeCyclePayload<T> = (

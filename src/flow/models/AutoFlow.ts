@@ -5,11 +5,11 @@ import {
 } from '@formily/reactive'
 import { Flow, FlowNodeType } from '@toy-box/flow-graph';
 import { IFieldMeta, IFieldGroupMeta } from '@toy-box/meta-schema';
-import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
-import { uid } from '../../utils';
 import { isArr } from '@formily/shared';
 import { isNum } from '@toy-box/toybox-shared';
-import { FlowStart, FlowAssignments, FlowDecisions, FlowLoops,
+import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
+import { uid } from '../../utils';
+import { FlowStart, FlowAssignment, FlowDecisions, FlowLoops,
   FlowSortCollectionProcessor, FlowSuspends, RecordCreates,
   RecordUpdates, RecordDeletes, RecordLookups, Constants, Formulas, Templates, Variables } from './index'
 // import { runEffects } from '../shared/effectbox'
@@ -63,7 +63,7 @@ export class AutoFlow {
   flowGraph: Flow
   flowEndId: string
   flowStart: FlowStart
-  flowAssignments: FlowAssignments
+  flowAssignments: FlowAssignment[] = []
   flowDecisions: FlowDecisions
   flowLoops: FlowLoops
   flowSortCollections: FlowSortCollectionProcessor
@@ -82,7 +82,7 @@ export class AutoFlow {
     this.id = autoFlowMeta.id
     this.initialMeta = autoFlowMeta
     this.flowStart = new FlowStart()
-    this.flowAssignments = new FlowAssignments()
+    // this.flowAssignment = new FlowAssignment()
     this.flowDecisions = new FlowDecisions()
     this.flowLoops = new FlowLoops()
     this.flowSortCollections = new FlowSortCollectionProcessor()
@@ -145,7 +145,7 @@ export class AutoFlow {
       flowNodes: observable.deep,
       mataFlowJson: observable.deep,
       flowStart: observable.deep,
-      flowAssignments: observable.deep,
+      flowAssignments: observable.shallow,
       flowDecisions: observable.deep,
       flowSuspends: observable.deep,
       flowLoops: observable.deep,
@@ -412,12 +412,16 @@ export class AutoFlow {
         break;
       case FlowMetaType.ASSIGNMENTS:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.flowAssignments.onAdd(data)
+          this.flowAssignments.push(new FlowAssignment(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.flowAssignments.onEdit(data)
+          this.flowAssignments.forEach((assignment) => {
+            if (assignment.id === data.id) assignment.onEdit(data)
+          })
         } else {
-          this.flowAssignments.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.ASSIGNMENTS] = this.flowAssignments.assignments
+          data[metaType].forEach((assignment: FlowAssignment) => {
+            this.flowAssignments.push(new FlowAssignment(assignment))
+          });
+          this.mataFlowJson.flow[FlowMetaType.ASSIGNMENTS] = this.flowAssignments
         }
         break;
       case FlowMetaType.DECISIONS:
@@ -519,6 +523,7 @@ export class AutoFlow {
       default:
         break;
     }
+    console.log(this.flowAssignments, this.mataFlowJson)
   }
 
   // 按targets顺序进行flowNodes实例化

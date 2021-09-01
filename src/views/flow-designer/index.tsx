@@ -49,6 +49,9 @@ const flow: FlowMeta = {
       "connector": {
         "targetReference": null
       },
+      "defaultConnector": {
+        "targetReference": 'end'
+      },
     },
     {
       "id": "2222",
@@ -56,12 +59,18 @@ const flow: FlowMeta = {
       "connector": {
         "targetReference": "loop1"
       },
+      "defaultConnector": {
+        "targetReference": "end"
+      },
     },
     {
       "id": "3333",
       "name": "3333",
       "connector": {
         "targetReference": "loop1"
+      },
+      "defaultConnector": {
+        "targetReference": "end"
       },
     },
   ],
