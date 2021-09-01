@@ -96,7 +96,7 @@ export interface FlowMeta {
   recordLookups?: FlowMetaParam[]
 }
 
-export enum FlowMetaTypes {
+export enum FlowMetaType {
   START = 'start',
   ASSIGNMENTS = 'assignments',
   DECISIONS = 'decisions',

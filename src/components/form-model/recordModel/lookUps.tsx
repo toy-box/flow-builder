@@ -6,14 +6,14 @@ import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { observer } from '@formily/react'
 import { IFieldOption, MetaValueType } from '@toy-box/meta-schema';
-import { IFlowResourceType, FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
 
 export interface RecordLookUpModelPorps {
   showModel: boolean
-  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
 }
 
@@ -60,14 +60,14 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaTypes.RECORD_LOOKUPS)
+      callbackFunc(paramData, FlowMetaType.RECORD_LOOKUPS)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaTypes.RECORD_LOOKUPS)
+    callbackFunc(false, FlowMetaType.RECORD_LOOKUPS)
   };
 
   const SchemaField = createSchemaField({

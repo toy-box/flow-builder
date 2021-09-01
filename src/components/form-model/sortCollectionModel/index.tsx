@@ -6,13 +6,13 @@ import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { IFieldOption } from '@toy-box/meta-schema';
 import { ResourceSelect } from '../../formily/components/index'
-import { IFlowResourceType, FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
 
 export interface SortCollectionPorps {
   showModel: boolean
-  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
 }
 
@@ -52,14 +52,14 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
       }
       console.log(paramData);
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaTypes.SORT_COLLECTION_PROCESSOR)
+      callbackFunc(paramData, FlowMetaType.SORT_COLLECTION_PROCESSOR)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaTypes.SORT_COLLECTION_PROCESSOR)
+    callbackFunc(false, FlowMetaType.SORT_COLLECTION_PROCESSOR)
   };
 
   const SchemaField = createSchemaField({

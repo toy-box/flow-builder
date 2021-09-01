@@ -11,10 +11,10 @@ import {
 } from '@toy-box/meta-schema'
 import { fieldMetaStore } from '../../store'
 import { observer } from '@formily/reactive-react'
-import { FlowMetaTypes, FlowMetaParam } from '../../flow/types'
+import { FlowMetaType, FlowMetaParam } from '../../flow/types'
 export interface AssignmentModelPorps {
   showModel: boolean
-  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
 }
 
@@ -33,7 +33,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   const handleOk = () => {
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(form.values, FlowMetaTypes.ASSIGNMENTS)
+      callbackFunc(form.values, FlowMetaType.ASSIGNMENTS)
     }).catch((rejected) => {
     })
   };
@@ -44,7 +44,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaTypes.ASSIGNMENTS)
+    callbackFunc(false, FlowMetaType.ASSIGNMENTS)
   };
 
   const SchemaField = createSchemaField({

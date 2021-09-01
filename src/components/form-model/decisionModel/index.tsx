@@ -6,10 +6,10 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { BranchArrays } from '../../formily/components/index'
 import { uid } from '../../../utils';
 import { isObj } from '@formily/shared';
-import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 export interface DecisionModelPorps {
   showModel: boolean
-  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
 }
 
@@ -46,14 +46,14 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       }
       console.log(paramData);
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaTypes.DECISIONS)
+      callbackFunc(paramData, FlowMetaType.DECISIONS)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaTypes.DECISIONS)
+    callbackFunc(false, FlowMetaType.DECISIONS)
   };
 
   const SchemaField = createSchemaField({

@@ -6,12 +6,12 @@ import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { fieldMetaStore } from '../../../store'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { IFlowResourceType, FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
 
 export interface RecordCreateModelPorps {
   showModel: boolean
-  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
 }
 
@@ -47,14 +47,14 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaTypes.RECORD_CREATES)
+      callbackFunc(paramData, FlowMetaType.RECORD_CREATES)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaTypes.RECORD_CREATES)
+    callbackFunc(false, FlowMetaType.RECORD_CREATES)
 
   };
 

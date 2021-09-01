@@ -4,12 +4,12 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonG
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { BranchArrays, ResourceSelect } from '../../formily/components/index'
-import { FlowMetaTypes, FlowMetaParam } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
 
 export interface SuspendModelPorps {
   showModel: boolean
-  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaTypes) => void
+  callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
 }
 
@@ -29,14 +29,14 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     console.log(form.values)
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(form.values, FlowMetaTypes.SUSPENDS)
+      callbackFunc(form.values, FlowMetaType.SUSPENDS)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaTypes.SUSPENDS)
+    callbackFunc(false, FlowMetaType.SUSPENDS)
   };
 
   const SchemaField = createSchemaField({
