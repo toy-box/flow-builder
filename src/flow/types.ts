@@ -151,3 +151,9 @@ export interface TargetReference {
 export interface Criteria {
   conditions: ICompareOperation[]
 }
+
+export type FlowNodeComm = {
+  id: string
+  label: string
+  type: FlowMetaType
+}

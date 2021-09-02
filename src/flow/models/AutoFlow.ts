@@ -552,11 +552,11 @@ export class AutoFlow {
   // 按targets顺序进行flowNodes实例化
   setFlowData = (flowDatas: any[], target?: FlowMetaParamOfType) => {
     if (!target) {
-      flowDatas.some((flowData, index) => {
+      flowDatas.forEach((flowData, index) => {
         if (flowData.flowType === FlowMetaType.START) {
           this.initFlowNodes(flowData.flowType, flowData)
           flowDatas.splice(index, 1)
-          return this.setFlowData(flowDatas, flowData);
+          this.setFlowData(flowDatas, flowData);
         } 
       })
     } else {
