@@ -10,8 +10,8 @@ import { isNum } from '@toy-box/toybox-shared';
 import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
 import { uid } from '../../utils';
 import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
-  FlowSortCollectionProcessor, FlowSuspends, RecordCreates,
-  RecordUpdates, RecordDeletes, RecordLookups, Constants, Formulas, Templates, Variables } from './index'
+  FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
+  RecordUpdate, RecordDelete, RecordLookup, Constants, Formulas, Templates, Variables } from './index'
 // import { runEffects } from '../shared/effectbox'
 
 const STAND_SIZE = 56;
@@ -66,12 +66,12 @@ export class AutoFlow {
   flowAssignments: FlowAssignment[] = []
   flowDecisions: FlowDecision[] = []
   flowLoops: FlowLoop[] = []
-  flowSortCollections: FlowSortCollectionProcessor
-  flowSuspends: FlowSuspends
-  recordCreates: RecordCreates
-  recordUpdates: RecordUpdates
-  recordDeletes: RecordDeletes
-  recordLookups: RecordLookups
+  flowSortCollections: FlowSortCollectionProcessor[] = []
+  flowSuspends: FlowSuspend[] = []
+  recordCreates: RecordCreate[] = []
+  recordUpdates: RecordUpdate[] = []
+  recordDeletes: RecordDelete[] = []
+  recordLookups: RecordLookup[] = []
   fieldMetas: IFieldGroupMeta[]
   flowConstants: Constants
   flowFormulas: Formulas
@@ -81,16 +81,7 @@ export class AutoFlow {
   constructor(autoFlowMeta: FlowGraphMeta) {
     this.id = autoFlowMeta.id
     this.initialMeta = autoFlowMeta
-    // this.flowStart = new FlowStart()
-    // this.flowAssignment = new FlowAssignment()
-    // this.flowDecisions = new FlowDecisions()
-    // this.flowLoops = new FlowLoops()
-    this.flowSortCollections = new FlowSortCollectionProcessor()
-    this.flowSuspends = new FlowSuspends()
-    this.recordCreates = new RecordCreates()
-    this.recordUpdates = new RecordUpdates()
-    this.recordDeletes = new RecordDeletes()
-    this.recordLookups = new RecordLookups()
+    // this.recordUpdates = new RecordUpdates()
     this.flowConstants = new Constants()
     this.flowFormulas = new Formulas()
     this.flowTemplates = new Templates()
@@ -440,12 +431,16 @@ export class AutoFlow {
         break;
       case FlowMetaType.SUSPENDS:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.flowSuspends.onAdd(data)
+          this.flowSuspends.push(new FlowSuspend(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.flowSuspends.onEdit(data)
+          this.flowSuspends.forEach((suspend) => {
+            if (suspend.id === data.id) suspend.onEdit(data)
+          })
         } else {
-          this.flowSuspends.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.SUSPENDS] = this.flowSuspends.suspends
+          data[metaType].forEach((suspend: FlowSuspend) => {
+            this.flowSuspends.push(new FlowSuspend(suspend))
+          });
+          this.mataFlowJson.flow[FlowMetaType.SUSPENDS] = this.flowSuspends
         }
         break;
       case FlowMetaType.LOOPS:
@@ -464,52 +459,72 @@ export class AutoFlow {
         break;
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.flowSortCollections.onAdd(data)
+          this.flowSortCollections.push(new FlowSortCollectionProcessor(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.flowSortCollections.onEdit(data)
+          this.flowSortCollections.forEach((sortCollention) => {
+            if (sortCollention.id === data.id) sortCollention.onEdit(data)
+          })
         } else {
-          this.flowSortCollections.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.SORT_COLLECTION_PROCESSOR] = this.flowSortCollections.sortCollectionProcessor
+          data[metaType].forEach((sortCollention: FlowSortCollectionProcessor) => {
+            this.flowSortCollections.push(new FlowSortCollectionProcessor(sortCollention))
+          });
+          this.mataFlowJson.flow[FlowMetaType.SORT_COLLECTION_PROCESSOR] = this.flowSortCollections
         }
         break;
       case FlowMetaType.RECORD_CREATES:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.recordCreates.onAdd(data)
+          this.recordCreates.push(new RecordCreate(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.recordCreates.onEdit(data)
+          this.recordCreates.forEach((record) => {
+            if (record.id === data.id) record.onEdit(data)
+          })
         } else {
-          this.recordCreates.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.RECORD_CREATES] = this.recordCreates.recordCreates
+          data[metaType].forEach((record: RecordCreate) => {
+            this.recordCreates.push(new RecordCreate(record))
+          });
+          this.mataFlowJson.flow[FlowMetaType.RECORD_CREATES] = this.recordCreates
         }
         break;
       case FlowMetaType.RECORD_DELETES:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.recordDeletes.onAdd(data)
+          this.recordDeletes.push(new RecordDelete(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.recordDeletes.onEdit(data)
+          this.recordDeletes.forEach((record) => {
+            if (record.id === data.id) record.onEdit(data)
+          })
         } else {
-          this.recordDeletes.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.RECORD_DELETES] = this.recordDeletes.recordDeletes
+          data[metaType].forEach((record: RecordDelete) => {
+            this.recordDeletes.push(new RecordDelete(record))
+          });
+          this.mataFlowJson.flow[FlowMetaType.RECORD_DELETES] = this.recordDeletes
         }
         break;
       case FlowMetaType.RECORD_LOOKUPS:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.recordLookups.onAdd(data)
+          this.recordLookups.push(new RecordLookup(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.recordLookups.onEdit(data)
+          this.recordLookups.forEach((record) => {
+            if (record.id === data.id) record.onEdit(data)
+          })
         } else {
-          this.recordLookups.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.RECORD_LOOKUPS] = this.recordLookups.recordLookups
+          data[metaType].forEach((record: RecordLookup) => {
+            this.recordLookups.push(new RecordLookup(record))
+          });
+          this.mataFlowJson.flow[FlowMetaType.RECORD_LOOKUPS] = this.recordLookups
         }
         break;
       case FlowMetaType.RECORD_UPDATES:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.recordUpdates.onAdd(data)
+          this.recordUpdates.push(new RecordUpdate(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.recordUpdates.onEdit(data)
+          this.recordUpdates.forEach((record) => {
+            if (record.id === data.id) record.onEdit(data)
+          })
         } else {
-          this.recordUpdates.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.RECORD_UPDATES] = this.recordUpdates.recordUpdates
+          data[metaType].forEach((record: RecordUpdate) => {
+            this.recordUpdates.push(new RecordUpdate(record))
+          });
+          this.mataFlowJson.flow[FlowMetaType.RECORD_UPDATES] = this.recordUpdates
         }
         break;
       case IFlowResourceType.VARIABLE:

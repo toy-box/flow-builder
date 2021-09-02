@@ -1,33 +1,53 @@
 import {
+  action,
   define,
   observable,
 } from '@formily/reactive'
-import { FlowMetaParam } from '../types'
+import { FlowMetaParam, SortOption, TargetReference } from '../types'
 
 export class FlowSortCollectionProcessor {
-  sortCollectionProcessor: FlowMetaParam[] = []
+  id: string
+  name: string
+  description?: string
+  connector?: TargetReference
+  defaultConnector?: TargetReference
+  collectionReference?: string
+  limit?: null | number
+  sortOptions?: SortOption[]
 
-  constructor(flowSortCollections?: FlowMetaParam[]) {
-    this.sortCollectionProcessor = flowSortCollections || []
+  constructor(flowSortCollection: FlowMetaParam) {
+    this.id = flowSortCollection.id
+    this.name = flowSortCollection.name
+    this.connector = flowSortCollection.connector
+    this.defaultConnector = flowSortCollection.defaultConnector
+    this.collectionReference = flowSortCollection.collectionReference
+    this.limit = flowSortCollection.limit
+    this.sortOptions = flowSortCollection.sortOptions
+    this.description = flowSortCollection.description
     this.makeObservable()
   }
 
   protected makeObservable() {
     define(this, {
-      sortCollectionProcessor: observable.deep,
+      id: observable.ref,
+      name: observable.ref,
+      connector: observable.deep,
+      defaultConnector: observable.deep,
+      collectionReference: observable.ref,
+      limit: observable.ref,
+      sortOptions: observable.shallow,
+      onEdit: action
     })
   }
 
-  initDatas = (flowSortCollections: FlowMetaParam[]) => {
-    this.sortCollectionProcessor = flowSortCollections
-  }
-
-  onAdd = (flowSortCollection: FlowMetaParam) => {
-    this.sortCollectionProcessor.push(flowSortCollection)
-  }
-
   onEdit = (flowSortCollection: FlowMetaParam) => {
-    const idx = this.sortCollectionProcessor.findIndex((de) => de.id === flowSortCollection.id)
-    if (idx > -1) this.sortCollectionProcessor.splice(idx, 1, flowSortCollection)
+    this.id = flowSortCollection.id
+    this.name = flowSortCollection.name
+    this.connector = flowSortCollection.connector
+    this.defaultConnector = flowSortCollection.defaultConnector
+    this.collectionReference = flowSortCollection.collectionReference
+    this.limit = flowSortCollection.limit
+    this.sortOptions = flowSortCollection.sortOptions
+    this.description = flowSortCollection.description
   }
 }

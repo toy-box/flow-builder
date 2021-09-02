@@ -1,6 +1,6 @@
 import { Edge, Node } from "@antv/x6"
-import { AutoFlow } from "./models/AutoFlow"
 import { IFieldMeta, ICompareOperation } from '@toy-box/meta-schema';
+import { AutoFlow } from "./models/AutoFlow"
 
 export type AnyFunction = (...args: any[]) => any
 
@@ -109,15 +109,9 @@ export interface FlowMetaParam {
   id: string
   name: string
   description?: string
-  connector?: {
-    targetReference: string | null
-  }
-  defaultConnector?: {
-    targetReference: string | null
-  }
-  nextValueConnector?: {
-    targetReference: string | null
-  }
+  connector?: TargetReference
+  defaultConnector?: TargetReference
+  nextValueConnector?: TargetReference
   defaultConnectorName?: string
   assignmentItems?: ICompareOperation[]
   rules?: FlowMetaParam[]
@@ -129,9 +123,7 @@ export interface FlowMetaParam {
   inputAssignments?: ICompareOperation[]
   storeOutputAutomatically?: boolean
   assignRecordIdToReference?: string
-  criteria?: {
-    conditions: ICompareOperation[]
-  }
+  criteria?: Criteria
   outputAssignments?: ICompareOperation[]
   outputReference?: null | string
   queriedFields?: string[]
@@ -150,4 +142,12 @@ export enum SortOrder {
   ASC = 'asc',
   DESC = 'desc',
   NULL = 'null'
+}
+
+export interface TargetReference {
+  targetReference: string | null
+}
+
+export interface Criteria {
+  conditions: ICompareOperation[]
 }

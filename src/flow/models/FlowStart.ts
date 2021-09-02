@@ -3,17 +3,13 @@ import {
   observable,
   action
 } from '@formily/reactive'
-import { FlowMetaParam } from '../types'
+import { FlowMetaParam, TargetReference } from '../types'
 
 export class FlowStart {
   id: string
   name: string
-  connector?: {
-    targetReference: string | null
-  }
-  defaultConnector?: {
-    targetReference: string | null
-  }
+  connector?: TargetReference
+  defaultConnector?: TargetReference
 
   constructor(flowStart: FlowMetaParam) {
     this.id = flowStart.id

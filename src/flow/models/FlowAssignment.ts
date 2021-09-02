@@ -3,22 +3,15 @@ import {
   observable,
   action
 } from '@formily/reactive'
-import { ICompareOperation } from '@toy-box/meta-schema';
-import { FlowMetaParam } from '../types'
+import { FlowMetaParam, TargetReference, Criteria } from '../types'
 
 export class FlowAssignment {
   id: string
   name: string
   description?: string
-  connector?: {
-    targetReference: string | null
-  }
-  defaultConnector?: {
-    targetReference: string | null
-  }
-  criteria?: {
-    conditions: ICompareOperation[]
-  }
+  connector?: TargetReference
+  defaultConnector?: TargetReference
+  criteria?: Criteria
 
   constructor(flowAssignment: FlowMetaParam) {
     this.id = flowAssignment.id

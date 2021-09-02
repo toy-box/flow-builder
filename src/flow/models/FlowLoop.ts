@@ -3,20 +3,15 @@ import {
   observable,
   action,
 } from '@formily/reactive'
-import { FlowMetaParam } from '../types'
+import { FlowMetaParam, TargetReference } from '../types'
 
 export class FlowLoop {
   id: string
   name: string
-  connector?: {
-    targetReference: string | null
-  }
-  defaultConnector?: {
-    targetReference: string | null
-  }
-  nextValueConnector?: {
-    targetReference: string | null
-  }
+  description?: string
+  connector?: TargetReference
+  defaultConnector?: TargetReference
+  nextValueConnector?: TargetReference
   collectionReference?: string
   iterationOrder?: string
 
@@ -28,6 +23,7 @@ export class FlowLoop {
     this.nextValueConnector = flowLoop.nextValueConnector
     this.collectionReference = flowLoop.collectionReference
     this.iterationOrder = flowLoop.iterationOrder
+    this.description = flowLoop.description
     this.makeObservable()
   }
 
@@ -52,5 +48,6 @@ export class FlowLoop {
     this.nextValueConnector = flowLoop.nextValueConnector
     this.collectionReference = flowLoop.collectionReference
     this.iterationOrder = flowLoop.iterationOrder
+    this.description = flowLoop.description
   }
 }
