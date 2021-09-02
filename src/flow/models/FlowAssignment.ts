@@ -1,14 +1,7 @@
-/*
- * @Author: OBKoro1
- * @Date: 2021-09-01 07:21:31
- * @LastEditTime: 2021-09-01 16:22:14
- * @LastEditors: Do not edit
- * @FilePath: /flow-builder/src/flow/models/FlowAssignment.ts
- * @Description: 
- */
 import {
   define,
   observable,
+  action
 } from '@formily/reactive'
 import { ICompareOperation } from '@toy-box/meta-schema';
 import { FlowMetaParam } from '../types'
@@ -44,7 +37,8 @@ export class FlowAssignment {
       description: observable.ref,
       connector: observable.deep,
       defaultConnector: observable.deep,
-      criteria: observable.deep
+      criteria: observable.deep,
+      onEdit: action
     })
   }
 

@@ -1,28 +1,42 @@
 import {
   define,
   observable,
+  action
 } from '@formily/reactive'
 import { FlowMetaParam } from '../types'
 
 export class FlowStart {
-  start: FlowMetaParam | undefined
+  id: string
+  name: string
+  connector?: {
+    targetReference: string | null
+  }
+  defaultConnector?: {
+    targetReference: string | null
+  }
 
-  constructor(flowStart?: FlowMetaParam) {
-    this.start = flowStart
+  constructor(flowStart: FlowMetaParam) {
+    this.id = flowStart.id
+    this.name = flowStart.name
+    this.connector = flowStart.connector
+    this.defaultConnector = flowStart.defaultConnector
     this.makeObservable()
   }
 
   protected makeObservable() {
     define(this, {
-      start: observable.deep,
+      id: observable.ref,
+      name: observable.ref,
+      connector: observable.deep,
+      defaultConnector: observable.deep,
+      onEdit: action
     })
   }
 
-  initData = (flowStart: FlowMetaParam) => {
-    this.start = flowStart
-  }
-
   onEdit = (flowStart: FlowMetaParam) => {
-    this.start = flowStart
+    this.id = flowStart.id
+    this.name = flowStart.name
+    this.connector = flowStart.connector
+    this.defaultConnector = flowStart.defaultConnector
   }
 }

@@ -9,7 +9,7 @@ import { isArr } from '@formily/shared';
 import { isNum } from '@toy-box/toybox-shared';
 import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
 import { uid } from '../../utils';
-import { FlowStart, FlowAssignment, FlowDecisions, FlowLoops,
+import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspends, RecordCreates,
   RecordUpdates, RecordDeletes, RecordLookups, Constants, Formulas, Templates, Variables } from './index'
 // import { runEffects } from '../shared/effectbox'
@@ -62,10 +62,10 @@ export class AutoFlow {
   mataFlowJson: FlowGraphMeta
   flowGraph: Flow
   flowEndId: string
-  flowStart: FlowStart
+  flowStart: FlowStart = {} as FlowStart
   flowAssignments: FlowAssignment[] = []
-  flowDecisions: FlowDecisions
-  flowLoops: FlowLoops
+  flowDecisions: FlowDecision[] = []
+  flowLoops: FlowLoop[] = []
   flowSortCollections: FlowSortCollectionProcessor
   flowSuspends: FlowSuspends
   recordCreates: RecordCreates
@@ -81,10 +81,10 @@ export class AutoFlow {
   constructor(autoFlowMeta: FlowGraphMeta) {
     this.id = autoFlowMeta.id
     this.initialMeta = autoFlowMeta
-    this.flowStart = new FlowStart()
+    // this.flowStart = new FlowStart()
     // this.flowAssignment = new FlowAssignment()
-    this.flowDecisions = new FlowDecisions()
-    this.flowLoops = new FlowLoops()
+    // this.flowDecisions = new FlowDecisions()
+    // this.flowLoops = new FlowLoops()
     this.flowSortCollections = new FlowSortCollectionProcessor()
     this.flowSuspends = new FlowSuspends()
     this.recordCreates = new RecordCreates()
@@ -146,7 +146,7 @@ export class AutoFlow {
       mataFlowJson: observable.deep,
       flowStart: observable.deep,
       flowAssignments: observable.shallow,
-      flowDecisions: observable.deep,
+      flowDecisions: observable.shallow,
       flowSuspends: observable.deep,
       flowLoops: observable.deep,
       flowSortCollections: observable.deep,
@@ -406,8 +406,8 @@ export class AutoFlow {
         if (metaFieldType === MetaFieldType.EDIT) {
           this.flowStart.onEdit(data)
         } else {
-          this.flowStart.initData(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.START] = this.flowStart.start
+          this.flowStart = new FlowStart(data[metaType])
+          this.mataFlowJson.flow[FlowMetaType.START] = this.flowStart
         }
         break;
       case FlowMetaType.ASSIGNMENTS:
@@ -426,12 +426,16 @@ export class AutoFlow {
         break;
       case FlowMetaType.DECISIONS:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.flowDecisions.onAdd(data)
+          this.flowDecisions.push(new FlowDecision(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.flowDecisions.onEdit(data)
+          this.flowDecisions.forEach((decision) => {
+            if (decision.id === data.id) decision.onEdit(data)
+          })
         } else {
-          this.flowDecisions.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.DECISIONS] = this.flowDecisions.decisions
+          data[metaType].forEach((decision: FlowDecision) => {
+            this.flowDecisions.push(new FlowDecision(decision))
+          });
+          this.mataFlowJson.flow[FlowMetaType.DECISIONS] = this.flowDecisions
         }
         break;
       case FlowMetaType.SUSPENDS:
@@ -446,12 +450,16 @@ export class AutoFlow {
         break;
       case FlowMetaType.LOOPS:
         if (metaFieldType === MetaFieldType.ADD) {
-          this.flowLoops.onAdd(data)
+          this.flowLoops.push(new FlowLoop(data))
         } else if (metaFieldType === MetaFieldType.EDIT) {
-          this.flowLoops.onEdit(data)
+          this.flowLoops.forEach((loop) => {
+            if (loop.id === data.id) loop.onEdit(data)
+          })
         } else {
-          this.flowLoops.initDatas(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.LOOPS] = this.flowLoops.loops
+          data[metaType].forEach((loop: FlowLoop) => {
+            this.flowLoops.push(new FlowLoop(loop))
+          });
+          this.mataFlowJson.flow[FlowMetaType.LOOPS] = this.flowLoops
         }
         break;
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
