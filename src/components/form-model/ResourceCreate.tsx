@@ -4,12 +4,12 @@ import { createForm, onFieldReact, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { Button, Modal } from 'antd'
 import { action } from '@formily/reactive'
-import { IFlowResourceType } from '../../flow/types'
 import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
-import { GatherInput } from '../formily/index'
-import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 import { clone } from '@formily/shared';
 import update from 'immutability-helper'
+import { IFlowResourceType } from '../../flow/types'
+import { GatherInput } from '../formily/index'
+import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 import { uid } from '../../utils'
 import { fieldMetaStore } from '../../store'
 

@@ -4,14 +4,14 @@ import {
   batch,
 } from '@formily/reactive'
 import { Flow, FlowNodeType } from '@toy-box/flow-graph';
-import { IFieldMeta, IFieldGroupMeta } from '@toy-box/meta-schema';
+import { IFieldMeta, IFieldGroupMeta, MetaValueType } from '@toy-box/meta-schema';
 import { isArr } from '@formily/shared';
 import { isNum } from '@toy-box/toybox-shared';
 import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
 import { uid } from '../../utils';
 import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
-  RecordUpdate, RecordDelete, RecordLookup, Constants, Formulas, Templates, Variables } from './index'
+  RecordUpdate, RecordDelete, RecordLookup } from './index'
 // import { runEffects } from '../shared/effectbox'
 
 const STAND_SIZE = 56;
@@ -72,52 +72,15 @@ export class AutoFlow {
   recordUpdates: RecordUpdate[] = []
   recordDeletes: RecordDelete[] = []
   recordLookups: RecordLookup[] = []
-  fieldMetas: IFieldGroupMeta[]
-  flowConstants: Constants
-  flowFormulas: Formulas
-  flowTemplates: Templates
-  flowVariables: Variables
+  fieldMetas: IFieldGroupMeta[] = []
+  flowConstants: IFieldMeta[] = []
+  flowFormulas: IFieldMeta[] = []
+  flowTemplates: IFieldMeta[] = []
+  flowVariables: IFieldMeta[] = []
 
   constructor(autoFlowMeta: FlowGraphMeta) {
     this.id = autoFlowMeta.id
     this.initialMeta = autoFlowMeta
-    // this.recordUpdates = new RecordUpdates()
-    this.flowConstants = new Constants()
-    this.flowFormulas = new Formulas()
-    this.flowTemplates = new Templates()
-    this.flowVariables = new Variables()
-    this.fieldMetas = [
-      {
-        label: '变量',
-        value: IFlowResourceType.VARIABLE,
-        children: this.flowVariables.variableNotArray,
-      },
-      {
-        label: '集合变量',
-        value: IFlowResourceType.VARIABLE_ARRAY,
-        children: this.flowVariables.variableArray,
-      },
-      {
-        label: '集合记录变量',
-        value: IFlowResourceType.VARIABLE_ARRAY_RECORD,
-        children: this.flowVariables.variableArrayRecord,
-      },
-      {
-        label: '常量',
-        value: IFlowResourceType.CONSTANT,
-        children: this.flowConstants.constants,
-      },
-      {
-        label: '公式',
-        value: IFlowResourceType.FORMULA,
-        children: this.flowFormulas.formulas,
-      },
-      {
-        label: '模板',
-        value: IFlowResourceType.TEMPLATE,
-        children: this.flowTemplates.templates,
-      }
-    ]
     this.mataFlowJson = {
       id: autoFlowMeta.id,
       name: autoFlowMeta.name,
@@ -136,8 +99,8 @@ export class AutoFlow {
       flowNodes: observable.deep,
       mataFlowJson: observable.deep,
       flowStart: observable.deep,
-      flowAssignments: observable.shallow,
-      flowDecisions: observable.shallow,
+      flowAssignments: observable.deep,
+      flowDecisions: observable.deep,
       flowSuspends: observable.deep,
       flowLoops: observable.deep,
       flowSortCollections: observable.deep,
@@ -528,25 +491,70 @@ export class AutoFlow {
         }
         break;
       case IFlowResourceType.VARIABLE:
-        this.flowVariables.initDatas(data[metaType])
-        this.mataFlowJson.flow[IFlowResourceType.VARIABLE] = this.flowVariables.variables
+        this.flowVariables = data[metaType]
+        data[metaType].forEach((meta: IFieldMeta) => {
+          if (meta?.type === MetaValueType.ARRAY) {
+            if (meta?.items?.type === MetaValueType.OBJECT || meta?.items?.type  === MetaValueType.OBJECT_ID) {
+              const obj = { ...meta }
+              obj.type = IFlowResourceType.VARIABLE_ARRAY_RECORD
+              this.setFieldMeta(obj, IFlowResourceType.VARIABLE_ARRAY_RECORD)
+            } else {
+              const obj = { ...meta }
+              obj.type = IFlowResourceType.VARIABLE_ARRAY
+              this.setFieldMeta(obj, IFlowResourceType.VARIABLE_ARRAY)
+            }
+          } else {
+            this.setFieldMeta(meta, IFlowResourceType.VARIABLE)
+          }
+        });
+        this.mataFlowJson.flow[IFlowResourceType.VARIABLE] = this.flowVariables
         break;
       case IFlowResourceType.CONSTANT:
-        this.flowConstants.initDatas(data[metaType])
-        this.mataFlowJson.flow[IFlowResourceType.CONSTANT] = this.flowConstants.constants
+        this.flowConstants = data[metaType]
+        data[metaType].forEach((meta: IFieldMeta) => {
+          this.setFieldMeta(meta, IFlowResourceType.CONSTANT)
+        });
+        this.mataFlowJson.flow[IFlowResourceType.CONSTANT] = this.flowConstants
         break;
       case IFlowResourceType.FORMULA:
-        this.flowFormulas.initDatas(data[metaType])
-        this.mataFlowJson.flow[IFlowResourceType.FORMULA] = this.flowFormulas.formulas
+        this.flowFormulas = data[metaType]
+        data[metaType].forEach((meta: IFieldMeta) => {
+          this.setFieldMeta(meta, IFlowResourceType.FORMULA)
+        });
+        this.mataFlowJson.flow[IFlowResourceType.FORMULA] = this.flowFormulas
         break;
       case IFlowResourceType.TEMPLATE:
-        this.flowTemplates.initDatas(data[metaType])
-        this.mataFlowJson.flow[IFlowResourceType.TEMPLATE] = this.flowTemplates.templates
+        this.flowTemplates = data[metaType]
+        data[metaType].forEach((meta: IFieldMeta) => {
+          this.setFieldMeta(meta, IFlowResourceType.TEMPLATE)
+        });
+        this.mataFlowJson.flow[IFlowResourceType.TEMPLATE] = this.flowTemplates
         break;
       default:
         break;
     }
     console.log(this.flowAssignments, this.mataFlowJson)
+  }
+
+  setFieldMeta = (fieldMeta: IFieldMeta, type: IFlowResourceType) => {
+    const idx = this.fieldMetas.findIndex((meta) => meta.value === type)
+    const templateObj: any = {
+      [IFlowResourceType.VARIABLE]: '变量',
+      [IFlowResourceType.VARIABLE_ARRAY]: '集合变量',
+      [IFlowResourceType.VARIABLE_ARRAY_RECORD]: '集合记录变量',
+      [IFlowResourceType.CONSTANT]: '常量',
+      [IFlowResourceType.FORMULA]: '公式',
+      [IFlowResourceType.TEMPLATE]: '模板',
+    }
+    if (idx > -1) {
+      this.fieldMetas[idx].children.push(fieldMeta)
+    } else {
+      this.fieldMetas.push({
+        label: templateObj[type],
+        value: IFlowResourceType.TEMPLATE,
+        children: [fieldMeta],
+      })
+    }
   }
 
   // 按targets顺序进行flowNodes实例化
