@@ -9,6 +9,7 @@ import { CompositePanel } from '../composite-panel'
 import { usePrefix } from '../../hooks'
 
 import './styles'
+import { NodeWidget } from '../node-widget'
 
 const serviceTest = async function (resolve: { (value: unknown): void; (value: unknown): void; (value: unknown): void; (arg0: any): void; }, key: string) {
   setTimeout(() => {
@@ -349,15 +350,15 @@ export const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
 
   return (
     <div className={prefixCls}>
-      <CompositePanel>
-        <CompositePanel.Item title="panels.Flow" icon={<FlowChart />}>
-          FlowChart
-        </CompositePanel.Item>
-        <CompositePanel.Item title="panels.Data" icon={<ListUnordered />}>
-          Resource
-        </CompositePanel.Item>
-      </CompositePanel>
       <FlowContext.Provider value={flowGraph}>
+        <CompositePanel>
+          <CompositePanel.Item title="panels.Flow" icon={<FlowChart />}>
+            <NodeWidget />
+          </CompositePanel.Item>
+          <CompositePanel.Item title="panels.Data" icon={<ListUnordered />}>
+            Resource
+          </CompositePanel.Item>
+        </CompositePanel>
         <AntvCanvas />
       </FlowContext.Provider>
     </div>
