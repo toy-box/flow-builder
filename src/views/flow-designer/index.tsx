@@ -24,6 +24,14 @@ GlobalRegistry.registerDesignerLocales({
         recordUpdate: '更新记录',
         recordLookup: '记录查询',
         recordDelete: '记录删除',
+      },
+      autoFlow: {
+        variable: '变量',
+        variableArray: '集合变量',
+        variableArrayRecord: '集合记录变量',
+        constant: '常量',
+        formula: '公式',
+        template: '模板',
       }
     }
   }

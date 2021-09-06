@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   define,
   observable,
@@ -12,6 +13,7 @@ import { uid } from '../../utils';
 import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
   RecordUpdate, RecordDelete, RecordLookup } from './index'
+import { useLocale } from '../../hooks'
 // import { runEffects } from '../shared/effectbox'
 
 const STAND_SIZE = 56;
@@ -543,12 +545,12 @@ export class AutoFlow {
   setFieldMeta = (fieldMetas: IFieldGroupMeta[] ,fieldMeta: IFieldMeta, type: IFlowResourceType) => {
     const idx = fieldMetas.findIndex((meta) => meta?.value === type)
     const templateObj: any = {
-      [IFlowResourceType.VARIABLE]: '变量',
-      [IFlowResourceType.VARIABLE_ARRAY]: '集合变量',
-      [IFlowResourceType.VARIABLE_ARRAY_RECORD]: '集合记录变量',
-      [IFlowResourceType.CONSTANT]: '常量',
-      [IFlowResourceType.FORMULA]: '公式',
-      [IFlowResourceType.TEMPLATE]: '模板',
+      [IFlowResourceType.VARIABLE]: useLocale('flow.autoFlow.variable'),
+      [IFlowResourceType.VARIABLE_ARRAY]: useLocale('flow.autoFlow.variableArray'),
+      [IFlowResourceType.VARIABLE_ARRAY_RECORD]: useLocale('flow.autoFlow.variableArrayRecord'),
+      [IFlowResourceType.CONSTANT]: useLocale('flow.autoFlow.constant'),
+      [IFlowResourceType.FORMULA]: useLocale('flow.autoFlow.formula'),
+      [IFlowResourceType.TEMPLATE]: useLocale('flow.autoFlow.template'),
     }
     if (idx > -1) {
       fieldMetas[idx].children.push(fieldMeta)
