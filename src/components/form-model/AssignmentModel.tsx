@@ -2,15 +2,12 @@ import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
-import { FormProvider, createSchemaField } from '@formily/react'
-import { FilterBuilder } from '@toy-box/meta-components';
-import { ResourceCreate } from './ResourceCreate'
-import './index.less'
-import {
-  ICompareOperation,
-} from '@toy-box/meta-schema'
-import { fieldMetaStore } from '../../store'
 import { observer } from '@formily/reactive-react'
+import { FormProvider, createSchemaField } from '@formily/react'
+import { FormilyFilter } from '../formily/components/index'
+import './index.less'
+import { fieldMetaStore } from '../../store'
+
 import { FlowMetaType, FlowMetaParam } from '../../flow/types'
 export interface AssignmentModelPorps {
   showModel: boolean
@@ -24,16 +21,23 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   title= "新建分配"
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
-  const { fieldMetas, fieldServices } = fieldMetaStore.fieldMetaStore;
   
   useEffect(() => {
     setIsModalVisible(showModel);
   }, [showModel]);
 
   const handleOk = () => {
+    const value = form.values;
+    const paramData = {
+      id: value.id,
+      name: value.name,
+      description: value.description,
+      assignmentItems: value.assignmentItems,
+    }
+    console.log(paramData, 'paramData')
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(form.values, FlowMetaType.ASSIGNMENTS)
+      callbackFunc(paramData, FlowMetaType.ASSIGNMENT)
     }).catch((rejected) => {
     })
   };
@@ -44,8 +48,22 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.ASSIGNMENTS)
+    callbackFunc(false, FlowMetaType.ASSIGNMENT)
   };
+
+  const AssignmentDesc = () => {
+    return <div>
+      <Divider />
+      <div className="assignment-content">
+        <div className="assignment-title">
+          设置变量值
+        </div>
+        <div className="assignment-desc">
+          每个变量由运算符和值组合修改。
+        </div>
+      </div>
+    </div>
+  }
 
   const SchemaField = createSchemaField({
     components: {
@@ -55,7 +73,9 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
       FormLayout,
       FormGrid,
       PreviewText,
-      FormButtonGroup
+      FormButtonGroup,
+      AssignmentDesc,
+      FormilyFilter
     },
   })
   
@@ -103,35 +123,34 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
               gridSpan: 2
             },
           },
+          desc: {
+            type: 'string',
+            title: '',
+            'x-decorator': 'FormItem',
+            'x-component': 'AssignmentDesc',
+            "x-decorator-props": {
+              gridSpan: 2
+            },
+          },
+          assignmentItems: {
+            type: 'array',
+            title: '',
+            required: true,
+            'x-decorator': 'FormItem',
+            'x-component': 'FormilyFilter',
+            "x-decorator-props": {
+              gridSpan: 2
+            },
+            'x-component-props': {
+              mataSource: 'flowJson',
+              isShowResourceBtn: true,
+              specialMode: true,
+            },
+          },
         },
       },
-    // },
     },
   }
-
-  const [value, setValue] = useState([
-    {
-      source: 'deptId',
-      op: '$eq',
-      target: '1',
-    },
-  ])
-
-  const handleFilter = useCallback(
-    (logicFilter) => setValue(logicFilter),
-    []
-  )
-
-  const specialOptions = [
-    {
-      label: '引用变量',
-      value: 'REFERENCE',
-    },
-    {
-      label: '直接输入',
-      value: 'INPUT',
-    },
-  ]
 
   return (
     <>
@@ -144,32 +163,6 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
               </FormProvider>
             </FormLayout>
           </PreviewText.Placeholder>
-          <Divider />
-          <div className="assignment-content">
-            <div className="assignment-title">
-              设置变量值
-            </div>
-            <div className="assignment-desc">
-              每个变量由运算符和值组合修改。
-            </div>
-            <div className="assignment-add-btn">
-              <ResourceCreate 
-                fieldMetas={fieldMetas as any[]}
-              />
-            </div>
-            <div className="assignment-filter-builder">
-            <FilterBuilder
-                fieldMetas={fieldMetas}
-                value={value as any[]}
-                filterFieldService={fieldServices}
-                specialOptions={specialOptions}
-                specialMode
-                onChange={(filterItem: Partial<ICompareOperation>[]) =>
-                  handleFilter(filterItem)
-                }
-              />
-            </div>
-          </div>
         </div>
       </Modal>
     </>

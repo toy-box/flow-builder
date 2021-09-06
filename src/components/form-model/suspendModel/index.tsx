@@ -27,16 +27,43 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   const handleOk = () => {
     console.log(form.values)
+    const value = form.values;
+    const quiredRules = value?.rules?.map((rule: any) => {
+      if (rule.sourceTime) {
+        return {
+          id: uid(),
+          name: rule.name,
+          dataValue: rule.dataValue,
+          offsetNum: rule.offsetNum,
+          offsetUnit: rule.offsetUnit,
+        }
+      }
+      return {
+        id: uid(),
+        name: rule.name,
+        registerId: rule.registerId,
+        field: rule.field,
+        recordIdValue: rule.recordIdValue,
+        offsetNum: rule.offsetNum,
+        offsetUnit: rule.offsetUnit,
+      }
+    })
+    const paramData = {
+      id: value.id,
+      name: value.name,
+      description: value.description,
+      rules: quiredRules,
+    }
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(form.values, FlowMetaType.SUSPENDS)
+      callbackFunc(paramData, FlowMetaType.SUSPEND)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.SUSPENDS)
+    callbackFunc(false, FlowMetaType.SUSPEND)
   };
 
   const SchemaField = createSchemaField({

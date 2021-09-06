@@ -60,14 +60,14 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.RECORD_LOOKUPS)
+      callbackFunc(paramData, FlowMetaType.RECORD_LOOKUP)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.RECORD_LOOKUPS)
+    callbackFunc(false, FlowMetaType.RECORD_LOOKUP)
   };
 
   const SchemaField = createSchemaField({

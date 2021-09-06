@@ -94,15 +94,15 @@ export interface FlowMeta {
 
 export enum FlowMetaType {
   START = 'start',
-  ASSIGNMENTS = 'assignments',
-  DECISIONS = 'decisions',
-  SUSPENDS= 'suspends',
-  LOOPS = 'loops',
+  ASSIGNMENT = 'assignments',
+  DECISION = 'decisions',
+  SUSPEND= 'suspends',
+  LOOP = 'loops',
   SORT_COLLECTION_PROCESSOR = 'sortCollectionProcessor',
-  RECORD_CREATES = 'recordCreates',
-  RECORD_UPDATES = 'recordUpdates',
-  RECORD_DELETES = 'recordDeletes',
-  RECORD_LOOKUPS = 'recordLookups'
+  RECORD_CREATE = 'recordCreates',
+  RECORD_UPDATE = 'recordUpdates',
+  RECORD_DELETE = 'recordDeletes',
+  RECORD_LOOKUP = 'recordLookups'
 }
 
 export interface FlowMetaParam {

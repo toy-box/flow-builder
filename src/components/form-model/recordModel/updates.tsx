@@ -45,14 +45,14 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.RECORD_UPDATES)
+      callbackFunc(paramData, FlowMetaType.RECORD_UPDATE)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.RECORD_UPDATES)
+    callbackFunc(false, FlowMetaType.RECORD_UPDATE)
   };
 
   const SchemaField = createSchemaField({

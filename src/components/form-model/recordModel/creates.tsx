@@ -47,15 +47,14 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.RECORD_CREATES)
+      callbackFunc(paramData, FlowMetaType.RECORD_CREATE)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.RECORD_CREATES)
-
+    callbackFunc(false, FlowMetaType.RECORD_CREATE)
   };
 
   const SchemaField = createSchemaField({

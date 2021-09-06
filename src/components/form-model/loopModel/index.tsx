@@ -44,14 +44,14 @@ export const LoopModel: FC<LoopModelPorps> = ({
       }
       console.log(paramData);
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.LOOPS)
+      callbackFunc(paramData, FlowMetaType.LOOP)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.LOOPS)
+    callbackFunc(false, FlowMetaType.LOOP)
   };
 
   const SchemaField = createSchemaField({

@@ -46,14 +46,14 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       }
       console.log(paramData);
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.DECISIONS)
+      callbackFunc(paramData, FlowMetaType.DECISION)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.DECISIONS)
+    callbackFunc(false, FlowMetaType.DECISION)
   };
 
   const SchemaField = createSchemaField({

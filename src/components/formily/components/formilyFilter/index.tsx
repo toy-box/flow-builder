@@ -3,6 +3,7 @@ import { useForm, observer, useField } from '@formily/react'
 import { FilterBuilder } from '@toy-box/meta-components';
 import { ICompareOperation, IFieldOption } from '@toy-box/meta-schema'
 import { fieldMetaStore } from '../../../../store'
+import { ResourceCreate } from '../../../form-model/ResourceCreate'
 
 export const FormilyFilter: FC = observer((props: any) => {
   const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
@@ -11,12 +12,12 @@ export const FormilyFilter: FC = observer((props: any) => {
   const handleFilter = useCallback(
     (value) => {
       setValue(value)
-      form.setFieldState(props.paramKey, (state) => {
+      form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
         formilyField.form.validate()
       })
     },
-    [form, formilyField.form, props.paramKey],
+    [form, formilyField.form, formilyField?.path?.entire],
   )
   const specialOptions = [
     {
@@ -53,6 +54,9 @@ export const FormilyFilter: FC = observer((props: any) => {
   }, [fieldMetas, form.values, props.mataSource, props.reactionKey, registers])
   return (
     <div style={{'display': props.display}}>
+      {props.isShowResourceBtn && <ResourceCreate 
+        fieldMetas={fieldMetas as any[]}
+      />}
       <FilterBuilder
         fieldMetas={resourceFieldMetas as any[]}
         value={value as any[]}

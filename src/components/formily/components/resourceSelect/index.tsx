@@ -1,16 +1,16 @@
 import React, { FC, useCallback, useMemo } from 'react'
-import { useForm, observer, useFieldSchema, useField } from '@formily/react'
+import { useForm, observer, useField } from '@formily/react'
 import { Select } from 'antd'
+import { isArr } from '@formily/shared'
 import { IFieldOption } from '@toy-box/meta-schema'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
 import { fieldMetaStore } from '../../../../store'
-import { isArr } from '@formily/shared'
+
 
 const { OptGroup, Option } = Select
 
 export const ResourceSelect: FC = observer((props: any) => {
   const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
-  const schema = useFieldSchema()
 
   const form = useForm()
   const formilyField = useField()

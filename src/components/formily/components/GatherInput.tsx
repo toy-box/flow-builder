@@ -3,8 +3,9 @@ import { Input } from '@formily/antd'
 import { MetaValueType } from '@toy-box/meta-schema';
 import { useForm, observer } from '@formily/react'
 import { FieldDate, FieldBoolean, FieldSelect } from '@toy-box/meta-components';
-import { fieldMetaStore } from '../../../store'
 import { isArr } from '@formily/shared';
+import { fieldMetaStore } from '../../../store'
+
 
 
 export const GatherInput: FC = observer((props: any) => {

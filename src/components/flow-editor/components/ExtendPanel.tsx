@@ -18,19 +18,19 @@ interface ExtendPanelProps {
 const MetaTypes = [
   {
     label: <TextWidget>flow.extend.assign</TextWidget>,
-    value: FlowMetaType.ASSIGNMENTS,
+    value: FlowMetaType.ASSIGNMENT,
   },
   {
     label: <TextWidget>flow.extend.decision</TextWidget>,
-    value: FlowMetaType.DECISIONS,
+    value: FlowMetaType.DECISION,
   },
   {
     label: <TextWidget>flow.extend.suppend</TextWidget>,
-    value: FlowMetaType.SUSPENDS,
+    value: FlowMetaType.SUSPEND,
   },
   {
     label: <TextWidget>flow.extend.loop</TextWidget>,
-    value: FlowMetaType.LOOPS,
+    value: FlowMetaType.LOOP,
   },
   {
     label: <TextWidget>flow.extend.collection</TextWidget>,
@@ -38,19 +38,19 @@ const MetaTypes = [
   },
   {
     label: <TextWidget>flow.extend.recordCreate</TextWidget>,
-    value: FlowMetaType.RECORD_CREATES,
+    value: FlowMetaType.RECORD_CREATE,
   },
   {
     label: <TextWidget>flow.extend.recordUpdate</TextWidget>,
-    value: FlowMetaType.RECORD_UPDATES,
+    value: FlowMetaType.RECORD_UPDATE,
   },
   {
     label: <TextWidget>flow.extend.recordLookup</TextWidget>,
-    value: FlowMetaType.RECORD_LOOKUPS,
+    value: FlowMetaType.RECORD_LOOKUP,
   },
   {
     label: <TextWidget>flow.extend.recordDelete</TextWidget>,
-    value: FlowMetaType.RECORD_DELETES,
+    value: FlowMetaType.RECORD_DELETE,
   },
 ]
 
@@ -79,23 +79,23 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, closeExtend })
   )
   const models = useMemo(() => {
     switch (flowMetaType) {
-      case FlowMetaType.ASSIGNMENTS:
+      case FlowMetaType.ASSIGNMENT:
         return <AssignmentModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.DECISIONS:
+      case FlowMetaType.DECISION:
         return <DecisionModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.SUSPENDS:
+      case FlowMetaType.SUSPEND:
         return <SuspendModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.LOOPS:
+      case FlowMetaType.LOOP:
         return <LoopModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
         return <SortCollectionModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.RECORD_CREATES:
+      case FlowMetaType.RECORD_CREATE:
         return <RecordCreateModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.RECORD_UPDATES:
+      case FlowMetaType.RECORD_UPDATE:
         return <RecordUpdateModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.RECORD_LOOKUPS:
+      case FlowMetaType.RECORD_LOOKUP:
         return <RecordLookUpModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.RECORD_DELETES:
+      case FlowMetaType.RECORD_DELETE:
         return <RecordRemoveModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       default:
         return null

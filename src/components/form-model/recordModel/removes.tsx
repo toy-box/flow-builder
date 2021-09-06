@@ -43,14 +43,14 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.RECORD_DELETES)
+      callbackFunc(paramData, FlowMetaType.RECORD_DELETE)
     }).catch((rejected) => {
     })
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.RECORD_DELETES)
+    callbackFunc(false, FlowMetaType.RECORD_DELETE)
   };
 
   const SchemaField = createSchemaField({
