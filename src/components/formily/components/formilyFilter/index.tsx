@@ -8,16 +8,16 @@ import { ResourceCreate } from '../../../form-model/ResourceCreate'
 export const FormilyFilter: FC = observer((props: any) => {
   const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
   const form = useForm()
-  const formilyField = useField()
+  const formilyField = useField() as any
   const handleFilter = useCallback(
     (value) => {
       setValue(value)
       form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
-        formilyField.form.validate()
+        formilyField.validate()
       })
     },
-    [form, formilyField.form, formilyField?.path?.entire],
+    [form, formilyField],
   )
   const specialOptions = [
     {
@@ -30,7 +30,7 @@ export const FormilyFilter: FC = observer((props: any) => {
     },
   ]
 
-  const [value, setValue] = useState([])
+  const [value, setValue] = useState(formilyField.value)
 
   const resourceFieldMetas = useMemo(() => {
     if (props.mataSource === 'metaData') {

@@ -13,15 +13,15 @@ export const ResourceSelect: FC = observer((props: any) => {
   const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
 
   const form = useForm()
-  const formilyField = useField()
+  const formilyField = useField() as any
   const onChange = useCallback(
     (value) => {
       form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
-        formilyField.form.validate()
+        formilyField.validate()
       })
     },
-    [form, formilyField.form, formilyField?.path?.entire],
+    [form, formilyField],
   )
 
   const metaOptions = useMemo(() => {

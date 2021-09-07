@@ -3,7 +3,7 @@ import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { BranchArrays } from '../../formily/components/index'
+import { BranchArrays, FormilyFilter } from '../../formily/components/index'
 import { uid } from '../../../utils';
 import { isObj } from '@formily/shared';
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
@@ -65,7 +65,8 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       FormGrid,
       PreviewText,
       FormButtonGroup,
-      BranchArrays
+      BranchArrays,
+      FormilyFilter
     },
   })
   
@@ -167,8 +168,21 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
                       },
                     },
                     'criteria.conditions': {
-                      type: 'void',
-                      'x-component': 'BranchArrays.FormilyFilterBuilder',
+                      // type: 'void',
+                      // 'x-component': 'BranchArrays.FormilyFilterBuilder',
+                      type: 'array',
+                      title: '',
+                      required: true,
+                      'x-decorator': 'FormItem',
+                      'x-component': 'FormilyFilter',
+                      "x-decorator-props": {
+                        gridSpan: 2
+                      },
+                      'x-component-props': {
+                        mataSource: 'flowJson',
+                        isShowResourceBtn: true,
+                        specialMode: true,
+                      },
                     },
                   },
                 },
