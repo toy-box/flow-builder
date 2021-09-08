@@ -1,12 +1,15 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
+import { isObj } from '@formily/shared';
 import { BranchArrays, FormilyFilter } from '../../formily/components/index'
 import { uid } from '../../../utils';
-import { isObj } from '@formily/shared';
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { TextWidget } from '../../widgets'
+import { useLocale } from '../../../hooks'
 export interface DecisionModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
@@ -16,7 +19,7 @@ export interface DecisionModelPorps {
 export const DecisionModel: FC<DecisionModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建决策",
+  title= <TextWidget>flow.form.decision.addTitle</TextWidget>,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   
@@ -41,7 +44,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         defaultConnector: {
           targetReference: null,
         },
-        defaultConnectorName: '默认分支',
+        defaultConnectorName: useLocale('flow.form.decision.defaultConnectorName'),
         rules: value.rules,
       }
       console.log(paramData);
@@ -86,9 +89,11 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   )
 
   const descTipHtml = <div className="branch-arrays-tip">
-    <p className="name">结果</p>
+    <p className="name">
+      <TextWidget>flow.form.decision.name</TextWidget>
+    </p>
     <p className="tip">
-    对于流可以使用的每个路径，创建结果。对于每个结果，指定必须满足的条件，以便流使用该路径。
+      <TextWidget>flow.form.decision.tip</TextWidget>
     </p>
   </div>
 
@@ -104,21 +109,21 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -134,9 +139,9 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
               gridSpan: 2,
             },
             'x-component-props': {
-              title: '新结果',
+              title: <TextWidget>flow.form.decision.title</TextWidget>,
               descTipHtml: descTipHtml,
-              addDescription: '结果顺序',
+              addDescription: <TextWidget>flow.form.decision.sortTitle</TextWidget>,
             },
             items: {
               type: 'object',
@@ -148,19 +153,19 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
                     gridSpan: 2,
                     layout: 'vertical',
                     colon: false,
-                    removeMessage: '删除结果',
+                    removeMessage: <TextWidget>flow.form.decision.removeResult</TextWidget>,
                   },
                   properties: {
                     name: {
                       type: 'string',
-                      title: '标签',
+                      title: <TextWidget>flow.form.comm.label</TextWidget>,
                       required: true,
                       'x-decorator': 'FormItem',
                       'x-component': 'Input',
                     },
                     description: {
                       type: 'string',
-                      title: '描述',
+                      title: <TextWidget>flow.form.comm.description</TextWidget>,
                       'x-decorator': 'FormItem',
                       'x-component': 'Input.TextArea',
                       "x-decorator-props": {
@@ -173,6 +178,10 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
                       type: 'array',
                       title: '',
                       required: true,
+                      'x-validator': {
+                        required: true,
+                        message: <TextWidget>flow.form.validator.filter</TextWidget>
+                      },
                       'x-decorator': 'FormItem',
                       'x-component': 'FormilyFilter',
                       "x-decorator-props": {
@@ -199,9 +208,9 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
 
   return (
     <>
-      <Modal width={1080} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={1080} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="assignment-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

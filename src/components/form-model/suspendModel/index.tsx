@@ -33,7 +33,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         return {
           id: uid(),
           name: rule.name,
-          dataValue: rule.dataValue,
+          dateValue: rule.dateValue,
           offsetNum: rule.offsetNum,
           offsetUnit: rule.offsetUnit,
         }
@@ -254,7 +254,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       },
                       'x-reactions': myReaction.bind(this, false),
                     },
-                    dataValue: {
+                    dateValue: {
                       type: 'string',
                       title: '基本时间',
                       required: true,

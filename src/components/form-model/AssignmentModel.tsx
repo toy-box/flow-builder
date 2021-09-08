@@ -7,6 +7,7 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { FormilyFilter } from '../formily/components/index'
 import './index.less'
 import { fieldMetaStore } from '../../store'
+import { TextWidget } from '../widgets'
 
 import { FlowMetaType, FlowMetaParam } from '../../flow/types'
 export interface AssignmentModelPorps {
@@ -18,7 +19,7 @@ export interface AssignmentModelPorps {
 export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   showModel = false,
   callbackFunc,
-  title= "新建分配"
+  title= <TextWidget>flow.form.assignment.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   
@@ -56,10 +57,10 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
       <Divider />
       <div className="assignment-content">
         <div className="assignment-title">
-          设置变量值
+          <TextWidget>flow.form.assignment.setVariable</TextWidget>
         </div>
         <div className="assignment-desc">
-          每个变量由运算符和值组合修改。
+          <TextWidget>flow.form.assignment.tip</TextWidget>
         </div>
       </div>
     </div>
@@ -102,21 +103,21 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -136,6 +137,10 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
             type: 'array',
             title: '',
             required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.filter</TextWidget>
+            },
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
             "x-decorator-props": {
@@ -154,9 +159,9 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="assignment-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />
