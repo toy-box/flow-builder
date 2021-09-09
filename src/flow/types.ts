@@ -68,8 +68,8 @@ export type LifeCyclePayload<T> = (
 
 export enum IFlowResourceType {
   VARIABLE = 'variables',
-  VARIABLE_ARRAY = 'variable_array',
-  VARIABLE_ARRAY_RECORD = 'variable_array_record',
+  VARIABLE_ARRAY = 'variables_array',
+  VARIABLE_ARRAY_RECORD = 'variables_array_record',
   CONSTANT = 'constants',
   FORMULA = 'formulas',
   TEMPLATE = 'templates'

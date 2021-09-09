@@ -6,6 +6,7 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { BranchArrays, ResourceSelect } from '../../formily/components/index'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
 
 export interface SuspendModelPorps {
   showModel: boolean
@@ -16,7 +17,7 @@ export interface SuspendModelPorps {
 export const SuspendModel: FC<SuspendModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建暂停"
+  title= <TextWidget>flow.form.suspend.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -106,7 +107,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   const descTipHtml = <div className="branch-arrays-tip">
     <p className="tip">
-    对于每个可以恢复流的事件，添加暂停配置。此事件可以指定时间或平台事件消息。暂停条件确定是否在事件发生之前暂停流。在未满足暂停条件时，流会使用默认路径，而不暂停。
+      <TextWidget>flow.form.suspend.tip</TextWidget>
     </p>
   </div>
 
@@ -122,29 +123,29 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '标签是必填项'
+              message: <TextWidget>flow.form.validator.label</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: 'API名称是必填项'
+              message: <TextWidget>flow.form.validator.value</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -160,9 +161,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
               gridSpan: 2,
             },
             'x-component-props': {
-              title: '新建暂停配置',
+              title: <TextWidget>flow.form.suspend.title</TextWidget>,
               descTipHtml: descTipHtml,
-              addDescription: '暂停配置',
+              addDescription: <TextWidget>flow.form.suspend.sortTitle</TextWidget>,
             },
             items: {
               type: 'object',
@@ -174,32 +175,32 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                     gridSpan: 2,
                     layout: 'vertical',
                     colon: false,
-                    removeMessage: '删除暂停配置',
+                    removeMessage: <TextWidget>flow.form.suspend.removeBtn</TextWidget>,
                   },
                   properties: {
                     name: {
                       type: 'string',
-                      title: '暂停配置标签',
+                      title: <TextWidget>flow.form.suspend.rule.name</TextWidget>,
                       required: true,
                       'x-validator': {
                         required: true,
-                        message: '暂停配置标签是必填项'
+                        message: <TextWidget>flow.form.validator.suspendLabel</TextWidget>
                       },
                       'x-decorator': 'FormItem',
                       'x-component': 'Input',
                     },
                     sourceTime: {
                       type: 'boolean',
-                      title: '时间源',
+                      title: <TextWidget>flow.form.suspend.rule.sourceTime</TextWidget>,
                       default: true,
                       required: true,
                       enum: [
                         {
-                          label: '特定时间',
+                          label: <TextWidget>flow.form.suspend.option.time</TextWidget>,
                           value: true,
                         },
                         {
-                          label: '记录时间',
+                          label: <TextWidget>flow.form.suspend.option.recordTime</TextWidget>,
                           value: false,
                         },
                       ],
@@ -211,11 +212,11 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                     },
                     registerId: {
                       type: 'string',
-                      title: '获取对象记录',
+                      title: <TextWidget>flow.form.suspend.rule.registerId</TextWidget>,
                       required: true,
                       'x-validator': {
                         required: true,
-                        message: '对象记录是必填项'
+                        message: <TextWidget>flow.form.validator.registerId</TextWidget>
                       },
                       'x-decorator': 'FormItem',
                       'x-component': 'ResourceSelect',
@@ -227,11 +228,11 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                     },
                     field: {
                       type: 'string',
-                      title: '字段',
+                      title: <TextWidget>flow.form.suspend.rule.field</TextWidget>,
                       required: true,
                       'x-validator': {
                         required: true,
-                        message: '字段是必填项'
+                        message: <TextWidget>flow.form.validator.field</TextWidget>
                       },
                       'x-decorator': 'FormItem',
                       'x-component': 'Input',
@@ -239,54 +240,54 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                     },
                     recordIdValue: {
                       type: 'string',
-                      title: '记录',
+                      title: <TextWidget>flow.form.suspend.rule.recordIdValue</TextWidget>,
                       required: true,
                       'x-validator': {
                         required: true,
-                        message: '记录是必填项'
+                        message: <TextWidget>flow.form.validator.recordIdValue</TextWidget>
                       },
                       'x-decorator': 'FormItem',
                       'x-component': 'ResourceSelect',
                       'x-component-props': {
                         isHiddenResourceBtn: false,
                         mataSource: 'flowJson',
-                        placeholder: '请选择记录'
+                        placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>
                       },
                       'x-reactions': myReaction.bind(this, false),
                     },
                     dateValue: {
                       type: 'string',
-                      title: '基本时间',
+                      title: <TextWidget>flow.form.suspend.rule.dateValue</TextWidget>,
                       required: true,
                       'x-validator': {
                         required: true,
-                        message: '基本时间是必填项'
+                        message: <TextWidget>flow.form.validator.dateValue</TextWidget>
                       },
                       'x-decorator': 'FormItem',
                       'x-component': 'ResourceSelect',
                       'x-component-props': {
                         isHiddenResourceBtn: false,
                         mataSource: 'flowJson',
-                        placeholder: '请选择时间数据'
+                        placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>
                       },
                       'x-reactions': myReaction.bind(this, true),
                     },
                     offsetNum: {
                       type: 'number',
-                      title: '偏移数字',
+                      title: <TextWidget>flow.form.suspend.rule.offsetNum</TextWidget>,
                       'x-decorator': 'FormItem',
                       'x-component': 'NumberPicker',
                     },
                     offsetUnit: {
                       type: 'string',
-                      title: '偏移单位（小时或天数）',
+                      title: <TextWidget>flow.form.suspend.rule.offsetUnit</TextWidget>,
                       'x-decorator': 'FormItem',
                       'x-component': 'Input',
                       'x-validator': [{
                         triggerType: 'onBlur',
                         validator: (value: string) => {
                           if (!value || value === 'Hours' || value === 'Days') return null
-                          return '请输入“Hours”或“Days”'
+                          return <TextWidget>flow.form.validator.offsetUnit</TextWidget>
                         }
                       }],
                     },
@@ -305,9 +306,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="suspend-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

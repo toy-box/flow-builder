@@ -261,7 +261,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               dependencies: ['flowType'],
               fulfill: {
                 schema: {
-                  'x-display': "{{$deps == 'variable' ? 'visible' : 'none'}}",
+                  'x-display': "{{$deps == 'variables' ? 'visible' : 'none'}}",
                 },
               },
             },

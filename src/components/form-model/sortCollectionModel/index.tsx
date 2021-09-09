@@ -9,6 +9,7 @@ import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
 
 export interface SortCollectionPorps {
   showModel: boolean
@@ -25,7 +26,7 @@ interface sortOption {
 export const SortCollectionModel: FC<SortCollectionPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建集合排序"
+  title= <TextWidget>flow.form.sortCollection.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel)
   
@@ -170,29 +171,29 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '标签是必填项'
+              message: <TextWidget>flow.form.validator.label</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: 'API名称是必填项'
+              message: <TextWidget>flow.form.validator.value</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -201,11 +202,11 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
           },
           collectionReference: {
             type: 'string',
-            title: '集合变量',
+            title: <TextWidget>flow.form.sortCollection.collectionReference</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '集合变量是必填项'
+              message: <TextWidget>flow.form.validator.collectionReference</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
@@ -230,7 +231,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
             maxItems: 3,
             'x-validator': {
               required: true,
-              message: '排序项不能为空'
+              message: <TextWidget>flow.form.validator.sortOptions</TextWidget>
             },
             'x-component': 'ArrayItems',
             'x-decorator': 'FormItem',
@@ -264,11 +265,11 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
                       properties: {
                         sortField: {
                           type: 'string',
-                          title: '排序方式',
+                          title: <TextWidget>flow.form.sortCollection.sortField</TextWidget>,
                           required: true,
                           'x-validator': {
                             required: true,
-                            message: '排序方式是必填项'
+                            message: <TextWidget>flow.form.validator.sortField</TextWidget>
                           },
                           'x-decorator': 'FormItem',
                           'x-component': 'Select',
@@ -281,15 +282,15 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
                         },
                         sortOrder: {
                           type: 'string',
-                          title: '排序顺序',
+                          title: <TextWidget>flow.form.sortCollection.sortOrder</TextWidget>,
                           default: 'asc',
                           enum: [
                             {
-                              label: '升序',
+                              label: <TextWidget>flow.form.sortCollection.sortOrderOption.asc</TextWidget>,
                               value: 'asc',
                             },
                             {
-                              label: '降序',
+                              label: <TextWidget>flow.form.sortCollection.sortOrderOption.desc</TextWidget>,
                               value: 'desc',
                             },
                           ],
@@ -303,7 +304,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
                         },
                         doesPutEmptyStringAndNullFirst: {
                           type: 'boolean',
-                          title: '请先放入空字符串和空值',
+                          title: <TextWidget>flow.form.sortCollection.doesPutEmptyStringAndNullFirst</TextWidget>,
                           'x-decorator': 'FormItem',
                           'x-component': 'Switch',
                         },
@@ -321,23 +322,23 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
             properties: {
               add: {
                 type: 'void',
-                title: '添加排序选项',
+                title: <TextWidget>flow.form.sortCollection.addSortItem</TextWidget>,
                 'x-component': 'ArrayItems.Addition',
               },
             },
           },
           limitFlag: {
             type: 'string',
-            title: '在排序后保留的项目数量',
+            title: <TextWidget>flow.form.sortCollection.limitFlag</TextWidget>,
             required: true,
             default: 'all',
             enum: [
               {
-                label: '保留所有选项',
+                label: <TextWidget>flow.form.sortCollection.limitFlagOption.all</TextWidget>,
                 value: 'all',
               },
               {
-                label: '设置最大项目数量',
+                label: <TextWidget>flow.form.sortCollection.limitFlagOption.count</TextWidget>,
                 value: 'count',
               },
             ],
@@ -346,11 +347,11 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
           },
           limit: {
             type: 'number',
-            title: '保留前几个项目，直到指定的最大数量，并移除剩余项目',
+            title: <TextWidget>flow.form.sortCollection.limit</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '输入项是数字'
+              message: <TextWidget>flow.form.validator.limit</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'NumberPicker',
@@ -362,9 +363,9 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="loop-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

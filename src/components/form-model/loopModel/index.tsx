@@ -7,6 +7,7 @@ import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType } from '../../../flow/types'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
 
 export interface LoopModelPorps {
   showModel: boolean
@@ -17,7 +18,7 @@ export interface LoopModelPorps {
 export const LoopModel: FC<LoopModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建循环"
+  title= <TextWidget>flow.form.loop.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -80,21 +81,29 @@ export const LoopModel: FC<LoopModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.label</TextWidget>
+            },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.value</TextWidget>
+            },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -103,8 +112,12 @@ export const LoopModel: FC<LoopModelPorps> = ({
           },
           collectionReference: {
             type: 'string',
-            title: '集合变量',
+            title: <TextWidget>flow.form.loop.collectionReference</TextWidget>,
             required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.collectionReference</TextWidget>
+            },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
             'x-component-props': {
@@ -124,15 +137,19 @@ export const LoopModel: FC<LoopModelPorps> = ({
           },
           iterationOrder: {
             type: 'string',
-            title: '排序方向',
+            title: <TextWidget>flow.form.loop.iterationOrder</TextWidget>,
             required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.iterationOrder</TextWidget>
+            },
             enum: [
               {
-                label: '第一个项目到最后一个项目',
+                label: <TextWidget>flow.form.loop.iterationOrderOption.asc</TextWidget>,
                 value: 'asc',
               },
               {
-                label: '最后一个项目到第一个项目',
+                label: <TextWidget>flow.form.loop.iterationOrderOption.desc</TextWidget>,
                 value: 'desc',
               },
             ],
@@ -148,9 +165,9 @@ export const LoopModel: FC<LoopModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="loop-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />
