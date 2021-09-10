@@ -7,6 +7,7 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
 
 export interface RecordRemoveModelPorps {
   showModel: boolean
@@ -17,7 +18,7 @@ export interface RecordRemoveModelPorps {
 export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建删除记录"
+  title= <TextWidget>flow.form.recordRemove.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -91,29 +92,29 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '标签是必填项'
+              message: <TextWidget>flow.form.validator.label</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: 'API名称是必填项'
+              message: <TextWidget>flow.form.validator.value</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -122,11 +123,11 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
           },
           registerId: {
             type: 'string',
-            title: '删除对象记录',
+            title: <TextWidget>flow.form.recordRemove.registerId</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '对象记录是必填项'
+              message: <TextWidget>flow.form.validator.registerId</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
@@ -142,14 +143,18 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
           },
           'criteria.conditions': {
             type: 'number',
-            title: '筛选记录',
+            title: <TextWidget>flow.form.recordRemove.conditions</TextWidget>,
+            required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.filter</TextWidget>
+            },
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
             "x-decorator-props": {
               gridSpan: 2
             },
             'x-component-props': {
-              paramKey: 'criteria.conditions',
               reactionKey: 'registerId',
               mataSource: 'metaData',
               specialMode: true,
@@ -170,9 +175,9 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="loop-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

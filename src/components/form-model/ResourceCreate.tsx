@@ -12,6 +12,8 @@ import { GatherInput } from '../formily/index'
 import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 import { uid } from '../../utils'
 import { fieldMetaStore } from '../../store'
+import { TextWidget } from '../widgets'
+import { useLocale } from '../../hooks'
 
 const SchemaField = createSchemaField({
   components: {
@@ -28,31 +30,31 @@ const SchemaField = createSchemaField({
 
 const metaDataOps = [{
   value: MetaValueType.TEXT,
-  label: '文本',
+  label: <TextWidget>flow.metaType.text</TextWidget>,
 }, {
   value: MetaValueType.STRING,
-  label: '字符串',
+  label: <TextWidget>flow.metaType.str</TextWidget>,
 }, {
   value: MetaValueType.NUMBER,
-  label: '数字',
+  label: <TextWidget>flow.metaType.num</TextWidget>,
 }, {
   value: MetaValueType.OBJECT_ID,
-  label: '记录',
+  label: <TextWidget>flow.metaType.objectId</TextWidget>,
 }, {
   value: MetaValueType.BOOLEAN,
-  label: '布尔值',
+  label: <TextWidget>flow.metaType.bool</TextWidget>,
 }, {
   value: MetaValueType.DATE,
-  label: '日期',
+  label: <TextWidget>flow.metaType.date</TextWidget>,
 }, {
   value: MetaValueType.DATETIME,
-  label: '日期/时间',
+  label: <TextWidget>flow.metaType.dateTime</TextWidget>,
 }, {
   value: MetaValueType.SINGLE_OPTION,
-  label: '单选列表',
+  label: <TextWidget>flow.metaType.singleOption</TextWidget>,
 }, {
   value: MetaValueType.MULTI_OPTION,
-  label: '多选列表',
+  label: <TextWidget>flow.metaType.multiOption</TextWidget>,
 }]
 
 const constMetaOps = [
@@ -73,12 +75,12 @@ const formulaMetaOps = [
 ]
 
 const labelNames: any = {
-  [IFlowResourceType.VARIABLE]: '变量',
-  [IFlowResourceType.VARIABLE_ARRAY]: '集合变量',
-  [IFlowResourceType.VARIABLE_ARRAY_RECORD]: '记录集合变量',
-  [IFlowResourceType.CONSTANT]: '常量',
-  [IFlowResourceType.FORMULA]: '公式',
-  [IFlowResourceType.TEMPLATE]: '文本模板',
+  [IFlowResourceType.VARIABLE]: <TextWidget>flow.autoFlow.variable</TextWidget>,
+  [IFlowResourceType.VARIABLE_ARRAY]: <TextWidget>flow.autoFlow.variableArray</TextWidget>,
+  [IFlowResourceType.VARIABLE_ARRAY_RECORD]: <TextWidget>flow.autoFlow.variableArrayRecord</TextWidget>,
+  [IFlowResourceType.CONSTANT]: <TextWidget>flow.autoFlow.constant</TextWidget>,
+  [IFlowResourceType.FORMULA]: <TextWidget>flow.autoFlow.formula</TextWidget>,
+  [IFlowResourceType.TEMPLATE]: <TextWidget>flow.autoFlow.template</TextWidget>,
 }
 
 interface ResourceCreateProps {
@@ -93,7 +95,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
     pattern: Formily.Core.Types.FormPathPattern,
     service: (
       field: Formily.Core.Models.Field
-    ) => Promise<{ label: string; value: any }[]>
+    ) => Promise<{ label: string | JSX.Element; value: any }[]>
   ) => {
     onFieldReact(pattern, (field) => {
       const fieldObj = field as any
@@ -174,11 +176,11 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
         properties: {
           flowType: {
             type: 'string',
-            title: '资源类型',
+            title: <TextWidget>flow.form.resourceCreate.flowType</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '资源类型是必填项'
+              message: <TextWidget>flow.form.validator.flowType</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Select',
@@ -189,7 +191,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               { label: labelNames[IFlowResourceType.TEMPLATE], value: IFlowResourceType.TEMPLATE },
             ],
             'x-component-props': {
-              placeholder: '请选择...'
+              placeholder: <TextWidget>flow.form.placeholder.flowType</TextWidget>
             },
             "x-decorator-props": {
               gridSpan: 2
@@ -197,24 +199,24 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           name: {
             type: 'string',
-            title: '资源名称',
+            title: <TextWidget>flow.form.resourceCreate.name</TextWidget>,
             required: true,
             'x-validator': [{
               triggerType: 'onBlur',
               required: true,
-              message: '资源名称是必填项',
+              message: <TextWidget>flow.form.validator.name</TextWidget>,
             }, {
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
                 const idx = fieldMetas?.findIndex((meta: any) => meta.name === value)
-                if(idx > -1) return '资源名称重复'
+                if(idx > -1) return <TextWidget>flow.form.validator.repeatName</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
             'x-component-props': {
-              placeholder: '请输入名称...',
+              placeholder: useLocale('flow.form.placeholder.name'),
             },
             "x-decorator-props": {
               gridSpan: 2
@@ -222,11 +224,11 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.resourceCreate.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-component-props": {
-              placeholder: '请输入描述...'
+              placeholder: useLocale('flow.form.placeholder.description')
             },
             "x-decorator-props": {
               gridSpan: 2
@@ -234,24 +236,24 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           type: {
             type: 'string',
-            title: '数据类型',
+            title: <TextWidget>flow.form.resourceCreate.type</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '数据类型是必填项'
+              message: <TextWidget>flow.form.validator.type</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Select',
             'x-component-props': {
-              placeholder: '请选择数据类型...'
+              placeholder: <TextWidget>flow.form.placeholder.type</TextWidget>
             },
           },
           valueType: {
             type: 'boolean',
-            title: '集合',
+            title: <TextWidget>flow.form.resourceCreate.valueType</TextWidget>,
             enum: [
               {
-                label: '允许多个值（集合）',
+                label: <TextWidget>flow.form.resourceCreate.valueTypeOption.array</TextWidget>,
                 value: 'array',
               },
             ],
@@ -268,16 +270,16 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           refObjectId: {
             type: 'string',
-            title: '对象',
+            title: <TextWidget>flow.form.resourceCreate.refObjectId</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '对象值是必填项'
+              message: <TextWidget>flow.form.validator.refObjectId</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'GatherInput',
             'x-component-props': {
-              placeholder: '请输入值...',
+              placeholder: <TextWidget>flow.form.placeholder.refObjectId</TextWidget>,
             },
             "x-decorator-props": {
               gridSpan: 1
@@ -293,7 +295,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           defaultValue: {
             type: 'string',
-            title: '默认值',
+            title: <TextWidget>flow.form.resourceCreate.defaultValue</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'GatherInput',
             'x-component-props': {
@@ -304,12 +306,12 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           text: {
             type: 'string',
-            title: '模板',
+            title: <TextWidget>flow.form.resourceCreate.text</TextWidget>,
             required: true,
             'x-disabled': true,
             'x-validator': {
               required: true,
-              message: '模板是必填项'
+              message: <TextWidget>flow.form.validator.text</TextWidget>
             },
             'x-visible': false,
             'x-decorator': 'FormItem',
@@ -322,11 +324,11 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           },
           expression: {
             type: 'string',
-            title: '公式',
+            title: <TextWidget>flow.form.resourceCreate.expression</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '公式是必填项'
+              message: <TextWidget>flow.form.validator.expression</TextWidget>
             },
             'x-visible': false,
             'x-decorator': 'FormItem',
@@ -426,9 +428,9 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   return (
     <>
       <div>
-        <Button onClick={showModal} size="small">添加资源</Button>
+        <Button onClick={showModal} size="small"><TextWidget>flow.form.resourceCreate.addResource</TextWidget></Button>
       </div>
-      <Modal width={900} title="添加资源" visible={isModalVisible} cancelText="取消" okText="确认" onOk={handleOk} onCancel={handleCancel}>
+      <Modal width={900} title={<TextWidget>flow.form.resourceCreate.addResource</TextWidget>} visible={isModalVisible} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
         <FormLayout layout='vertical' colon={false}>
           <FormProvider form={form}>
             <SchemaField schema={schema} />

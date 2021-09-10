@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { FC, useState, useEffect } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
@@ -8,6 +9,8 @@ import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
+import { useLocale } from '../../../hooks'
 
 export interface RecordUpdateModelPorps {
   showModel: boolean
@@ -18,7 +21,7 @@ export interface RecordUpdateModelPorps {
 export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建更新记录"
+  title= <TextWidget>flow.form.recordUpdate.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -80,10 +83,10 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
-            state.title = `筛选 ${register.name} 记录`
+            state.title = `${useLocale('flow.form.recordUpdate.filter')} ${register.name} ${useLocale('flow.form.recordUpdate.record')}`
           })
           form.setFieldState('inputAssignments', (state) => {
-            state.title = `设置 ${register.name} 的字段值`
+            state.title = `${useLocale('flow.form.recordUpdate.setting')} ${register.name} ${useLocale('flow.form.recordUpdate.setField')}`
           })
         }
       })
@@ -105,29 +108,29 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '标签是必填项'
+              message: <TextWidget>flow.form.validator.label</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: 'API名称是必填项'
+              message: <TextWidget>flow.form.validator.value</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -136,11 +139,11 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
           },
           registerId: {
             type: 'string',
-            title: '更新对象记录',
+            title: <TextWidget>flow.form.recordUpdate.registerId</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '对象记录是必填项'
+              message: <TextWidget>flow.form.validator.registerId</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
@@ -156,11 +159,11 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
           },
           'criteria.conditions': {
             type: 'number',
-            title: '筛选记录',
+            title: <TextWidget>flow.form.recordUpdate.conditions</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '筛选记录是必填项'
+              message: <TextWidget>flow.form.validator.filter</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
@@ -168,7 +171,6 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
               gridSpan: 2
             },
             'x-component-props': {
-              paramKey: 'criteria.conditions',
               reactionKey: 'registerId',
               mataSource: 'metaData',
               specialMode: true,
@@ -184,19 +186,18 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
           },
           inputAssignments: {
             type: 'number',
-            title: '设置字段值',
+            title: <TextWidget>flow.form.recordUpdate.inputAssignments</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
             'x-validator': {
               required: true,
-              message: '字段值是必填项'
+              message: <TextWidget>flow.form.validator.inputAssignments</TextWidget>
             },
             "x-decorator-props": {
               gridSpan: 2
             },
             'x-component-props': {
               simple: true,
-              paramKey: 'inputAssignments',
               mataSource: 'metaData',
               reactionKey: 'registerId',
             },
@@ -216,9 +217,9 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="loop-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

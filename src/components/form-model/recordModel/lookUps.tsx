@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
@@ -10,6 +11,8 @@ import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/ty
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
+import { useLocale } from '../../../hooks'
 
 export interface RecordLookUpModelPorps {
   showModel: boolean
@@ -24,7 +27,7 @@ const TextTemplate = observer((props: any) => {
 export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建获取记录"
+  title= <TextWidget>flow.form.recordLookUp.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -96,9 +99,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
-            state.title = `筛选 ${register.name} 记录`
+            state.title = `${useLocale('flow.form.recordLookUp.filter')} ${register.name} ${useLocale('flow.form.recordLookUp.record')}`
           })
-          
         }
       })
       onFieldValueChange('storeOutputAutomatically', (field) => {
@@ -208,29 +210,29 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '标签是必填项'
+              message: <TextWidget>flow.form.validator.label</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: 'API名称是必填项'
+              message: <TextWidget>flow.form.validator.value</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -239,11 +241,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           registerId: {
             type: 'string',
-            title: '获取对象记录',
+            title: <TextWidget>flow.form.recordLookUp.registerId</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '对象记录是必填项'
+              message: <TextWidget>flow.form.validator.registerId</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
@@ -259,11 +261,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           'criteria.conditions': {
             type: 'number',
-            title: '筛选记录',
+            title: <TextWidget>flow.form.recordLookUp.conditions</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '筛选记录是必填项'
+              message: <TextWidget>flow.form.validator.filter</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
@@ -287,19 +289,19 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           sortOrder: {
             type: 'string',
-            title: '排序记录',
+            title: <TextWidget>flow.form.recordLookUp.sortOrder</TextWidget>,
             default: 'null',
             enum: [
               {
-                label: '升序',
+                label: <TextWidget>flow.form.recordLookUp.sortOrderOption.asc</TextWidget>,
                 value: 'asc',
               },
               {
-                label: '降序',
+                label: <TextWidget>flow.form.recordLookUp.sortOrderOption.desc</TextWidget>,
                 value: 'desc',
               },
               {
-                label: '未排序',
+                label: <TextWidget>flow.form.recordLookUp.sortOrderOption.no</TextWidget>,
                 value: 'null',
               },
             ],
@@ -316,21 +318,21 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           sortOrderIsEmpty: {
             type: 'string',
-            title: '排序标准',
+            title: <TextWidget>flow.form.recordLookUp.sortField</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'TextTemplate',
             'x-component-props': {
-              textTemplate: '如果您仅存储第一个记录，按唯一字段筛选，例如 ID。',
+              textTemplate: <TextWidget>flow.form.recordLookUp.textTemplate</TextWidget>,
             },
             'x-reactions': myReaction.bind(this, 'sortOrderIsEmpty'),
           },
           sortField: {
             type: 'string',
-            title: '排序标准',
+            title: <TextWidget>flow.form.recordLookUp.sortField</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '排序标准是必填项'
+              message: <TextWidget>flow.form.validator.sortOrderIsEmpty</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
@@ -343,15 +345,15 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           getFirstRecordOnly: {
             type: 'boolean',
-            title: '存储的记录数量',
+            title: <TextWidget>flow.form.recordLookUp.getFirstRecordOnly</TextWidget>,
             default: true,
             enum: [
               {
-                label: '仅限第一个记录',
+                label: <TextWidget>flow.form.recordLookUp.getFirstRecordOnlyOp.first</TextWidget>,
                 value: true,
               },
               {
-                label: '所有记录',
+                label: <TextWidget>flow.form.recordLookUp.getFirstRecordOnlyOp.all</TextWidget>,
                 value: false,
               },
             ],
@@ -371,15 +373,15 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           storeOutputAutomatically: {
             type: 'boolean',
-            title: '如何存储记录数据',
+            title: <TextWidget>flow.form.recordLookUp.storeOutputAutomatically</TextWidget>,
             default: true,
             enum: [
               {
-                label: '自动存储所有字段',
+                label: <TextWidget>flow.form.recordLookUp.storeOutputAutomaticallyOp.auto</TextWidget>,
                 value: true,
               },
               {
-                label: '手动存储所有字段',
+                label: <TextWidget>flow.form.recordLookUp.storeOutputAutomaticallyOp.people</TextWidget>,
                 value: false,
               },
             ],
@@ -399,15 +401,15 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           automaticallyType: {
             type: 'boolean',
-            title: '手动存储类型',
+            title: <TextWidget>flow.form.recordLookUp.automaticallyType</TextWidget>,
             default: true,
             enum: [
               {
-                label: '选择字段',
+                label: <TextWidget>flow.form.recordLookUp.automaticallyTypeOp.select</TextWidget>,
                 value: true,
               },
               {
-                label: '选择字段并分配变量（高级）',
+                label: <TextWidget>flow.form.recordLookUp.automaticallyTypeOp.selectPro</TextWidget>,
                 value: false,
               },
             ],
@@ -427,15 +429,15 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           address: {
             type: 'boolean',
-            title: '存储字段值的位置',
+            title: <TextWidget>flow.form.recordLookUp.address</TextWidget>,
             default: true,
             enum: [
               {
-                label: '共同在记录变量中',
+                label: <TextWidget>flow.form.recordLookUp.addressOption.comm</TextWidget>,
                 value: true,
               },
               {
-                label: '在单独变量中',
+                label: <TextWidget>flow.form.recordLookUp.addressOption.one</TextWidget>,
                 value: false,
               },
             ],
@@ -455,20 +457,20 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           outputReference: {
             type: 'string',
-            title: '选择记录变量',
+            title: <TextWidget>flow.form.recordLookUp.outputReference</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '记录变量是必填项'
+              message: <TextWidget>flow.form.validator.outputReference</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
             'x-component-props': {
               mataSource: 'flowJson',
-              placeholder: '选择记录变量',
+              placeholder: <TextWidget>flow.form.placeholder.outputReference</TextWidget>,
               flowJsonTypes: [{ 
                 value: IFlowResourceType.VARIABLE,
-                label: '记录（单个）变量',
+                label: <TextWidget>flow.form.recordLookUp.outputReferenceLabel</TextWidget>,
                 children: [MetaValueType.OBJECT, MetaValueType.OBJECT_ID]
               }]
             },
@@ -498,7 +500,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             type: 'array',
             'x-component': 'ArrayItems',
             'x-decorator': 'FormItem',
-            title: '选择字段',
+            title: <TextWidget>flow.form.recordLookUp.queriedFields</TextWidget>,
             items: {
               type: 'object',
               properties: {
@@ -530,7 +532,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             properties: {
               add: {
                 type: 'void',
-                title: '添加字段',
+                title: <TextWidget>flow.form.recordLookUp.addField</TextWidget>,
                 'x-component': 'ArrayItems.Addition',
               },
             },
@@ -538,7 +540,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           },
           outputAssignments: {
             type: 'number',
-            title: '设置字段变量',
+            title: <TextWidget>flow.form.recordLookUp.outputAssignments</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
             "x-decorator-props": {
@@ -547,7 +549,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-component-props': {
               simple: true,
               specialMode: false,
-              paramKey: 'outputAssignments',
               reactionKey: 'registerId',
               mataSource: 'metaData',
             },
@@ -567,9 +568,9 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="loop-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

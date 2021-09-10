@@ -5,6 +5,7 @@ import { isArr } from '@formily/shared'
 import { IFieldOption } from '@toy-box/meta-schema'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
 import { fieldMetaStore } from '../../../../store'
+import { useLocale } from '../../../../hooks'
 
 
 const { OptGroup, Option } = Select
@@ -131,7 +132,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         fieldMetas={fieldMetas as any[]}
       />}
       <Select
-        placeholder={props.placeholder || '请选择集合变量'}
+        placeholder={props.placeholder || useLocale('flow.form.placeholder.resourceSelect')}
         value={props.value}
         style={props.style}
         onChange={onChange}

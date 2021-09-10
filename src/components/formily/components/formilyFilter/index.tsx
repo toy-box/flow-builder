@@ -4,6 +4,7 @@ import { FilterBuilder } from '@toy-box/meta-components';
 import { ICompareOperation, IFieldOption } from '@toy-box/meta-schema'
 import { fieldMetaStore } from '../../../../store'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
+import { useLocale } from '../../../../hooks'
 
 export const FormilyFilter: FC = observer((props: any) => {
   const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
@@ -21,11 +22,11 @@ export const FormilyFilter: FC = observer((props: any) => {
   )
   const specialOptions = [
     {
-      label: '引用变量',
+      label: useLocale('flow.form.comm.reference'),
       value: 'REFERENCE',
     },
     {
-      label: '直接输入',
+      label: useLocale('flow.form.comm.input'),
       value: 'INPUT',
     },
   ]

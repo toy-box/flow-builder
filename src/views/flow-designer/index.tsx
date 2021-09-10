@@ -52,9 +52,11 @@ GlobalRegistry.registerDesignerLocales({
           cencel: '取消',
           submit: '确定',
           empty: '暂无数据',
+          reference: '引用变量',
+          input: '直接输入'
         },
         validator: {
-          filter: '条件分支不能为空',
+          filter: '筛选记录是必填项',
           label: '标签是必填项',
           value: 'API名称是必填项',
           suspendLabel: '暂停配置标签是必填项',
@@ -67,11 +69,45 @@ GlobalRegistry.registerDesignerLocales({
           iterationOrder: '排序方向是必填项',
           limit: '输入项是数字',
           sortOptions: '排序项是必填项',
-          sortField: '排序方式是必填项'
+          sortField: '排序方式是必填项',
+          flowType: '资源类型是必填项',
+          name: '资源名称是必填项',
+          repeatName: '资源名称重复',
+          type: '数据类型是必填项',
+          refObjectId: '对象值是必填项',
+          text: '模板是必填项',
+          expression: '公式是必填项',
+          inputAssignments: '字段值是必填项',
+          sortOrderIsEmpty: '排序标准是必填项',
+          outputReference: '记录变量是必填项'
         },
         placeholder: {
           recordIdValue: '请选择记录',
-          dateValue: '请选择时间数据'
+          dateValue: '请选择时间数据',
+          flowType: '请选择...',
+          name: '请输入名称...',
+          description: '请输入描述...',
+          type: '请选择数据类型...',
+          refObjectId: '请输入值...',
+          assignRecordIdToReference: '请选择变量',
+          outputReference: '选择记录变量',
+          formula: '请输入公式',
+          resourceSelect: '请选择集合变量'
+        },
+        resourceCreate: {
+          flowType: '资源类型',
+          name: '资源名称',
+          description: '描述',
+          type: '数据类型',
+          valueType: '集合',
+          valueTypeOption: {
+            array: '允许多个值（集合）'
+          },
+          refObjectId: '对象',
+          defaultValue: '默认值',
+          text: '模板',
+          expression: '公式',
+          addResource: '添加资源'
         },
         assignment: {
           addTitle: '新建分配',
@@ -144,6 +180,86 @@ GlobalRegistry.registerDesignerLocales({
             count: '设置最大项目数量'
           },
           limit: '保留前几个项目，直到指定的最大数量，并移除剩余项目'
+        },
+        recordCreate: {
+          addTitle: '新建创建记录',
+          editTitle: '编辑创建记录',
+          removeTitle: '删除创建记录',
+          setting: '设置',
+          setField: '的字段值',
+          saveId: '在变量中存储',
+          registerId: '对象记录',
+          inputAssignments: '设置字段值',
+          storeOutputAutomatically: '手动分配变量',
+          assignRecordIdToReference: '变量'
+        },
+        recordRemove: {
+          addTitle: '新建删除记录',
+          editTitle: '编辑删除记录',
+          removeTitle: '删除删除记录',
+          registerId: '对象记录',
+          conditions: '筛选记录',
+        },
+        recordUpdate: {
+          addTitle: '新建更新记录',
+          editTitle: '编辑更新记录',
+          removeTitle: '删除更新记录',
+          filter: '筛选',
+          record: '记录',
+          setting: '设置',
+          setField: '的字段值',
+          registerId: '对象记录',
+          conditions: '筛选记录',
+          inputAssignments: '设置字段值',
+        },
+        recordLookUp: {
+          addTitle: '新建获取记录',
+          editTitle: '编辑获取记录',
+          removeTitle: '删除获取记录',
+          filter: '筛选',
+          record: '记录',
+          registerId: '对象记录',
+          conditions: '筛选记录',
+          sortOrder: '排序记录',
+          sortOrderOption: {
+            asc: '升序',
+            desc: '降序',
+            no: '未排序'
+          },
+          sortField: '排序标准',
+          getFirstRecordOnly: '存储的记录数量',
+          getFirstRecordOnlyOp: {
+            first: '仅限第一个记录',
+            all: '所有记录'
+          },
+          storeOutputAutomatically: '如何存储记录数据',
+          storeOutputAutomaticallyOp: {
+            auto: '自动存储所有字段',
+            people: '手动存储所有字段'
+          },
+          automaticallyType: '手动存储类型',
+          automaticallyTypeOp: {
+            select: '选择字段',
+            selectPro: '选择字段并分配变量（高级）'
+          },
+          address: '存储字段值的位置',
+          addressOption: {
+            comm: '共同在记录变量中',
+            one: '在单独变量中'
+          },
+          outputReference: '选择记录变量',
+          outputReferenceLabel: '记录（单个）变量',
+          queriedFields: '选择字段',
+          addField: '添加字段',
+          outputAssignments: '设置字段值',
+          textTemplate: '如果您仅存储第一个记录，按唯一字段筛选，例如 ID。'
+        },
+        formula: {
+          editTitle: '编辑公式',
+          formulaEditorTitle: 'meta公式型字段'
+        },
+        template: {
+          customTitle: '可选字段'
         }
       }
     }

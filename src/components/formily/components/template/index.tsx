@@ -5,6 +5,7 @@ import BraftEditor from 'braft-editor';
 import { Modifier, EditorState, convertFromRaw } from 'draft-js'
 import { convertHTMLToRaw } from 'braft-convert'
 import { useForm, observer } from '@formily/react'
+import { TextWidget } from '../../../widgets'
 
 const entityExtension = {
   // 指定扩展类型
@@ -128,7 +129,7 @@ export const BraftEditorTemplate: FC<any> = observer((props: any) => {
     {
       key: 'custom-dropdown',
       type: 'dropdown',
-      text: '可选字段',
+      text: <TextWidget>flow.form.template.customTitle</TextWidget>,
       autoHide: true,
       className: 'hire-custom-dropdown',
       arrowActive: true,

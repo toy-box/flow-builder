@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { FC, useState, useEffect } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
@@ -8,6 +9,8 @@ import { fieldMetaStore } from '../../../store'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
+import { TextWidget } from '../../widgets'
+import { useLocale } from '../../../hooks'
 
 export interface RecordCreateModelPorps {
   showModel: boolean
@@ -18,7 +21,7 @@ export interface RecordCreateModelPorps {
 export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= "新建创建记录"
+  title= <TextWidget>flow.form.recordCreate.addTitle</TextWidget>
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -82,10 +85,10 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('inputAssignments', (state) => {
-            state.title = `设置 ${register.name} 的字段值`
+            state.title = `${useLocale('flow.form.recordCreate.setting')} ${register.name} ${useLocale('flow.form.recordCreate.setField')}`
           })
           form.setFieldState('assignRecordIdToReference', (state) => {
-            state.title = `在变量中存储 ${register.name} ID`
+            state.title = `${useLocale('flow.form.recordCreate.saveId')} ${register.name} ID`
           })
         }
       })
@@ -107,29 +110,29 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
         properties: {
           name: {
             type: 'string',
-            title: '标签',
+            title: <TextWidget>flow.form.comm.label</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '标签是必填项'
+              message: <TextWidget>flow.form.validator.label</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input'
           },
           id: {
             type: 'string',
-            title: 'API名称',
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: 'API名称是必填项'
+              message: <TextWidget>flow.form.validator.value</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },
           description: {
             type: 'string',
-            title: '描述',
+            title: <TextWidget>flow.form.comm.description</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Input.TextArea',
             "x-decorator-props": {
@@ -138,11 +141,11 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
           },
           registerId: {
             type: 'string',
-            title: '对象记录',
+            title: <TextWidget>flow.form.recordCreate.registerId</TextWidget>,
             required: true,
             'x-validator': {
               required: true,
-              message: '对象记录是必填项'
+              message: <TextWidget>flow.form.validator.registerId</TextWidget>
             },
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
@@ -158,7 +161,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
           },
           inputAssignments: {
             type: 'array',
-            title: '设置字段值',
+            title: <TextWidget>flow.form.recordCreate.inputAssignments</TextWidget>,
             required: true,
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
@@ -182,7 +185,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
           },
           storeOutputAutomatically: {
             type: 'boolean',
-            title: '手动分配变量',
+            title: <TextWidget>flow.form.recordCreate.storeOutputAutomatically</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'Switch',
             "x-decorator-props": {
@@ -199,12 +202,12 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
           },
           assignRecordIdToReference: {
             type: 'string',
-            title: '变量',
+            title: <TextWidget>flow.form.recordCreate.assignRecordIdToReference</TextWidget>,
             'x-decorator': 'FormItem',
             'x-component': 'ResourceSelect',
             'x-component-props': {
               mataSource: 'flowJson',
-              placeholder: '请选择变量',
+              placeholder: <TextWidget>flow.form.placeholder.assignRecordIdToReference</TextWidget>,
               flowJsonTypes: [{
                 value: IFlowResourceType.VARIABLE
               }]
@@ -225,9 +228,9 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText="取消" okText="确认" onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="loop-index">
-          <PreviewText.Placeholder value="暂无数据">
+          <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
               <FormProvider form={form}>
                 <SchemaField schema={schema} />

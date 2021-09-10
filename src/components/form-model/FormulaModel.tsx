@@ -3,6 +3,8 @@ import { Modal, Input } from 'antd';
 import 'codemirror/lib/codemirror.css';
 import { FormulaEditor } from '@toy-box/form-formula';
 import { IFieldMeta } from '@toy-box/meta-schema';
+import { TextWidget } from '../widgets'
+import { useLocale } from '../../hooks'
 
 export interface AssignmentModelPorps {
   metaSchema?: Toybox.MetaSchema.Types.IFieldMeta[] | MetaSchemaObj
@@ -125,11 +127,11 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
   return (
     <>
       <div title={formulaValue} onClick={showModal}>
-        <Input disabled style={customInputStyle} placeholder="请输入公式" value={formulaValue}  />
+        <Input disabled style={customInputStyle} placeholder={useLocale('flow.placeholder.formula')} value={formulaValue}  />
       </div>
-      <Modal width={900} title="编辑公式" visible={isModalVisible} cancelText="取消" okText="确认" onOk={handleOk} onCancel={handleCancel}>
+      <Modal width={900} title={<TextWidget>flow.form.formula.editTitle</TextWidget>} visible={isModalVisible} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
         <FormulaEditor
-          title="meta公式型字段"
+          title={useLocale('flow.form.formula.formulaEditorTitle')}
           style={style}
           // metaSchema={metaSchema1}
           value={formulaValue}

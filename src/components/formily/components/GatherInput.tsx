@@ -89,7 +89,7 @@ export const GatherInput: FC = observer((props: any) => {
       default:
         return null
     }
-  }, [form.values.type, changeValue, props.value, props.options, handleSelectOptions, changeDate])
+  }, [form.values.type, changeValue, props.value, registerOptions, handleSelectOptions, changeDate])
   return (
     <div>
       { filterValueInput }
