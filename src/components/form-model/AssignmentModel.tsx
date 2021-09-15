@@ -14,12 +14,14 @@ export interface AssignmentModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  assignmentData?: FlowMetaParam
 }
 
 export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.assignment.addTitle</TextWidget>
+  title= <TextWidget>flow.form.assignment.addTitle</TextWidget>,
+  assignmentData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   

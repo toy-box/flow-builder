@@ -157,3 +157,8 @@ export type FlowNodeComm = {
   label: string
   type: FlowMetaType
 }
+
+export enum OpartType {
+  EDIT = 'edit',
+  REMOVE = 'remove'
+}

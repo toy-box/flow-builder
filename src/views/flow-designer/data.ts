@@ -85,7 +85,7 @@ export const flow: FlowMeta = {
     },
     {
       "id": "loop2",
-      "name": "循环1",
+      "name": "循环2",
       "nextValueConnector": {
         "targetReference": null
       },

@@ -7,11 +7,13 @@ import { AssignmentModel, DecisionModel, SuspendModel, LoopModel,
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { usePrefix } from '../../../hooks'
+import { AutoFlow } from '../../../flow/models/AutoFlow'
 
 import '../styles/extendPanel.less'
 
 interface ExtendPanelProps {
   callbackFunc: (id: string, type: FlowMetaType, data: any) => void,
+  flowGraph: AutoFlow,
   closeExtend?: () => void,
 }
 
@@ -54,7 +56,7 @@ const MetaTypes = [
   },
 ]
 
-export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, closeExtend }) => {
+export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, flowGraph, closeExtend }) => {
   const prefixCls = usePrefix('-extend-panel')
   const node = useNode()
   const [showModel, setShowModel] = useState(false)
@@ -63,6 +65,7 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, closeExtend })
   const assignmentCallBack = useCallback(
     (data, type) => {
       if (!isBool(data)) {
+        flowGraph.updateInitialMeta(node.node.id, type, data)
         callbackFunc(node.node.id, type, data)
       }
       setShowModel(false)

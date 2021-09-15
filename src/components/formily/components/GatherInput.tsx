@@ -5,6 +5,7 @@ import { useForm, observer } from '@formily/react'
 import { FieldDate, FieldBoolean, FieldSelect } from '@toy-box/meta-components';
 import { isArr } from '@formily/shared';
 import { fieldMetaStore } from '../../../store'
+import { useLocale } from '../../../hooks'
 
 
 
@@ -48,16 +49,16 @@ export const GatherInput: FC = observer((props: any) => {
       case MetaValueType.TEXT:
       case MetaValueType.STRING:
       case MetaValueType.NUMBER:
-        return <Input placeholder="请输入值" type={form.values.type} onChange={changeValue} value={props.value} />
+        return <Input placeholder={useLocale('flow.form.placeholder.formilyInput.input')} type={form.values.type} onChange={changeValue} value={props.value} />
       case MetaValueType.OBJECT_ID:
         return <FieldSelect
-                placeholder='请选择值'
+                placeholder={useLocale('flow.form.placeholder.formilyInput.select')}
                 options={registerOptions}
                 field={
                   {
                     type: form.values.type,
                     key: form.values.type,
-                    name: '记录',
+                    name: useLocale('flow.form.placeholder.formilyInput.record'),
                   }
                 }
                 value={props.value}
@@ -71,9 +72,10 @@ export const GatherInput: FC = observer((props: any) => {
                   field={{
                     type: form.values.type,
                     key: form.values.type,
-                    name: '日期',
+                    name: useLocale('flow.form.placeholder.formilyInput.fieldDate'),
                   }}
-                  placeholder={`${form.values.type === MetaValueType.DATE ? '请选择日期' : '请选择日期/时间'}`}
+                  placeholder={`${form.values.type === MetaValueType.DATE ?
+                    useLocale('flow.form.placeholder.formilyInput.date') : useLocale('flow.form.placeholder.formilyInput.dateTime')}`}
                   onChange={changeDate}
                 />
       case MetaValueType.BOOLEAN:
@@ -82,7 +84,7 @@ export const GatherInput: FC = observer((props: any) => {
                   field={{
                     type: form.values.type,
                     key: 'boolean',
-                    name: 'bool值'
+                    name: useLocale('flow.form.placeholder.formilyInput.bool')
                   }}
                   onChange={changeDate}
                 />

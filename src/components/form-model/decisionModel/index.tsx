@@ -10,18 +10,22 @@ import { uid } from '../../../utils';
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
+
 export interface DecisionModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  decisionData?: FlowMetaParam
 }
 
 export const DecisionModel: FC<DecisionModelPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.decision.addTitle</TextWidget>,
+  decisionData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  const [defaultConnectorName, setDefaultConnectorName] = useState(useLocale('flow.form.decision.defaultConnectorName'))
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -31,23 +35,25 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
     console.log(form.values)
     form.submit((resolve) => {
       const value = form.values;
-      value.rules.forEach((rule: any) => {
-        if (!isObj(rule.connector)) {
-          rule.connector = {
-            targetReference: null
+      if (!decisionData) {
+        value.rules.forEach((rule: any) => {
+          if (!isObj(rule.connector)) {
+            rule.connector = {
+              targetReference: null
+            }
           }
-        }
-      })
+        })
+      }
       const paramData = {
         id: value.id,
         name: value.name,
         defaultConnector: {
-          targetReference: null,
+          targetReference: decisionData?.defaultConnector?.targetReference || null,
         },
-        defaultConnectorName: useLocale('flow.form.decision.defaultConnectorName'),
+        defaultConnectorName: defaultConnectorName,
         rules: value.rules,
       }
-      console.log(paramData);
+      console.log(paramData, defaultConnectorName);
       setIsModalVisible(false);
       callbackFunc(paramData, FlowMetaType.DECISION)
     }).catch((rejected) => {
@@ -75,18 +81,25 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   
   const form = createForm()
 
-  form.setValues(
-    {
-      rules: [{
-        name: '',
-        id: uid(),
-        criteria: {
-          conditions: [{}],
-        },
-        description: '',
-      }]
+
+  useEffect(() => {
+    if (decisionData) {
+      form.setValues(decisionData)
+    } else {
+      form.setValues(
+        {
+          rules: [{
+            name: '',
+            id: uid(),
+            criteria: {
+              conditions: [{}],
+            },
+            description: '',
+          }]
+        }
+      )
     }
-  )
+  }, [decisionData, form])
 
   const descTipHtml = <div className="branch-arrays-tip">
     <p className="name">

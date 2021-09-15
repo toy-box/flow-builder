@@ -2,9 +2,12 @@ import React, { useEffect, useCallback } from 'react';
 import { Graph } from '@antv/x6';
 import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
-import { connect, StartNode, ExtendNode, EndNode, DecisionNode, AssignNode } from '@toy-box/flow-nodes';
+import { connect, StartNode, ExtendNode, EndNode, DecisionNode, LoopNode,
+  ActionNode, AssignNode } from '@toy-box/flow-nodes';
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
 import { ExtendPanel } from './ExtendPanel';
+import { DecisionPanel } from './DecisionPanel';
+import { LoopPanel } from './LoopPanel';
 
 const STAND_SIZE = 56;
 
@@ -14,7 +17,6 @@ export const AntvCanvas = observer(() => {
 
   const submit = useCallback(
     (id, type, data) => {
-      flowGraph.updateInitialMeta(id, type, data)
       const graph = new Graph({
         container: document.getElementById('flow-canvas') || undefined,
         panning: true,
@@ -32,9 +34,10 @@ export const AntvCanvas = observer(() => {
             StartNode: connect(StartNode, () => {
               return <div>start</div>;
             }),
-            ExtendNode: connect(ExtendNode, <ExtendPanel callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
+            ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
             EndNode: connect(EndNode),
-            DecisionNode: connect(DecisionNode, <ExtendPanel callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           },
           // svgNodes: {
           //   DecisionNode: makeDecisionNode
@@ -65,9 +68,10 @@ export const AntvCanvas = observer(() => {
           StartNode: connect(StartNode, () => {
             return <div>start</div>;
           }),
-          ExtendNode: connect(ExtendNode, <ExtendPanel callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
+          ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
           EndNode: connect(EndNode),
-          DecisionNode: connect(DecisionNode, <ExtendPanel callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
         }
       })
     );

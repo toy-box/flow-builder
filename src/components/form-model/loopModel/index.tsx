@@ -13,12 +13,14 @@ export interface LoopModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  loopData?: FlowMetaParam
 }
 
 export const LoopModel: FC<LoopModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.loop.addTitle</TextWidget>
+  title= <TextWidget>flow.form.loop.addTitle</TextWidget>,
+  loopData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -35,10 +37,10 @@ export const LoopModel: FC<LoopModelPorps> = ({
         id: value.id,
         name: value.name,
         nextValueConnector: {
-          targetReference: null,
+          targetReference: loopData?.nextValueConnector?.targetReference || null,
         },
         defaultConnector: {
-          targetReference: null,
+          targetReference: loopData?.defaultConnector?.targetReference || null,
         },
         collectionReference: value.collectionReference,
         iterationOrder: value.iterationOrder
@@ -68,6 +70,12 @@ export const LoopModel: FC<LoopModelPorps> = ({
   })
   
   const form = createForm()
+
+  useEffect(() => {
+    if (loopData) {
+      form.setValues(loopData)
+    }
+  }, [loopData, form])
 
   const schema = {
     type: 'object',

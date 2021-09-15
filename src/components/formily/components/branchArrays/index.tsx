@@ -78,7 +78,7 @@ export const BranchArrays: FC = observer((props: any) => {
       form.setFieldState('rules', (state) => {
         state.value = update(state.value, { $splice: [[selectIndex, 1]] })
       })
-      setSelectIndex(selectIndex - 1)
+      setSelectIndex(selectIndex - 1 < 0 ? selectIndex : selectIndex - 1)
     },[form, selectIndex]
   )
 
@@ -130,6 +130,7 @@ export const BranchArrays: FC = observer((props: any) => {
       form.setFieldState('rules', (state) => {
         state.value = update(state.value, { $push: [ruleItem] })
       })
+      console.log(form.values)
     },
     [form],
   )

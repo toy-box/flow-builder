@@ -13,6 +13,10 @@ GlobalRegistry.registerDesignerLocales({
       Data: '数据',
     },
     flow: {
+      comm: {
+        edit: '编辑元素',
+        delete: '删除元素',
+      },
       extend: {
         title: '添加流程节点',
         assign: '分配',
@@ -92,7 +96,16 @@ GlobalRegistry.registerDesignerLocales({
           assignRecordIdToReference: '请选择变量',
           outputReference: '选择记录变量',
           formula: '请输入公式',
-          resourceSelect: '请选择集合变量'
+          resourceSelect: '请选择集合变量',
+          formilyInput: {
+            input: '请输入值',
+            select: '请选择值',
+            record: '记录',
+            fieldDate: '日期',
+            date: '请选择日期',
+            dateTime: '请选择日期/时间',
+            bool: 'bool值'
+          }
         },
         resourceCreate: {
           flowType: '资源类型',
