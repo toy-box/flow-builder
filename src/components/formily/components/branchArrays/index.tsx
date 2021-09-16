@@ -44,7 +44,6 @@ export const BranchArrays: FC = observer((props: any) => {
       let removeTip = ''
       items?.mapProperties((schema1, name) => {
         removeTip = schema1['x-component-props'].removeMessage || '删除'
-        
       })
       const content = (
         <RecursionField
@@ -78,8 +77,9 @@ export const BranchArrays: FC = observer((props: any) => {
       form.setFieldState('rules', (state) => {
         state.value = update(state.value, { $splice: [[selectIndex, 1]] })
       })
+      field.remove(selectIndex)
       setSelectIndex(selectIndex - 1 < 0 ? selectIndex : selectIndex - 1)
-    },[form, selectIndex]
+    },[field, form, selectIndex]
   )
 
   const selectValue = useCallback(
@@ -130,7 +130,6 @@ export const BranchArrays: FC = observer((props: any) => {
       form.setFieldState('rules', (state) => {
         state.value = update(state.value, { $push: [ruleItem] })
       })
-      console.log(form.values)
     },
     [form],
   )

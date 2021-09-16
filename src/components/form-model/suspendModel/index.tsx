@@ -12,12 +12,14 @@ export interface SuspendModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  metaFlowData?: FlowMetaParam
 }
 
 export const SuspendModel: FC<SuspendModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.suspend.addTitle</TextWidget>
+  title= <TextWidget>flow.form.suspend.addTitle</TextWidget>,
+  metaFlowData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -34,6 +36,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         return {
           id: uid(),
           name: rule.name,
+          connector: {
+            targetReference: rule?.connector?.targetReference || null,
+          },
           dateValue: rule.dateValue,
           offsetNum: rule.offsetNum,
           offsetUnit: rule.offsetUnit,
@@ -42,6 +47,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       return {
         id: uid(),
         name: rule.name,
+        connector: {
+          targetReference: rule?.connector?.targetReference || null,
+        },
         registerId: rule.registerId,
         field: rule.field,
         recordIdValue: rule.recordIdValue,
@@ -52,6 +60,12 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     const paramData = {
       id: value.id,
       name: value.name,
+      connector: {
+        targetReference: metaFlowData?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
+      },
       description: value.description,
       rules: quiredRules,
     }
@@ -85,18 +99,24 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   
   const form = createForm()
 
-  form.setValues(
-    {
-      rules: [{
-        name: '',
-        id: uid(),
-        criteria: {
-          conditions: [{}],
-        },
-        description: '',
-      }]
+  useEffect(() => {
+    if (metaFlowData) {
+      form.setValues(metaFlowData)
+    } else {
+      form.setValues(
+        {
+          rules: [{
+            name: '',
+            id: uid(),
+            criteria: {
+              conditions: [{}],
+            },
+            description: '',
+          }]
+        }
+      )
     }
-  )
+  }, [form, metaFlowData])
 
   const myReaction = useCallback((bool, field) => {
     const val = form.values

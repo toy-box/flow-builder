@@ -3,7 +3,8 @@ import {
   observable,
   action
 } from '@formily/reactive'
-import { FlowMetaParam, TargetReference, Criteria } from '../types'
+import { ICompareOperation } from '@toy-box/meta-schema';
+import { FlowMetaParam, TargetReference } from '../types'
 
 export class FlowAssignment {
   id: string
@@ -11,7 +12,7 @@ export class FlowAssignment {
   description?: string
   connector?: TargetReference
   defaultConnector?: TargetReference
-  criteria?: Criteria
+  assignmentItems?: ICompareOperation[]
 
   constructor(flowAssignment: FlowMetaParam) {
     this.id = flowAssignment.id
@@ -19,7 +20,7 @@ export class FlowAssignment {
     this.description = flowAssignment.description
     this.connector = flowAssignment.connector
     this.defaultConnector = flowAssignment.defaultConnector
-    this.criteria = flowAssignment.criteria
+    this.assignmentItems = flowAssignment.assignmentItems
     this.makeObservable()
   }
 
@@ -30,7 +31,7 @@ export class FlowAssignment {
       description: observable.ref,
       connector: observable.deep,
       defaultConnector: observable.deep,
-      criteria: observable.deep,
+      assignmentItems: observable.deep,
       onEdit: action
     })
   }
@@ -41,6 +42,6 @@ export class FlowAssignment {
     this.description = flowAssignment.description
     this.connector = flowAssignment.connector
     this.defaultConnector = flowAssignment.defaultConnector
-    this.criteria = flowAssignment.criteria
+    this.assignmentItems = flowAssignment.assignmentItems
   }
 }

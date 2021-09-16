@@ -15,6 +15,7 @@ export interface SortCollectionPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  metaFlowData?: FlowMetaParam
 }
 
 interface sortOption {
@@ -26,7 +27,8 @@ interface sortOption {
 export const SortCollectionModel: FC<SortCollectionPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.sortCollection.addTitle</TextWidget>
+  title= <TextWidget>flow.form.sortCollection.addTitle</TextWidget>,
+  metaFlowData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel)
   
@@ -45,7 +47,10 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
         id: value.id,
         name: value.name,
         connector: {
-          targetReference: null,
+          targetReference: metaFlowData?.connector?.targetReference || null,
+        },
+        defaultConnector: {
+          targetReference: metaFlowData?.defaultConnector?.targetReference || null,
         },
         collectionReference: value.collectionReference,
         limit: value.limitFlag === 'all' ? null : value.limit,
@@ -109,9 +114,16 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
       })
     }
   })
-  form.setValues({
-    sortOptions: []
-  })
+
+  useEffect(() => {
+    if (metaFlowData) {
+      form.setValues(metaFlowData)
+    } else {
+      form.setValues({
+        sortOptions: []
+      })
+    }
+  }, [form, metaFlowData])
 
   const isRecord = useCallback((value) => {
     const resourceFieldMetas = fieldMetaStore.fieldMetaStore.fieldMetas as any[]

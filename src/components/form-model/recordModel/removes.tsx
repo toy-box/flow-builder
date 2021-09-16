@@ -13,12 +13,14 @@ export interface RecordRemoveModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  metaFlowData?: FlowMetaParam
 }
 
 export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.recordRemove.addTitle</TextWidget>
+  title= <TextWidget>flow.form.recordRemove.addTitle</TextWidget>,
+  metaFlowData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
 
@@ -34,7 +36,10 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
       id: value.id,
       name: value.name,
       connector: {
-        targetReference: null,
+        targetReference: metaFlowData?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       criteria: {
@@ -76,9 +81,12 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
     effects: () => {
     }
   })
-  form.setValues({
-    sortOptions: []
-  })
+
+  useEffect(() => {
+    if (metaFlowData) {
+      form.setValues(metaFlowData)
+    }
+  }, [form, metaFlowData])
 
   const schema = {
     type: 'object',

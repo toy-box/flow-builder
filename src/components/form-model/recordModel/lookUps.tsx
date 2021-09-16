@@ -18,6 +18,7 @@ export interface RecordLookUpModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  metaFlowData?: FlowMetaParam
 }
 
 const TextTemplate = observer((props: any) => {
@@ -27,9 +28,12 @@ const TextTemplate = observer((props: any) => {
 export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.recordLookUp.addTitle</TextWidget>
+  title= <TextWidget>flow.form.recordLookUp.addTitle</TextWidget>,
+  metaFlowData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  const filterName = useLocale('flow.form.recordLookUp.filter')
+  const record = useLocale('flow.form.recordLookUp.record')
 
   
   useEffect(() => {
@@ -46,7 +50,10 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       id: value.id,
       name: value.name,
       connector: {
-        targetReference: null,
+        targetReference: metaFlowData?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       criteria: {
@@ -99,7 +106,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
-            state.title = `${useLocale('flow.form.recordLookUp.filter')} ${register.name} ${useLocale('flow.form.recordLookUp.record')}`
+            state.title = `${filterName} ${register.name} ${record}`
           })
         }
       })
@@ -149,9 +156,12 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       })
     }
   })
-  form.setValues({
-    sortOptions: []
-  })
+
+  useEffect(() => {
+    if (metaFlowData) {
+      form.setValues(metaFlowData)
+    }
+  }, [form, metaFlowData])
 
   const myReaction = useCallback((type, field) => {
     const val = form.values

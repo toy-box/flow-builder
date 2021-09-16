@@ -16,14 +16,19 @@ export interface RecordCreateModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  metaFlowData?: FlowMetaParam
 }
 
 export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.recordCreate.addTitle</TextWidget>
+  title= <TextWidget>flow.form.recordCreate.addTitle</TextWidget>,
+  metaFlowData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  const setName = useLocale('flow.form.recordCreate.setting')
+  const setField = useLocale('flow.form.recordCreate.setField')
+  const saveId = useLocale('flow.form.recordCreate.saveId')
 
   
   useEffect(() => {
@@ -37,10 +42,10 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
       id: value.id,
       name: value.name,
       connector: {
-        targetReference: null,
+        targetReference: metaFlowData?.connector?.targetReference || null,
       },
       defaultConnector: {
-        targetReference: null,
+        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       inputAssignments: value.inputAssignments,
@@ -85,18 +90,22 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('inputAssignments', (state) => {
-            state.title = `${useLocale('flow.form.recordCreate.setting')} ${register.name} ${useLocale('flow.form.recordCreate.setField')}`
+            state.title = `${setName} ${register.name} ${setField}`
           })
           form.setFieldState('assignRecordIdToReference', (state) => {
-            state.title = `${useLocale('flow.form.recordCreate.saveId')} ${register.name} ID`
+            state.title = `${saveId} ${register.name} ID`
           })
         }
       })
     }
   })
-  form.setValues({
-    sortOptions: []
-  })
+
+  useEffect(() => {
+    if (metaFlowData) {
+      form.setValues(metaFlowData)
+    }
+  }, [form, metaFlowData])
+  
 
   const schema = {
     type: 'object',
@@ -170,7 +179,6 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
             },
             'x-component-props': {
               simple: true,
-              paramKey: 'inputAssignments',
               mataSource: 'metaData',
               reactionKey: 'registerId',
             },

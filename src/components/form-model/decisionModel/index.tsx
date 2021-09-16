@@ -47,6 +47,9 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       const paramData = {
         id: value.id,
         name: value.name,
+        connector: {
+          targetReference: decisionData?.connector?.targetReference || null,
+        },
         defaultConnector: {
           targetReference: decisionData?.defaultConnector?.targetReference || null,
         },
@@ -57,6 +60,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       setIsModalVisible(false);
       callbackFunc(paramData, FlowMetaType.DECISION)
     }).catch((rejected) => {
+      console.log(rejected)
     })
   };
 
@@ -81,25 +85,42 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   
   const form = createForm()
 
+  if (decisionData) {
+    form.setValues(decisionData)
+  } else {
+    form.setValues(
+      {
+        rules: [{
+          name: '',
+          id: uid(),
+          criteria: {
+            conditions: [{}],
+          },
+          description: '',
+        }]
+      }
+    )
+  }
 
-  useEffect(() => {
-    if (decisionData) {
-      form.setValues(decisionData)
-    } else {
-      form.setValues(
-        {
-          rules: [{
-            name: '',
-            id: uid(),
-            criteria: {
-              conditions: [{}],
-            },
-            description: '',
-          }]
-        }
-      )
-    }
-  }, [decisionData, form])
+
+  // useEffect(() => {
+  //   if (decisionData) {
+  //     form.setValues(decisionData)
+  //   } else {
+  //     form.setValues(
+  //       {
+  //         rules: [{
+  //           name: '',
+  //           id: uid(),
+  //           criteria: {
+  //             conditions: [{}],
+  //           },
+  //           description: '',
+  //         }]
+  //       }
+  //     )
+  //   }
+  // }, [decisionData, form])
 
   const descTipHtml = <div className="branch-arrays-tip">
     <p className="name">

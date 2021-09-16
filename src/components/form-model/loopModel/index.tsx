@@ -73,6 +73,7 @@ export const LoopModel: FC<LoopModelPorps> = ({
 
   useEffect(() => {
     if (loopData) {
+      console.log(loopData);
       form.setValues(loopData)
     }
   }, [loopData, form])

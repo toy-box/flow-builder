@@ -31,6 +31,7 @@ export const flow: FlowMeta = {
       "defaultConnector": {
         "targetReference": "end"
       },
+      "assignmentItems": []
     },
     {
       "id": "3333",
@@ -64,6 +65,11 @@ export const flow: FlowMeta = {
           },
           "criteria": {
             "conditions": [
+              {
+                target: '',
+                op: '$eq' as any,
+                source: ''
+              }
             ]
           }
         },

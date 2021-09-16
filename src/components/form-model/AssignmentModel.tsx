@@ -34,6 +34,12 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
     const paramData = {
       id: value.id,
       name: value.name,
+      connector: {
+        targetReference: assignmentData?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: assignmentData?.defaultConnector?.targetReference || null,
+      },
       description: value.description,
       assignmentItems: value.assignmentItems,
     }
@@ -83,6 +89,10 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   })
   
   const form = createForm()
+
+  if (assignmentData) {
+    form.setValues(assignmentData)
+  }
 
   const schema = {
     type: 'object',

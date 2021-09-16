@@ -16,14 +16,20 @@ export interface RecordUpdateModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string
+  metaFlowData?: FlowMetaParam
 }
 
 export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
   showModel = false,
   callbackFunc,
-  title= <TextWidget>flow.form.recordUpdate.addTitle</TextWidget>
+  title= <TextWidget>flow.form.recordUpdate.addTitle</TextWidget>,
+  metaFlowData
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  const filterName = useLocale('flow.form.recordUpdate.filter')
+  const record = useLocale('flow.form.recordUpdate.record')
+  const setName = useLocale('flow.form.recordUpdate.setting')
+  const setField = useLocale('flow.form.recordUpdate.setField')
 
   
   useEffect(() => {
@@ -37,7 +43,10 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       id: value.id,
       name: value.name,
       connector: {
-        targetReference: null,
+        targetReference: metaFlowData?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       criteria: {
@@ -83,18 +92,21 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
-            state.title = `${useLocale('flow.form.recordUpdate.filter')} ${register.name} ${useLocale('flow.form.recordUpdate.record')}`
+            state.title = `${filterName} ${register.name} ${record}`
           })
           form.setFieldState('inputAssignments', (state) => {
-            state.title = `${useLocale('flow.form.recordUpdate.setting')} ${register.name} ${useLocale('flow.form.recordUpdate.setField')}`
+            state.title = `${setName} ${register.name} ${setField}`
           })
         }
       })
     }
   })
-  form.setValues({
-    sortOptions: []
-  })
+
+  useEffect(() => {
+    if (metaFlowData) {
+      form.setValues(metaFlowData)
+    }
+  }, [form, metaFlowData])
 
   const schema = {
     type: 'object',

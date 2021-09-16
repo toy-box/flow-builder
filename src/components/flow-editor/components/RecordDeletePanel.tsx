@@ -1,7 +1,7 @@
 import React, { FC, useState, useCallback, useMemo } from 'react'
 import { useNode } from '@toy-box/flow-nodes'
 import { isBool } from '@toy-box/toybox-shared'
-import { LoopModel } from '../../form-model'
+import { RecordRemoveModel } from '../../form-model'
 import { FlowMetaType, FlowMetaParam, OpartType } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { usePrefix } from '../../../hooks'
@@ -26,7 +26,7 @@ const MetaTypes = [
   },
 ]
 
-export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, closeExtend }) => {
+export const RecordDeletePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, closeExtend }) => {
   const prefixCls = usePrefix('-extend-panel')
   const node = useNode()
   const [showModel, setShowModel] = useState(false)
@@ -40,18 +40,18 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, c
       }
       setShowModel(false)
     },
-    [callbackFunc, node.node.id],
+    [callbackFunc, flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
     (type) => {
       closeExtend && closeExtend()
-      const flowLoops = flowGraph.flowLoops
+      const recordDeletes = flowGraph.recordDeletes
       const nodeId = node.node.id;
-      const metaData = flowLoops.find((meta) => meta.id === nodeId);
+      const metaData = recordDeletes.find((meta) => meta.id === nodeId);
       setMetaFlowData(metaData)
       setShowModel(true)
     },
-    [closeExtend, flowGraph.flowLoops, node.node.id],
+    [closeExtend, flowGraph.recordDeletes, node.node.id],
   )
   return (
     <div className={prefixCls}>
@@ -70,7 +70,7 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, c
           ))
         }
       </ul>
-      {<LoopModel loopData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordRemoveModel metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

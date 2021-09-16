@@ -3,11 +3,18 @@ import { Graph } from '@antv/x6';
 import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
 import { connect, StartNode, ExtendNode, EndNode, DecisionNode, LoopNode,
-  ActionNode, AssignNode } from '@toy-box/flow-nodes';
+  ActionNode, AssignNode, RecordCreateNode, RecordSearchNode, RecordEdithNode,
+  RecordDeletehNode, CollectionSortNode } from '@toy-box/flow-nodes';
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
 import { ExtendPanel } from './ExtendPanel';
 import { DecisionPanel } from './DecisionPanel';
 import { LoopPanel } from './LoopPanel';
+import { AssignPanel } from './AssignPanel';
+import { CollectionSortPanel } from './CollectionSortPanel';
+import { RecordCreatePanel } from './RecordCreatePanel';
+import { RecordDeletePanel } from './RecordDeletePanel';
+import { RecordEditPanel } from './RecordEditPanel';
+import { RecordSearchPanel } from './RecordSearchPanel';
 
 const STAND_SIZE = 56;
 
@@ -36,8 +43,14 @@ export const AntvCanvas = observer(() => {
             }),
             ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
             EndNode: connect(EndNode),
+            AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           },
           // svgNodes: {
           //   DecisionNode: makeDecisionNode
@@ -70,12 +83,18 @@ export const AntvCanvas = observer(() => {
           }),
           ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
           EndNode: connect(EndNode),
+          AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
         }
       })
     );
-  }, [flow, submit]);
+  }, [flow, flowGraph, submit]);
 
   useEffect(() => {
     console.log(111111111111)

@@ -1,9 +1,7 @@
 import React, { FC, useState, useCallback, useMemo } from 'react'
 import { useNode } from '@toy-box/flow-nodes'
 import { isBool } from '@toy-box/toybox-shared'
-import { AssignmentModel, DecisionModel, SuspendModel, LoopModel,
-  SortCollectionModel, RecordCreateModel, RecordUpdateModel,
-  RecordRemoveModel, RecordLookUpModel } from '../../form-model'
+import { DecisionModel } from '../../form-model'
 import { FlowMetaType, FlowMetaParam, OpartType } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { usePrefix } from '../../../hooks'
