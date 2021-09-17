@@ -56,7 +56,7 @@ export const RecordDeletePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.loop</TextWidget>
+        <TextWidget>flow.extend.recordDelete</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,7 +70,7 @@ export const RecordDeletePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
           ))
         }
       </ul>
-      {<RecordRemoveModel metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordRemoveModel title={<TextWidget>flow.form.recordRemove.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

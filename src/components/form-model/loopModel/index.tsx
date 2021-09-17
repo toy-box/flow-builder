@@ -12,7 +12,7 @@ import { TextWidget } from '../../widgets'
 export interface LoopModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
-  title?: string
+  title?: string | JSX.Element
   loopData?: FlowMetaParam
 }
 

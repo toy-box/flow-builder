@@ -48,6 +48,7 @@ export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
       const recordCreates = flowGraph.recordCreates
       const nodeId = node.node.id;
       const metaData = recordCreates.find((meta) => meta.id === nodeId);
+      console.log(metaData, 'metaData');
       setMetaFlowData(metaData)
       setShowModel(true)
     },
@@ -56,7 +57,7 @@ export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.loop</TextWidget>
+        <TextWidget>flow.extend.recordCreate</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,7 +71,7 @@ export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
           ))
         }
       </ul>
-      {<RecordCreateModel metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordCreateModel title={<TextWidget>flow.form.recordCreate.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

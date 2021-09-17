@@ -70,7 +70,7 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, flowGraph, clo
       }
       setShowModel(false)
     },
-    [callbackFunc, node.node.id],
+    [callbackFunc, flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
     (type) => {

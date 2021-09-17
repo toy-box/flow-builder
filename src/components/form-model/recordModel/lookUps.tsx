@@ -17,7 +17,7 @@ import { useLocale } from '../../../hooks'
 export interface RecordLookUpModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
-  title?: string
+  title?: string | JSX.Element
   metaFlowData?: FlowMetaParam
 }
 

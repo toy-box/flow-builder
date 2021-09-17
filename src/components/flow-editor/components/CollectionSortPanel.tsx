@@ -56,7 +56,7 @@ export const CollectionSortPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, fl
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.loop</TextWidget>
+        <TextWidget>flow.extend.collection</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,7 +70,7 @@ export const CollectionSortPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, fl
           ))
         }
       </ul>
-      {<SortCollectionModel metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<SortCollectionModel title={<TextWidget>flow.form.sortCollection.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

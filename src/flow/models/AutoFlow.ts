@@ -294,7 +294,7 @@ export class AutoFlow {
             ...flow[meta.flowType][flowIdx]
           }
           currentFlow.connector.targetReference = data.id
-          this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         }
         return meta
       } else if ((baseNode?.id === meta.id && !cycleBeginOfBackNode)) {
@@ -309,7 +309,7 @@ export class AutoFlow {
               ...flow[meta.flowType][flowIdx]
             }
             currentFlow.nextValueConnector.targetReference = data.id
-            this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
           }
           // flow[metaType].push(data)
           this.initMetaFields(metaType, data, MetaFieldType.ADD)
@@ -324,7 +324,7 @@ export class AutoFlow {
               ...flow[meta.flowType][flowIdx]
             }
             currentFlow.connector.targetReference = data.id
-            this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
           }
         }
         return meta
@@ -341,7 +341,7 @@ export class AutoFlow {
             ...flow[meta.flowType][flowIdx]
           }
           currentFlow.rules[idx].connector.targetReference = data.id
-          this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         } else if (flowIdx > -1) {
           if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
             data.defaultConnector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
@@ -353,7 +353,7 @@ export class AutoFlow {
             ...flow[meta.flowType][flowIdx]
           }
           currentFlow.defaultConnector.targetReference = data.id
-          this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         }
         return meta
       } else if (cycleBeginOfBackNode?.id === meta.id) {
@@ -363,7 +363,7 @@ export class AutoFlow {
             ...flow[meta.flowType][flowIdx]
           }
           currentFlow.nextValueConnector.targetReference = data.id
-          this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         } else {
           this.updataCurrentFlowData(meta, data, metaType)
           const node = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
@@ -374,14 +374,14 @@ export class AutoFlow {
               ...flow[mTData.flowType][mtIdx]
             }
             currentFlow.defaultConnector.targetReference = data.id
-            this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+            this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
             // flow[mTData.flowType][mtIdx].defaultConnector.targetReference = data.id
           } else if (mTData && mtIdx) {
             const currentFlow = {
               ...flow[mTData.flowType][mtIdx]
             }
             currentFlow.connector.targetReference = data.id
-            this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+            this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
             // flow[mTData.flowType][mtIdx].connector.targetReference = data.id
           }
         }
@@ -392,7 +392,7 @@ export class AutoFlow {
           ...flow[meta.flowType][flowIdx]
         }
         currentFlow.defaultConnector.targetReference = data.id
-        this.initMetaFields(metaType, currentFlow, MetaFieldType.EDIT)
+        this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         return meta
       }
     })
@@ -468,8 +468,8 @@ export class AutoFlow {
           this.flowStart.onEdit(data)
         } else {
           this.flowStart = new FlowStart(data[metaType])
-          this.mataFlowJson.flow[FlowMetaType.START] = this.flowStart
         }
+        this.mataFlowJson.flow[FlowMetaType.START] = this.flowStart
         break;
       case FlowMetaType.ASSIGNMENT:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -482,8 +482,8 @@ export class AutoFlow {
           data[metaType].forEach((assignment: FlowAssignment) => {
             this.flowAssignments.push(new FlowAssignment(assignment))
           });
-          this.mataFlowJson.flow[FlowMetaType.ASSIGNMENT] = this.flowAssignments
         }
+        this.mataFlowJson.flow[FlowMetaType.ASSIGNMENT] = this.flowAssignments
         break;
       case FlowMetaType.DECISION:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -496,8 +496,8 @@ export class AutoFlow {
           data[metaType].forEach((decision: FlowDecision) => {
             this.flowDecisions.push(new FlowDecision(decision))
           });
-          this.mataFlowJson.flow[FlowMetaType.DECISION] = this.flowDecisions
         }
+        this.mataFlowJson.flow[FlowMetaType.DECISION] = this.flowDecisions
         break;
       case FlowMetaType.SUSPEND:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -510,8 +510,8 @@ export class AutoFlow {
           data[metaType].forEach((suspend: FlowSuspend) => {
             this.flowSuspends.push(new FlowSuspend(suspend))
           });
-          this.mataFlowJson.flow[FlowMetaType.SUSPEND] = this.flowSuspends
         }
+        this.mataFlowJson.flow[FlowMetaType.SUSPEND] = this.flowSuspends
         break;
       case FlowMetaType.LOOP:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -524,8 +524,8 @@ export class AutoFlow {
           data[metaType].forEach((loop: FlowLoop) => {
             this.flowLoops.push(new FlowLoop(loop))
           });
-          this.mataFlowJson.flow[FlowMetaType.LOOP] = this.flowLoops
         }
+        this.mataFlowJson.flow[FlowMetaType.LOOP] = this.flowLoops
         break;
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -538,8 +538,8 @@ export class AutoFlow {
           data[metaType].forEach((sortCollention: FlowSortCollectionProcessor) => {
             this.flowSortCollections.push(new FlowSortCollectionProcessor(sortCollention))
           });
-          this.mataFlowJson.flow[FlowMetaType.SORT_COLLECTION_PROCESSOR] = this.flowSortCollections
         }
+        this.mataFlowJson.flow[FlowMetaType.SORT_COLLECTION_PROCESSOR] = this.flowSortCollections
         break;
       case FlowMetaType.RECORD_CREATE:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -552,8 +552,8 @@ export class AutoFlow {
           data[metaType].forEach((record: RecordCreate) => {
             this.recordCreates.push(new RecordCreate(record))
           });
-          this.mataFlowJson.flow[FlowMetaType.RECORD_CREATE] = this.recordCreates
         }
+        this.mataFlowJson.flow[FlowMetaType.RECORD_CREATE] = this.recordCreates
         break;
       case FlowMetaType.RECORD_DELETE:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -566,8 +566,8 @@ export class AutoFlow {
           data[metaType].forEach((record: RecordDelete) => {
             this.recordDeletes.push(new RecordDelete(record))
           });
-          this.mataFlowJson.flow[FlowMetaType.RECORD_DELETE] = this.recordDeletes
         }
+        this.mataFlowJson.flow[FlowMetaType.RECORD_DELETE] = this.recordDeletes
         break;
       case FlowMetaType.RECORD_LOOKUP:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -580,8 +580,8 @@ export class AutoFlow {
           data[metaType].forEach((record: RecordLookup) => {
             this.recordLookups.push(new RecordLookup(record))
           });
-          this.mataFlowJson.flow[FlowMetaType.RECORD_LOOKUP] = this.recordLookups
         }
+        this.mataFlowJson.flow[FlowMetaType.RECORD_LOOKUP] = this.recordLookups
         break;
       case FlowMetaType.RECORD_UPDATE:
         if (metaFieldType === MetaFieldType.ADD) {
@@ -594,8 +594,8 @@ export class AutoFlow {
           data[metaType].forEach((record: RecordUpdate) => {
             this.recordUpdates.push(new RecordUpdate(record))
           });
-          this.mataFlowJson.flow[FlowMetaType.RECORD_UPDATE] = this.recordUpdates
         }
+        this.mataFlowJson.flow[FlowMetaType.RECORD_UPDATE] = this.recordUpdates
         break;
       case IFlowResourceType.VARIABLE:
         this.flowVariables = data[metaType]

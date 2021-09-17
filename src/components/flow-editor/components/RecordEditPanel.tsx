@@ -56,7 +56,7 @@ export const RecordEditPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGr
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.loop</TextWidget>
+        <TextWidget>flow.extend.recordUpdate</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,7 +70,7 @@ export const RecordEditPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGr
           ))
         }
       </ul>
-      {<RecordUpdateModel metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordUpdateModel title={<TextWidget>flow.form.recordUpdate.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

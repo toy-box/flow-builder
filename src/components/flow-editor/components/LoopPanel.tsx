@@ -40,7 +40,7 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, c
       }
       setShowModel(false)
     },
-    [callbackFunc, node.node.id],
+    [callbackFunc, flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
     (type) => {
@@ -70,7 +70,7 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, c
           ))
         }
       </ul>
-      {<LoopModel loopData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<LoopModel title={<TextWidget>flow.form.loop.editTitle</TextWidget>} loopData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

@@ -14,7 +14,7 @@ import { TextWidget } from '../../widgets'
 export interface SortCollectionPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
-  title?: string
+  title?: string | JSX.Element
   metaFlowData?: FlowMetaParam
 }
 

@@ -14,7 +14,7 @@ import { useLocale } from '../../../hooks'
 export interface DecisionModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
-  title?: string
+  title?: string | JSX.Element
   decisionData?: FlowMetaParam
 }
 

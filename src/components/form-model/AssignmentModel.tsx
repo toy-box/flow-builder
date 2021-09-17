@@ -13,7 +13,7 @@ import { FlowMetaType, FlowMetaParam } from '../../flow/types'
 export interface AssignmentModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
-  title?: string
+  title?: string | JSX.Element
   assignmentData?: FlowMetaParam
 }
 

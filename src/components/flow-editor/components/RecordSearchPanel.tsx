@@ -56,7 +56,7 @@ export const RecordSearchPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.loop</TextWidget>
+        <TextWidget>flow.extend.recordLookup</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,7 +70,7 @@ export const RecordSearchPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
           ))
         }
       </ul>
-      {<RecordLookUpModel metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordLookUpModel title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

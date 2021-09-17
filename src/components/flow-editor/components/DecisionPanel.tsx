@@ -40,7 +40,7 @@ export const DecisionPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGrap
       }
       setShowModel(false)
     },
-    [callbackFunc, node.node.id],
+    [callbackFunc, flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
     (type) => {
@@ -51,7 +51,7 @@ export const DecisionPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGrap
       setMetaFlowData(metaData)
       setShowModel(true)
     },
-    [closeExtend],
+    [closeExtend, flowGraph.flowDecisions, node.node.id],
   )
   return (
     <div className={prefixCls}>
@@ -70,7 +70,7 @@ export const DecisionPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGrap
           ))
         }
       </ul>
-      {<DecisionModel decisionData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<DecisionModel title={<TextWidget>flow.form.decision.editTitle</TextWidget>} decisionData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

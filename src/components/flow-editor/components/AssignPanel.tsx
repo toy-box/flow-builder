@@ -56,7 +56,7 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph,
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.loop</TextWidget>
+        <TextWidget>flow.extend.assign</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,7 +70,7 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph,
           ))
         }
       </ul>
-      {<AssignmentModel assignmentData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<AssignmentModel title={<TextWidget>flow.form.assignment.editTitle</TextWidget>} assignmentData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }
