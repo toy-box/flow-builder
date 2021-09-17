@@ -70,7 +70,12 @@ export const CollectionSortPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, fl
           ))
         }
       </ul>
-      {<SortCollectionModel title={<TextWidget>flow.form.sortCollection.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<SortCollectionModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.sortCollection.editTitle</TextWidget>} 
+        metaFlowData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

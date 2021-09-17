@@ -10,7 +10,7 @@ export interface AssignmentModelPorps {
   metaSchema?: Toybox.MetaSchema.Types.IFieldMeta[] | MetaSchemaObj
   value?: string
   onChange: (value: string) => void
-  inputStyle?: CSSProperties
+  inputStyle?: CSSProperties,
 }
 
 export interface MetaSchemaObj {

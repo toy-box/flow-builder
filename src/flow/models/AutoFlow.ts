@@ -49,6 +49,7 @@ const showMetaTypes = [
 export enum MetaFieldType {
   EDIT = 'EDIT',
   ADD = 'ADD',
+  REMOVE = 'REMOVE',
   INIT = 'INIT',
 } 
 
@@ -731,7 +732,7 @@ export class AutoFlow {
         break;
       case FlowMetaType.DECISION:
       case FlowMetaType.SUSPEND:
-        this.setDecisions(flowData, loopBack, loopLastData, decisionEndId)
+        this.setDecisions(flowData, metaType, loopBack, loopLastData, decisionEndId)
         break;
       case FlowMetaType.LOOP:
         this.setLoops(flowData, loopBack, loopLastData, decisionEndId)
@@ -769,8 +770,19 @@ export class AutoFlow {
     })
   }
 
-  setDecisions(flowData: FlowMetaParam, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, decisionEndId?: string) {
+  setDecisions(flowData: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, decisionEndId?: string) {
     const endId = uid()
+    let componentName = undefined
+    switch (metaType) {
+      case FlowMetaType.DECISION:
+        componentName = 'DecisionNode'
+        break;
+      case FlowMetaType.SUSPEND:
+        componentName = 'SuspendNode'
+        break;
+    default:
+        break;
+    }
     const decisionEndTarget = [loopBackNode?.id ? loopBackNode.id :
       (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : (flowData?.defaultConnector?.targetReference || endId))]
     const decisions: NodeProps[] = [{
@@ -782,7 +794,7 @@ export class AutoFlow {
       height: STAND_SIZE,
       targets: [],
       label: flowData.id,
-      component: 'DecisionNode',
+      component: componentName,
       onClick: () => console.log('this is', flowData.id)
     }]
     const ids: string[] = []

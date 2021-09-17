@@ -1,7 +1,7 @@
 import React, { FC, useState, useCallback, useMemo } from 'react'
 import { useNode } from '@toy-box/flow-nodes'
 import { isBool } from '@toy-box/toybox-shared'
-import { AssignmentModel } from '../../form-model'
+import { SuspendModel } from '../../form-model'
 import { FlowMetaType, FlowMetaParam, OpartType } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { usePrefix } from '../../../hooks'
@@ -26,7 +26,7 @@ const MetaTypes = [
   },
 ]
 
-export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, closeExtend }) => {
+export const SuspendPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, closeExtend }) => {
   const prefixCls = usePrefix('-extend-panel')
   const node = useNode()
   const [showModel, setShowModel] = useState(false)
@@ -45,18 +45,18 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph,
   const onSubmit = useCallback(
     (type) => {
       closeExtend && closeExtend()
-      const flowAssignments = flowGraph.flowAssignments
+      const flowSuspends = flowGraph.flowSuspends
       const nodeId = node.node.id;
-      const metaData = flowAssignments.find((meta) => meta.id === nodeId);
+      const metaData = flowSuspends.find((meta) => meta.id === nodeId);
       setMetaFlowData(metaData)
       setShowModel(true)
     },
-    [closeExtend, flowGraph.flowAssignments, node.node.id],
+    [closeExtend, flowGraph.flowSuspends, node.node.id],
   )
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.assign</TextWidget>
+        <TextWidget>flow.extend.decision</TextWidget>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
@@ -70,10 +70,10 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph,
           ))
         }
       </ul>
-      {<AssignmentModel 
+      {<SuspendModel 
         flowGraph={flowGraph}
-        title={<TextWidget>flow.form.assignment.editTitle</TextWidget>} 
-        assignmentData={metaFlowData} 
+        title={<TextWidget>flow.form.suspend.editTitle</TextWidget>} 
+        metaFlowData={metaFlowData} 
         showModel={showModel} 
         callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>

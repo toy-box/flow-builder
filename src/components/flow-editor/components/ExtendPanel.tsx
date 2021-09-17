@@ -83,27 +83,27 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, flowGraph, clo
   const models = useMemo(() => {
     switch (flowMetaType) {
       case FlowMetaType.ASSIGNMENT:
-        return <AssignmentModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <AssignmentModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.DECISION:
-        return <DecisionModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <DecisionModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.SUSPEND:
-        return <SuspendModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <SuspendModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.LOOP:
-        return <LoopModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <LoopModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
-        return <SortCollectionModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <SortCollectionModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.RECORD_CREATE:
-        return <RecordCreateModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <RecordCreateModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.RECORD_UPDATE:
-        return <RecordUpdateModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <RecordUpdateModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.RECORD_LOOKUP:
-        return <RecordLookUpModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <RecordLookUpModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.RECORD_DELETE:
-        return <RecordRemoveModel showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
+        return <RecordRemoveModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       default:
         return null
     }
-  }, [assignmentCallBack, flowMetaType, showModel])
+  }, [assignmentCallBack, flowGraph, flowMetaType, showModel])
   return (
     <div className={prefixCls}>
       <div className={`${prefixCls}-title`}>

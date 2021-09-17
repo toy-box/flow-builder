@@ -70,7 +70,12 @@ export const RecordEditPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGr
           ))
         }
       </ul>
-      {<RecordUpdateModel title={<TextWidget>flow.form.recordUpdate.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordUpdateModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.recordUpdate.editTitle</TextWidget>} 
+        metaFlowData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

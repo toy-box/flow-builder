@@ -70,7 +70,12 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, c
           ))
         }
       </ul>
-      {<LoopModel title={<TextWidget>flow.form.loop.editTitle</TextWidget>} loopData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<LoopModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.loop.editTitle</TextWidget>} 
+        loopData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

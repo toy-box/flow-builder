@@ -8,6 +8,9 @@ import { FormilyFilter } from '../formily/components/index'
 import './index.less'
 import { fieldMetaStore } from '../../store'
 import { TextWidget } from '../widgets'
+import { AutoFlow } from '../../flow/models/AutoFlow'
+import { RepeatErrorMessage } from './RepeatErrorMessage'
+import { useLocale } from '../../hooks'
 
 import { FlowMetaType, FlowMetaParam } from '../../flow/types'
 export interface AssignmentModelPorps {
@@ -15,15 +18,18 @@ export interface AssignmentModelPorps {
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string | JSX.Element
   assignmentData?: FlowMetaParam
+  flowGraph: AutoFlow,
 }
 
 export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.assignment.addTitle</TextWidget>,
-  assignmentData
+  assignmentData,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  const repeatName = useLocale('flow.form.validator.repeatName')
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -124,6 +130,18 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
+            'x-validator': [{
+              triggerType: 'onBlur',
+              required: true,
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
+            }, {
+              triggerType: 'onBlur',
+              validator: (value: string) => {
+                if (!value) return null
+                const message = new RepeatErrorMessage(flowGraph, value, assignmentData, repeatName)
+                return message.errorMessage
+              }
+            }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },

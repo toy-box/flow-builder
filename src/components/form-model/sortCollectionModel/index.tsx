@@ -10,12 +10,16 @@ import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/ty
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
+import { useLocale } from '../../../hooks'
+import { AutoFlow } from '../../../flow/models/AutoFlow'
+import { RepeatErrorMessage } from '../RepeatErrorMessage'
 
 export interface SortCollectionPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string | JSX.Element
   metaFlowData?: FlowMetaParam
+  flowGraph: AutoFlow,
 }
 
 interface sortOption {
@@ -28,9 +32,11 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.sortCollection.addTitle</TextWidget>,
-  metaFlowData
+  metaFlowData,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel)
+  const repeatName = useLocale('flow.form.validator.repeatName')
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -196,10 +202,18 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
-            'x-validator': {
+            'x-validator': [{
+              triggerType: 'onBlur',
               required: true,
-              message: <TextWidget>flow.form.validator.value</TextWidget>
-            },
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
+            }, {
+              triggerType: 'onBlur',
+              validator: (value: string) => {
+                if (!value) return null
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
+                return message.errorMessage
+              }
+            }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },

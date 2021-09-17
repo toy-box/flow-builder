@@ -71,7 +71,12 @@ export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
           ))
         }
       </ul>
-      {<RecordCreateModel title={<TextWidget>flow.form.recordCreate.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordCreateModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.recordCreate.editTitle</TextWidget>} 
+        metaFlowData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

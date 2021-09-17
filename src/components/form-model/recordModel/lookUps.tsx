@@ -13,12 +13,15 @@ import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
+import { AutoFlow } from '../../../flow/models/AutoFlow'
+import { RepeatErrorMessage } from '../RepeatErrorMessage'
 
 export interface RecordLookUpModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string | JSX.Element
   metaFlowData?: FlowMetaParam
+  flowGraph: AutoFlow,
 }
 
 const TextTemplate = observer((props: any) => {
@@ -29,11 +32,13 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.recordLookUp.addTitle</TextWidget>,
-  metaFlowData
+  metaFlowData,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const filterName = useLocale('flow.form.recordLookUp.filter')
   const record = useLocale('flow.form.recordLookUp.record')
+  const repeatName = useLocale('flow.form.validator.repeatName')
 
   
   useEffect(() => {
@@ -233,10 +238,18 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
-            'x-validator': {
+            'x-validator': [{
+              triggerType: 'onBlur',
               required: true,
-              message: <TextWidget>flow.form.validator.value</TextWidget>
-            },
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
+            }, {
+              triggerType: 'onBlur',
+              validator: (value: string) => {
+                if (!value) return null
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
+                return message.errorMessage
+              }
+            }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },

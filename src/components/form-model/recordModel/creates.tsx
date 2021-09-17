@@ -11,24 +11,29 @@ import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/ty
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
+import { AutoFlow } from '../../../flow/models/AutoFlow'
+import { RepeatErrorMessage } from '../RepeatErrorMessage'
 
 export interface RecordCreateModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string | JSX.Element
   metaFlowData?: FlowMetaParam
+  flowGraph: AutoFlow,
 }
 
 export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.recordCreate.addTitle</TextWidget>,
-  metaFlowData
+  metaFlowData,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const setName = useLocale('flow.form.recordCreate.setting')
   const setField = useLocale('flow.form.recordCreate.setField')
   const saveId = useLocale('flow.form.recordCreate.saveId')
+  const repeatName = useLocale('flow.form.validator.repeatName')
 
   
   useEffect(() => {
@@ -132,10 +137,18 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
-            'x-validator': {
+            'x-validator': [{
+              triggerType: 'onBlur',
               required: true,
-              message: <TextWidget>flow.form.validator.value</TextWidget>
-            },
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
+            }, {
+              triggerType: 'onBlur',
+              validator: (value: string) => {
+                if (!value) return null
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
+                return message.errorMessage
+              }
+            }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },

@@ -70,7 +70,12 @@ export const RecordSearchPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
           ))
         }
       </ul>
-      {<RecordLookUpModel title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordLookUpModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
+        metaFlowData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

@@ -15,6 +15,7 @@ import { RecordCreatePanel } from './RecordCreatePanel';
 import { RecordDeletePanel } from './RecordDeletePanel';
 import { RecordEditPanel } from './RecordEditPanel';
 import { RecordSearchPanel } from './RecordSearchPanel';
+import { SuspendPanel } from './SuspendPanel';
 
 const STAND_SIZE = 56;
 
@@ -45,6 +46,7 @@ export const AntvCanvas = observer(() => {
             EndNode: connect(EndNode),
             AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+            SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
@@ -85,6 +87,7 @@ export const AntvCanvas = observer(() => {
           EndNode: connect(EndNode),
           AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),

@@ -70,7 +70,12 @@ export const DecisionPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGrap
           ))
         }
       </ul>
-      {<DecisionModel title={<TextWidget>flow.form.decision.editTitle</TextWidget>} decisionData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<DecisionModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.decision.editTitle</TextWidget>} 
+        decisionData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }

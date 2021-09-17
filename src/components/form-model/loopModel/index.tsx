@@ -8,21 +8,27 @@ import { IFlowResourceType } from '../../../flow/types'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
+import { useLocale } from '../../../hooks'
+import { AutoFlow } from '../../../flow/models/AutoFlow'
+import { RepeatErrorMessage } from '../RepeatErrorMessage'
 
 export interface LoopModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string | JSX.Element
   loopData?: FlowMetaParam
+  flowGraph: AutoFlow,
 }
 
 export const LoopModel: FC<LoopModelPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.loop.addTitle</TextWidget>,
-  loopData
+  loopData,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  const repeatName = useLocale('flow.form.validator.repeatName')
 
   
   useEffect(() => {
@@ -103,10 +109,18 @@ export const LoopModel: FC<LoopModelPorps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
-            'x-validator': {
+            'x-validator': [{
+              triggerType: 'onBlur',
               required: true,
-              message: <TextWidget>flow.form.validator.value</TextWidget>
-            },
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
+            }, {
+              triggerType: 'onBlur',
+              validator: (value: string) => {
+                if (!value) return null
+                const message = new RepeatErrorMessage(flowGraph, value, loopData, repeatName)
+                return message.errorMessage
+              }
+            }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },

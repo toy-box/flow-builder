@@ -10,22 +10,27 @@ import { uid } from '../../../utils';
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
+import { AutoFlow } from '../../../flow/models/AutoFlow'
+import { RepeatErrorMessage } from '../RepeatErrorMessage'
 
 export interface DecisionModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
   title?: string | JSX.Element
   decisionData?: FlowMetaParam
+  flowGraph: AutoFlow,
 }
 
 export const DecisionModel: FC<DecisionModelPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.decision.addTitle</TextWidget>,
-  decisionData
+  decisionData,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const [defaultConnectorName, setDefaultConnectorName] = useState(useLocale('flow.form.decision.defaultConnectorName'))
+  const repeatName = useLocale('flow.form.validator.repeatName')
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -152,6 +157,18 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
+            'x-validator': [{
+              triggerType: 'onBlur',
+              required: true,
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
+            }, {
+              triggerType: 'onBlur',
+              validator: (value: string) => {
+                if (!value) return null
+                const message = new RepeatErrorMessage(flowGraph, value, decisionData, repeatName)
+                return message.errorMessage
+              }
+            }],
             'x-decorator': 'FormItem',
             'x-component': 'Input',
           },

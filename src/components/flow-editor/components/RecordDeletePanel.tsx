@@ -70,7 +70,12 @@ export const RecordDeletePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
           ))
         }
       </ul>
-      {<RecordRemoveModel title={<TextWidget>flow.form.recordRemove.editTitle</TextWidget>} metaFlowData={metaFlowData} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {<RecordRemoveModel 
+        flowGraph={flowGraph}
+        title={<TextWidget>flow.form.recordRemove.editTitle</TextWidget>} 
+        metaFlowData={metaFlowData} 
+        showModel={showModel} 
+        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
     </div>
   )
 }
