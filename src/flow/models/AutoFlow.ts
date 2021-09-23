@@ -7,7 +7,7 @@ import {
 import { Flow, FlowNodeType } from '@toy-box/flow-graph';
 import { IFieldMeta, IFieldGroupMeta, MetaValueType } from '@toy-box/meta-schema';
 import { isArr } from '@formily/shared';
-import { isNum } from '@toy-box/toybox-shared';
+import { isNum, isObj } from '@toy-box/toybox-shared';
 import update from 'immutability-helper'
 import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
 import { uid } from '../../utils';
@@ -209,6 +209,57 @@ export class AutoFlow {
     })
   }
 
+  removeFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
+    this.flowGraph = new Flow()
+    let targetId: string | null = null
+    switch (metaType) {
+      case FlowMetaType.DECISION:
+      case FlowMetaType.SUSPEND:
+        targetId = flowData.connector?.targetReference || null
+        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
+        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
+        break;
+      case FlowMetaType.LOOP:
+        targetId = flowData.defaultConnector?.targetReference || null
+        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
+        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
+        break;
+      case FlowMetaType.ASSIGNMENT:
+      case FlowMetaType.SORT_COLLECTION_PROCESSOR:
+      case FlowMetaType.RECORD_CREATE:
+      case FlowMetaType.RECORD_DELETE:
+      case FlowMetaType.RECORD_LOOKUP:
+      case FlowMetaType.RECORD_UPDATE:
+        targetId = flowData.connector?.targetReference || null
+        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
+        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
+        break;
+      default:
+        break;
+    }
+    this.metaFlowDatas.forEach((meta) => {
+      if (meta.connector?.targetReference === nodeId) {
+        meta.connector.targetReference = targetId
+        this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
+      } else if (meta.defaultConnector?.targetReference === nodeId) {
+        meta.defaultConnector.targetReference = targetId
+        this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
+      } else if (meta.nextValueConnector?.targetReference === nodeId) {
+        meta.nextValueConnector.targetReference = targetId
+        this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
+      }
+    })
+    this.flowNodes = []
+    this.setFlowData(this.metaFlowDatas)
+    this.flowNodes.push({
+      id: this.flowEndId,
+      type: 'end',
+      width: STAND_SIZE,
+      height: STAND_SIZE,
+      component: 'EndNode',
+    })
+  }
+
   updateInitialMeta = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
     console.log('111112323232', nodeId, metaType)
     const data = flowData
@@ -273,6 +324,11 @@ export class AutoFlow {
                 flowType: metaType
               })
             })
+          } else {
+            this.metaFlowDatas.push({
+              ...flow[key],
+              flowType: metaType
+            })
           }
         }
       }
@@ -287,7 +343,16 @@ export class AutoFlow {
       })
       const cycleBeginOfBackNode = this.flowNodes.find((node) => node.loopBackTarget === flowNode?.id)
       const cycleBeginOfEndNode = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
-      const flowIdx = flow[meta.flowType].findIndex((flowMeta: FlowMetaParam) => flowMeta.id === meta.id)
+      if (isObj(flow[meta.flowType])) {
+        this.updataCurrentFlowData(meta, data, metaType)
+        const currentFlow = {
+          ...flow[meta.flowType]
+        }
+        currentFlow.connector.targetReference = data.id
+        this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+        return meta
+      }
+      const flowIdx = flow[meta.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === meta.id)
       if (forkBeginOfEndNode?.id === meta.id) {
         this.updataCurrentFlowData(meta, data, metaType)
         if (flowIdx > -1) {
@@ -369,7 +434,7 @@ export class AutoFlow {
           this.updataCurrentFlowData(meta, data, metaType)
           const node = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
           const mTData = this.metaFlowDatas.find((mt) => mt.id === node?.id)
-          const mtIdx = mTData?.flowType && flow[mTData?.flowType].findIndex((flowMeta: FlowMetaParam) => flowMeta.id === mTData?.id)
+          const mtIdx = mTData?.flowType && flow[mTData?.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === mTData?.id)
           if (mTData && mtIdx && mTData.flowType === FlowMetaType.LOOP) {
             const currentFlow = {
               ...flow[mTData.flowType][mtIdx]
@@ -479,6 +544,8 @@ export class AutoFlow {
           this.flowAssignments.forEach((assignment) => {
             if (assignment.id === nodeId) assignment.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.flowAssignments = this.flowAssignments.filter((assignment) => assignment.id !== nodeId)
         } else {
           data[metaType].forEach((assignment: FlowAssignment) => {
             this.flowAssignments.push(new FlowAssignment(assignment))
@@ -493,6 +560,8 @@ export class AutoFlow {
           this.flowDecisions.forEach((decision) => {
             if (decision.id === nodeId) decision.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.flowDecisions = this.flowDecisions.filter((decision) => decision.id !== nodeId)
         } else {
           data[metaType].forEach((decision: FlowDecision) => {
             this.flowDecisions.push(new FlowDecision(decision))
@@ -507,6 +576,8 @@ export class AutoFlow {
           this.flowSuspends.forEach((suspend) => {
             if (suspend.id === nodeId) suspend.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.flowSuspends = this.flowSuspends.filter((suspend) => suspend.id !== nodeId)
         } else {
           data[metaType].forEach((suspend: FlowSuspend) => {
             this.flowSuspends.push(new FlowSuspend(suspend))
@@ -521,6 +592,8 @@ export class AutoFlow {
           this.flowLoops.forEach((loop) => {
             if (loop.id === nodeId) loop.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.flowLoops = this.flowLoops.filter((loop) => loop.id !== nodeId)
         } else {
           data[metaType].forEach((loop: FlowLoop) => {
             this.flowLoops.push(new FlowLoop(loop))
@@ -535,6 +608,8 @@ export class AutoFlow {
           this.flowSortCollections.forEach((sortCollention) => {
             if (sortCollention.id === nodeId) sortCollention.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.flowSortCollections = this.flowSortCollections.filter((sortCollention) => sortCollention.id !== nodeId)
         } else {
           data[metaType].forEach((sortCollention: FlowSortCollectionProcessor) => {
             this.flowSortCollections.push(new FlowSortCollectionProcessor(sortCollention))
@@ -549,6 +624,8 @@ export class AutoFlow {
           this.recordCreates.forEach((record) => {
             if (record.id === nodeId) record.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.recordCreates = this.recordCreates.filter((record) => record.id !== nodeId)
         } else {
           data[metaType].forEach((record: RecordCreate) => {
             this.recordCreates.push(new RecordCreate(record))
@@ -563,6 +640,8 @@ export class AutoFlow {
           this.recordDeletes.forEach((record) => {
             if (record.id === nodeId) record.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.recordDeletes = this.recordDeletes.filter((record) => record.id !== nodeId)
         } else {
           data[metaType].forEach((record: RecordDelete) => {
             this.recordDeletes.push(new RecordDelete(record))
@@ -577,6 +656,8 @@ export class AutoFlow {
           this.recordLookups.forEach((record) => {
             if (record.id === nodeId) record.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.recordLookups = this.recordLookups.filter((record) => record.id !== nodeId)
         } else {
           data[metaType].forEach((record: RecordLookup) => {
             this.recordLookups.push(new RecordLookup(record))
@@ -591,6 +672,8 @@ export class AutoFlow {
           this.recordUpdates.forEach((record) => {
             if (record.id === nodeId) record.onEdit(data)
           })
+        } else if (metaFieldType === MetaFieldType.REMOVE) {
+          this.recordUpdates = this.recordUpdates.filter((record) => record.id !== nodeId)
         } else {
           data[metaType].forEach((record: RecordUpdate) => {
             this.recordUpdates.push(new RecordUpdate(record))
@@ -677,8 +760,8 @@ export class AutoFlow {
       flowDatas.forEach((flowData, index) => {
         if (flowData.flowType === FlowMetaType.START) {
           this.initFlowNodes(flowData.flowType, flowData)
-          flowDatas.splice(index, 1)
-          this.setFlowData(flowDatas, flowData);
+          const filterFlowDatas = flowDatas.filter(data => data.id !== flowData.id)
+          this.setFlowData(filterFlowDatas, flowData);
         } 
       })
     } else {

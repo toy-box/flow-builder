@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback } from 'react';
+import React, { FC, useState, useCallback, useEffect } from 'react';
 import update from 'immutability-helper'
 import classnames from 'classnames'
 import { ISchema  } from '@formily/json-schema'
@@ -6,7 +6,6 @@ import { Button } from 'antd';
 import {
   PlusOutlined,
 } from '@ant-design/icons';
-
 import { IRuleItem } from '../../../form-model/interface'
 import './index.less'
 import { useForm, observer, useField, useFieldSchema, RecursionField } from '@formily/react'
@@ -29,8 +28,8 @@ const isOperationComponent = (schema: ISchema) => {
 }
 
 export const BranchArrays: FC = observer((props: any) => {
-  const field = useField<Formily.Core.Models.ArrayField>()
   const form = useForm()
+  const field = useField<Formily.Core.Models.ArrayField>()
   const schema = useFieldSchema()
   const dataSource = Array.isArray(field.value) ? field.value : []
   const [selectIndex, setSelectIndex] = useState(0)
@@ -74,9 +73,9 @@ export const BranchArrays: FC = observer((props: any) => {
 
   const handleRemove = useCallback(
     () => {
-      form.setFieldState('rules', (state) => {
-        state.value = update(state.value, { $splice: [[selectIndex, 1]] })
-      })
+      // form.setFieldState('rules', (state) => {
+      //   state.value = update(state.value, { $splice: [[selectIndex, 1]] })
+      // })
       field.remove(selectIndex)
       setSelectIndex(selectIndex - 1 < 0 ? selectIndex : selectIndex - 1)
     },[field, form, selectIndex]
@@ -139,11 +138,11 @@ export const BranchArrays: FC = observer((props: any) => {
   }
 
   return (
-    <ArrayBase>
+    // <ArrayBase>
     <div>
       {renderContent()}
     </div>
-    </ArrayBase>
+    // </ArrayBase>
   )
 })
 

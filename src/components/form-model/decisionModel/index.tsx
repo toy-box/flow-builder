@@ -4,7 +4,7 @@ import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { isObj } from '@formily/shared';
+import { clone, isObj } from '@formily/shared';
 import { BranchArrays, FormilyFilter } from '../../formily/components/index'
 import { uid } from '../../../utils';
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
@@ -91,7 +91,8 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   const form = createForm()
 
   if (decisionData) {
-    form.setValues(decisionData)
+    const val = clone(decisionData)
+    form.setValues(val)
   } else {
     form.setValues(
       {

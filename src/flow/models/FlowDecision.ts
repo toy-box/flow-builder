@@ -30,7 +30,7 @@ export class FlowDecision {
       description: observable.ref,
       connector: observable.deep,
       defaultConnector: observable.deep,
-      rules: observable.shallow,
+      rules: observable.deep,
       onEdit: action
     })
   }

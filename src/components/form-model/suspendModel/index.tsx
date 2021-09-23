@@ -3,6 +3,7 @@ import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup, Radio, NumberPicker } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
+import { clone } from '@toy-box/toybox-shared';
 import { BranchArrays, ResourceSelect } from '../../formily/components/index'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { uid } from '../../../utils';
@@ -105,24 +106,23 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   
   const form = createForm()
 
-  useEffect(() => {
-    if (metaFlowData) {
-      form.setValues(metaFlowData)
-    } else {
-      form.setValues(
-        {
-          rules: [{
-            name: '',
-            id: uid(),
-            criteria: {
-              conditions: [{}],
-            },
-            description: '',
-          }]
-        }
-      )
-    }
-  }, [form, metaFlowData])
+  if (metaFlowData) {
+    const val = clone(metaFlowData)
+    form.setValues(val)
+  } else {
+    form.setValues(
+      {
+        rules: [{
+          name: '',
+          id: uid(),
+          criteria: {
+            conditions: [{}],
+          },
+          description: '',
+        }]
+      }
+    )
+  }
 
   const myReaction = useCallback((bool, field) => {
     const val = form.values
