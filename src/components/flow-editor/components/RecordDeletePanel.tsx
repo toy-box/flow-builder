@@ -48,8 +48,12 @@ export const RecordDeletePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
       const recordDeletes = flowGraph.recordDeletes
       const nodeId = node.node.id;
       const metaData = recordDeletes.find((meta) => meta.id === nodeId);
-      setMetaFlowData(metaData)
-      setShowModel(true)
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.RECORD_DELETE, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
     },
     [closeExtend, flowGraph.recordDeletes, node.node.id],
   )

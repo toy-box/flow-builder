@@ -48,8 +48,12 @@ export const CollectionSortPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, fl
       const flowSortCollections = flowGraph.flowSortCollections
       const nodeId = node.node.id;
       const metaData = flowSortCollections.find((meta) => meta.id === nodeId);
-      setMetaFlowData(metaData)
-      setShowModel(true)
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.SORT_COLLECTION_PROCESSOR, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
     },
     [closeExtend, flowGraph.flowSortCollections, node.node.id],
   )

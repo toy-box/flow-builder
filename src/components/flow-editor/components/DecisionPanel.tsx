@@ -48,8 +48,12 @@ export const DecisionPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGrap
       const flowDecisions = flowGraph.flowDecisions
       const nodeId = node.node.id;
       const metaData = flowDecisions.find((meta) => meta.id === nodeId);
-      setMetaFlowData(metaData)
-      setShowModel(true)
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.DECISION, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
     },
     [closeExtend, flowGraph.flowDecisions, node.node.id],
   )

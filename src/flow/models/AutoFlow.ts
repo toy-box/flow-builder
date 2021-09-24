@@ -210,19 +210,11 @@ export class AutoFlow {
   }
 
   removeFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
-    this.flowGraph = new Flow()
+    this.removeFlowDataFunc(nodeId, metaType, flowData)
     let targetId: string | null = null
     switch (metaType) {
-      case FlowMetaType.DECISION:
-      case FlowMetaType.SUSPEND:
-        targetId = flowData.connector?.targetReference || null
-        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
-        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
-        break;
       case FlowMetaType.LOOP:
         targetId = flowData.defaultConnector?.targetReference || null
-        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
-        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
         break;
       case FlowMetaType.ASSIGNMENT:
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
@@ -231,8 +223,6 @@ export class AutoFlow {
       case FlowMetaType.RECORD_LOOKUP:
       case FlowMetaType.RECORD_UPDATE:
         targetId = flowData.connector?.targetReference || null
-        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
-        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
         break;
       default:
         break;
@@ -245,10 +235,11 @@ export class AutoFlow {
         meta.defaultConnector.targetReference = targetId
         this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
       } else if (meta.nextValueConnector?.targetReference === nodeId) {
-        meta.nextValueConnector.targetReference = targetId
+        meta.nextValueConnector.targetReference = meta.id !== targetId ? targetId : null
         this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
       }
     })
+    this.flowGraph = new Flow()
     this.flowNodes = []
     this.setFlowData(this.metaFlowDatas)
     this.flowNodes.push({
@@ -258,6 +249,54 @@ export class AutoFlow {
       height: STAND_SIZE,
       component: 'EndNode',
     })
+  }
+
+  removeFlowDataFunc = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam, flag?: boolean) => {
+    switch (metaType) {
+      case FlowMetaType.DECISION:
+      case FlowMetaType.SUSPEND:
+        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
+        const targetReferenceId = flowData.defaultConnector?.targetReference
+        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
+        const currnetMeta = this.metaFlowDatas.find((meta) => meta.id === targetReferenceId)
+        flowData.rules?.forEach((rule) => {
+          const currnetRuleMeta = this.metaFlowDatas.find((meta) => meta.id === rule.connector?.targetReference)
+          if (currnetRuleMeta) this.removeFlowDataFunc(currnetRuleMeta?.id, currnetRuleMeta.flowType, currnetRuleMeta, true)
+        })
+        if (currnetMeta) this.removeFlowDataFunc(currnetMeta?.id, currnetMeta.flowType, currnetMeta, true)
+        break;
+      case FlowMetaType.LOOP:
+        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
+        const nextTargetId = flowData.nextValueConnector?.targetReference
+        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
+        const nextMeta = this.metaFlowDatas.find((meta) => meta.id === nextTargetId)
+        if (flowData.defaultConnector?.targetReference && flag) {
+          const currentDefault = this.metaFlowDatas.find((meta) => meta.id === flowData.defaultConnector?.targetReference)
+          if (currentDefault) this.removeFlowDataFunc(currentDefault?.id, currentDefault.flowType, currentDefault, true)
+        }
+        if (nextMeta) {
+          this.removeFlowDataFunc(nextMeta?.id, nextMeta.flowType, nextMeta, true)
+          const defaultTargetId = nextMeta.defaultConnector?.targetReference
+          const defaultMeta = this.metaFlowDatas.find((meta) => meta.id === defaultTargetId)
+          if (defaultMeta) this.removeFlowDataFunc(defaultMeta?.id, defaultMeta.flowType, defaultMeta, true)
+        }
+        break;
+      case FlowMetaType.ASSIGNMENT:
+      case FlowMetaType.SORT_COLLECTION_PROCESSOR:
+      case FlowMetaType.RECORD_CREATE:
+      case FlowMetaType.RECORD_DELETE:
+      case FlowMetaType.RECORD_LOOKUP:
+      case FlowMetaType.RECORD_UPDATE:
+        this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
+        this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
+        if (flowData.connector?.targetReference && flag) {
+          const baseMeta = this.metaFlowDatas.find((meta) => meta.id === flowData.connector?.targetReference)
+          if (baseMeta) this.removeFlowDataFunc(baseMeta?.id, baseMeta.flowType, baseMeta, true)
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   updateInitialMeta = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {

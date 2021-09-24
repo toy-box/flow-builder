@@ -48,8 +48,12 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, c
       const flowLoops = flowGraph.flowLoops
       const nodeId = node.node.id;
       const metaData = flowLoops.find((meta) => meta.id === nodeId);
-      setMetaFlowData(metaData)
-      setShowModel(true)
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.LOOP, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
     },
     [closeExtend, flowGraph.flowLoops, node.node.id],
   )

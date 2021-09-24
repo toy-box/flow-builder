@@ -48,9 +48,13 @@ export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
       const recordCreates = flowGraph.recordCreates
       const nodeId = node.node.id;
       const metaData = recordCreates.find((meta) => meta.id === nodeId);
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.RECORD_CREATE, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
       console.log(metaData, 'metaData');
-      setMetaFlowData(metaData)
-      setShowModel(true)
     },
     [closeExtend, flowGraph.recordCreates, node.node.id],
   )

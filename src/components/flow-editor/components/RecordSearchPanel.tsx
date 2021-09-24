@@ -48,8 +48,12 @@ export const RecordSearchPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
       const recordLookups = flowGraph.recordLookups
       const nodeId = node.node.id;
       const metaData = recordLookups.find((meta) => meta.id === nodeId);
-      setMetaFlowData(metaData)
-      setShowModel(true)
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.RECORD_LOOKUP, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
     },
     [closeExtend, flowGraph.recordLookups, node.node.id],
   )

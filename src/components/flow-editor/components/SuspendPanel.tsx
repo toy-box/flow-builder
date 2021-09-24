@@ -48,8 +48,12 @@ export const SuspendPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph
       const flowSuspends = flowGraph.flowSuspends
       const nodeId = node.node.id;
       const metaData = flowSuspends.find((meta) => meta.id === nodeId);
-      setMetaFlowData(metaData)
-      setShowModel(true)
+      if (type === OpartType.REMOVE && metaData) {
+        flowGraph.removeFlowData(nodeId, FlowMetaType.SUSPEND, metaData)
+      } else {
+        setMetaFlowData(metaData)
+        setShowModel(true)
+      }
     },
     [closeExtend, flowGraph.flowSuspends, node.node.id],
   )
