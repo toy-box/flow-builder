@@ -11,7 +11,7 @@ import { useLocale } from '../../../../hooks'
 const { OptGroup, Option } = Select
 
 export const ResourceSelect: FC = observer((props: any) => {
-  const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
+  const { registers } = fieldMetaStore.fieldMetaStore
 
   const form = useForm()
   const formilyField = useField() as any
@@ -56,7 +56,7 @@ export const ResourceSelect: FC = observer((props: any) => {
       })
       return options
     }
-    const resourceFieldMetas = fieldMetas as any[]
+    const resourceFieldMetas = props.flowGraph.fieldMetas as any[]
     let metas = resourceFieldMetas;
     if (isArr(props.flowJsonTypes)) {
       metas = []
@@ -98,7 +98,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         }
       }
     })
-  }, [fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers])
+  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers])
 
   const optionRender = useMemo(() => {
     return metaOptions?.map((option: any) =>
@@ -129,7 +129,8 @@ export const ResourceSelect: FC = observer((props: any) => {
   return (
     <div>
       {!props.isHiddenResourceBtn && <ResourceCreate 
-        fieldMetas={fieldMetas as any[]}
+        fieldMetas={props.flowGraph.fieldMetas as any[]}
+        flowGraph={props.flowGraph}
       />}
       <Select
         placeholder={props.placeholder || useLocale('flow.form.placeholder.resourceSelect')}

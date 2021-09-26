@@ -275,6 +275,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-component-props': {
               isHiddenResourceBtn: true,
               mataSource: 'metaData',
+              flowGraph,
             },
           },
           web: {
@@ -296,10 +297,10 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               gridSpan: 2
             },
             'x-component-props': {
-              paramKey: 'criteria.conditions',
               reactionKey: 'registerId',
               mataSource: 'metaData',
               specialMode: true,
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['registerId'],
@@ -364,6 +365,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               isHiddenResourceBtn: true,
               mataSource: 'metaData',
               reactionKey: 'registerId',
+              flowGraph,
             },
           },
           getFirstRecordOnly: {
@@ -495,7 +497,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                 value: IFlowResourceType.VARIABLE,
                 label: <TextWidget>flow.form.recordLookUp.outputReferenceLabel</TextWidget>,
                 children: [MetaValueType.OBJECT, MetaValueType.OBJECT_ID]
-              }]
+              }],
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['address'],
@@ -574,6 +577,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               specialMode: false,
               reactionKey: 'registerId',
               mataSource: 'metaData',
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['address'],

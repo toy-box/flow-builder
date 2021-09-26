@@ -62,7 +62,6 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
         limit: value.limitFlag === 'all' ? null : value.limit,
         sortOptions: value.sortOptions
       }
-      console.log(paramData);
       setIsModalVisible(false);
       callbackFunc(paramData, FlowMetaType.SORT_COLLECTION_PROCESSOR)
     }).catch((rejected) => {
@@ -99,18 +98,6 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
             sortOrder: 'asc'
           }]
         })
-        form.setFieldState('sortOptions[0].sortField', (state) => {
-          const value = isRecord(field.value)?.value
-          state.display = value === IFlowResourceType.VARIABLE_ARRAY_RECORD ? 'visible' : 'none'
-        })
-        form.setFieldState('sortOptions[0].remove', (state) => {
-          const value = isRecord(field.value)?.value
-          state.display = value === IFlowResourceType.VARIABLE_ARRAY_RECORD ? 'visible' : 'none'
-        })
-        form.setFieldState('sortOptions.addition', (state) => {
-          const value = isRecord(field.value)?.value
-          state.display = value === IFlowResourceType.VARIABLE_ARRAY_RECORD ? 'visible' : 'none'
-        })
       })
       onFieldValueChange('limitFlag', (field) => {
         form.setFieldState('limit', (state) => {
@@ -121,38 +108,43 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     }
   })
 
-  useEffect(() => {
-    if (metaFlowData) {
-      form.setValues(metaFlowData)
-    } else {
-      form.setValues({
-        sortOptions: []
-      })
-    }
-  }, [form, metaFlowData])
-
-  const isRecord = useCallback((value) => {
-    const resourceFieldMetas = fieldMetaStore.fieldMetaStore.fieldMetas as any[]
-    const meta = resourceFieldMetas.find((metaData: any) => {
-      if (value) {
-        const idx = metaData.children.findIndex((data: any) => data.key === value)
-        return idx > -1
-      }
-      return false
+  if (metaFlowData) {
+    form.setValues({
+      id: metaFlowData.id,
+      name: metaFlowData.name,
+      connector: {
+        targetReference: metaFlowData?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
+      },
+      collectionReference: metaFlowData.collectionReference,
+      limitFlag: metaFlowData.limit ? 'count' : 'all',
+      limit: metaFlowData.limit,
+      sortOptions: metaFlowData.sortOptions
     })
-    return meta
-  }, [])
+  } else {
+    form.setValues({
+      sortOptions: []
+    })
+  }
 
-  const myReaction = useCallback((field) => {
-    const flowType = field.query('collectionReference').get('value')
-    if (!flowType) return []
-    const resourceFieldMetas = fieldMetaStore.fieldMetaStore.fieldMetas as any[]
+  const isRecord = useCallback((flowType) => {
+    const resourceFieldMetas = flowGraph.fieldMetas as any[]
     let refObjectId: string = ''
     resourceFieldMetas.some((metaData: any) => {
       const idx = metaData.children.findIndex((data: any) => data.key === flowType)
       if (idx > -1) refObjectId = metaData.children[idx].refObjectId
       return idx > -1
     })
+    return refObjectId
+  }, [])
+
+  const myReaction = useCallback((field) => {
+    const flowType = field.query('collectionReference').get('value')
+    if (!flowType) return []
+    const refObjectId = isRecord(flowType)
+    field.display = refObjectId ? 'visible' : 'none'
     const registers = fieldMetaStore.fieldMetaStore.registers
     let registerOps: IFieldOption[] = []
     registers.some((re) => {
@@ -176,6 +168,20 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     })
     field.dataSource = registerOps
   }, [form.values])
+
+  const removeReaction = useCallback((field) => {
+    const flowType = field.query('collectionReference').get('value')
+    if (!flowType) return []
+    const refObjectId = isRecord(flowType)
+    field.display = refObjectId ? 'visible' : 'none'
+  }, [])
+
+  const addBtnReaction = useCallback((field) => {
+    const flowType = field.query('collectionReference').get('value')
+    if (!flowType) return []
+    const refObjectId = isRecord(flowType)
+    field.display = refObjectId ? 'visible' : 'none'
+  }, [])
 
   const schema = {
     type: 'object',
@@ -243,7 +249,8 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
                 value: IFlowResourceType.VARIABLE_ARRAY
               }, {
                 value: IFlowResourceType.VARIABLE_ARRAY_RECORD
-              }]
+              }],
+              flowGraph,
             },
           },
           web: {
@@ -338,6 +345,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
                           type: 'void',
                           'x-decorator': 'FormItem',
                           'x-component': 'ArrayItems.Remove',
+                          "x-reactions": removeReaction
                         },
                       },
                     },
@@ -350,6 +358,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
                 type: 'void',
                 title: <TextWidget>flow.form.sortCollection.addSortItem</TextWidget>,
                 'x-component': 'ArrayItems.Addition',
+                "x-reactions": addBtnReaction
               },
             },
           },

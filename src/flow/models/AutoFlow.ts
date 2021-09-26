@@ -5,9 +5,9 @@ import {
   batch,
 } from '@formily/reactive'
 import { Flow, FlowNodeType } from '@toy-box/flow-graph';
-import { IFieldMeta, IFieldGroupMeta, MetaValueType } from '@toy-box/meta-schema';
+import { IFieldMeta, IFieldGroupMeta, MetaValueType, IFieldOption } from '@toy-box/meta-schema';
 import { isArr } from '@formily/shared';
-import { isNum, isObj } from '@toy-box/toybox-shared';
+import { clone, isNum, isObj } from '@toy-box/toybox-shared';
 import update from 'immutability-helper'
 import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
 import { uid } from '../../utils';
@@ -15,6 +15,7 @@ import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
   RecordUpdate, RecordDelete, RecordLookup } from './index'
 import { useLocale } from '../../hooks'
+import { AnyARecord } from 'dns';
 // import { runEffects } from '../shared/effectbox'
 
 const STAND_SIZE = 56;
@@ -742,37 +743,68 @@ export class AutoFlow {
     console.log(this.flowAssignments, this.mataFlowJson)
   }
 
+  addFlowMeta = (metaType: IFlowResourceType, flowMeta: IFieldMeta) => {
+    switch (metaType) {
+      case IFlowResourceType.VARIABLE:
+        this.flowVariables = update(this.flowVariables, { $push: [flowMeta] })
+        this.mataFlowJson.flow[IFlowResourceType.VARIABLE] = this.flowVariables
+        break;
+      case IFlowResourceType.CONSTANT:
+        this.flowConstants = update(this.flowConstants, { $push: [flowMeta] })
+        this.mataFlowJson.flow[IFlowResourceType.CONSTANT] = this.flowConstants
+        break;
+      case IFlowResourceType.FORMULA:
+        this.flowFormulas = update(this.flowFormulas, { $push: [flowMeta] })
+        this.mataFlowJson.flow[IFlowResourceType.FORMULA] = this.flowFormulas
+        break;
+      case IFlowResourceType.TEMPLATE:
+        this.flowTemplates = update(this.flowTemplates, { $push: [flowMeta] })
+        this.mataFlowJson.flow[IFlowResourceType.TEMPLATE] = this.flowTemplates
+        break;
+      default:
+        break;
+    }
+  }
+
   get fieldMetas() {
+    return this.getFieldMetas()
+  }
+
+  getFieldMetas = (fieldMetaType?: IFlowResourceType) => {
     let metas: IFieldGroupMeta[] = []
     this.flowVariables.forEach((meta: IFieldMeta) => {
       if (meta?.type === MetaValueType.ARRAY) {
         if (meta?.items?.type === MetaValueType.OBJECT || meta?.items?.type  === MetaValueType.OBJECT_ID) {
           const obj = { ...meta }
           obj.type = IFlowResourceType.VARIABLE_ARRAY_RECORD
-          metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_ARRAY_RECORD)
+          metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_ARRAY_RECORD, fieldMetaType)
         } else {
           const obj = { ...meta }
           obj.type = IFlowResourceType.VARIABLE_ARRAY
-          metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_ARRAY)
+          metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_ARRAY, fieldMetaType)
         }
       } else {
-        metas = this.setFieldMeta(metas, meta, IFlowResourceType.VARIABLE)
+        metas = this.setFieldMeta(metas, meta, IFlowResourceType.VARIABLE, fieldMetaType)
       }
     });
     this.flowConstants.forEach((meta: IFieldMeta) => {
-      metas = this.setFieldMeta(metas, meta, IFlowResourceType.CONSTANT)
+      metas = this.setFieldMeta(metas, meta, IFlowResourceType.CONSTANT, fieldMetaType)
     });
     this.flowFormulas.forEach((meta: IFieldMeta) => {
-      metas = this.setFieldMeta(metas, meta, IFlowResourceType.FORMULA)
+      metas = this.setFieldMeta(metas, meta, IFlowResourceType.FORMULA, fieldMetaType)
     });
     this.flowTemplates.forEach((meta: IFieldMeta) => {
-      metas = this.setFieldMeta(metas, meta, IFlowResourceType.TEMPLATE)
+      metas = this.setFieldMeta(metas, meta, IFlowResourceType.TEMPLATE, fieldMetaType)
     });
     return metas
   }
 
-  setFieldMeta = (fieldMetas: IFieldGroupMeta[] ,fieldMeta: IFieldMeta, type: IFlowResourceType) => {
+  setFieldMeta = (fieldMetas: IFieldGroupMeta[] ,fieldMeta: IFieldMeta, type: IFlowResourceType, fieldMetaType?: IFlowResourceType) => {
     const idx = fieldMetas.findIndex((meta) => meta?.value === type)
+    const meta = clone(fieldMeta)
+    if (!meta.options && !fieldMetaType) {
+      meta.options = this.getFieldMetas(fieldMeta.type as IFlowResourceType)
+    }
     const templateObj: any = {
       [IFlowResourceType.VARIABLE]: useLocale('flow.autoFlow.variable'),
       [IFlowResourceType.VARIABLE_ARRAY]: useLocale('flow.autoFlow.variableArray'),
@@ -781,13 +813,45 @@ export class AutoFlow {
       [IFlowResourceType.FORMULA]: useLocale('flow.autoFlow.formula'),
       [IFlowResourceType.TEMPLATE]: useLocale('flow.autoFlow.template'),
     }
+    if ((fieldMetaType === IFlowResourceType.VARIABLE_ARRAY
+      || fieldMetaType === IFlowResourceType.VARIABLE_ARRAY_RECORD)
+      && meta.type === fieldMetaType) {
+      this.filterFieldMetas(templateObj, fieldMetas, meta, idx, type)
+    } else if (fieldMetaType === meta.type
+      && (meta?.items?.type === MetaValueType.OBJECT_ID
+      || meta?.items?.type === MetaValueType.OBJECT)) {
+      this.filterFieldMetas(templateObj, fieldMetas, meta, idx, type)
+    } else if (meta.type === fieldMetaType) {
+      this.filterFieldMetas(templateObj, fieldMetas, meta, idx, type)
+    } else if (!fieldMetaType) {
+      if (idx > -1) {
+        fieldMetas[idx].children.push(meta)
+      } else {
+        fieldMetas.push({
+          label: templateObj[type],
+          value: type,
+          children: [meta],
+        })
+      }
+    }
+    return fieldMetas
+  }
+
+  filterFieldMetas = (templateObj: any, fieldMetas: IFieldGroupMeta[], meta: IFieldMeta, idx: number, type: IFlowResourceType) => {
     if (idx > -1) {
-      fieldMetas[idx].children.push(fieldMeta)
+      const children = fieldMetas[idx].children as unknown as IFieldOption[]
+      children.push({
+        label: meta.name,
+        value: meta.key
+      })
     } else {
       fieldMetas.push({
         label: templateObj[type],
         value: type,
-        children: [fieldMeta],
+        children: [{
+          label: meta.name,
+          value: meta.key
+        } as any],
       })
     }
     return fieldMetas

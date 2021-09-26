@@ -156,6 +156,7 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
             'x-component-props': {
               isHiddenResourceBtn: true,
               mataSource: 'metaData',
+              flowGraph,
             },
           },
           web: {
@@ -180,6 +181,7 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
               reactionKey: 'registerId',
               mataSource: 'metaData',
               specialMode: true,
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['registerId'],

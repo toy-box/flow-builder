@@ -175,6 +175,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
             'x-component-props': {
               isHiddenResourceBtn: true,
               mataSource: 'metaData',
+              flowGraph,
             },
           },
           web: {
@@ -199,6 +200,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
               reactionKey: 'registerId',
               mataSource: 'metaData',
               specialMode: true,
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['registerId'],
@@ -225,6 +227,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
               simple: true,
               mataSource: 'metaData',
               reactionKey: 'registerId',
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['registerId'],

@@ -11,9 +11,9 @@ import { IFlowResourceType } from '../../flow/types'
 import { GatherInput } from '../formily/index'
 import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 import { uid } from '../../utils'
-import { fieldMetaStore } from '../../store'
 import { TextWidget } from '../widgets'
 import { useLocale } from '../../hooks'
+import { AutoFlow } from '../../flow/models/AutoFlow'
 
 const SchemaField = createSchemaField({
   components: {
@@ -84,13 +84,14 @@ const labelNames: any = {
 }
 
 interface ResourceCreateProps {
-  fieldMetas?: ICompareOperation[] 
+  fieldMetas?: ICompareOperation[]
+  flowGraph: AutoFlow
 }
 
 export const ResourceCreate:FC<ResourceCreateProps> = ({
   fieldMetas = [],
+  flowGraph,
 }) => {
-  const { updateFieldMetas } = fieldMetaStore.fieldMetaStore;
   const useAsyncDataSource = (
     pattern: Formily.Core.Types.FormPathPattern,
     service: (
@@ -104,11 +105,13 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       const isShow = flowTypeValue && flowTypeValue !== IFlowResourceType.TEMPLATE
       const isShowDefault = flowTypeValue === IFlowResourceType.VARIABLE || flowTypeValue === IFlowResourceType.CONSTANT
       field.display = isShow ? 'visible' : 'none'
-      const valueType = field.query('valueType').value()
+      const valueTypeArray = field.query('valueType').value()
+      const valueType = valueTypeArray ? valueTypeArray.length : undefined
       formData.setFieldState('defaultValue', (state) => {
         const valFlag = !valueType && fieldObj.value && fieldObj.value !== MetaValueType.MULTI_OPTION
           && fieldObj.value !== MetaValueType.SINGLE_OPTION && fieldObj.value !== MetaValueType.OBJECT_ID;
         state.display = isShowDefault && valFlag ? 'visible' : 'none'
+        console.log(isShowDefault, valFlag, state.display)
       })
       service(fieldObj).then(
         action((data) => {
@@ -209,8 +212,12 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const idx = fieldMetas?.findIndex((meta: any) => meta.name === value)
-                if(idx > -1) return <TextWidget>flow.form.validator.repeatName</TextWidget>
+                let idx = 0
+                fieldMetas.forEach((meta: any) => {
+                  const ch = meta.children.find((child: any) => child.name === value)
+                  if (ch) idx += 1
+                })
+                if(idx > 0) return <TextWidget>flow.form.validator.repeatName</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',
@@ -249,7 +256,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             },
           },
           valueType: {
-            type: 'boolean',
+            type: 'string',
             title: <TextWidget>flow.form.resourceCreate.valueType</TextWidget>,
             enum: [
               {
@@ -288,7 +295,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               dependencies: ['type'],
               fulfill: {
                 schema: {
-                  'x-display': "{{$deps == 'objectId' ? 'visible' : 'none'}}",
+                  'x-display': "{{$deps == 'refId' ? 'visible' : 'none'}}",
                 },
               },
             },
@@ -356,33 +363,9 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
 
   const submitResource = useCallback(
     (resourceData, flowDataType) => {
-      let metaIndex = -1
-      if (resourceData.type === 'array') {
-        if (resourceData.items.type === 'object' || resourceData.items.type  === 'objectId') {
-          metaIndex = fieldMetas.findIndex((meta: any) => meta.value === (flowDataType + '_array_record'))
-        } else {
-          metaIndex = fieldMetas.findIndex((meta: any) => meta.value === (flowDataType + '_array'))
-        }
-      } else {
-        metaIndex = fieldMetas.findIndex((meta: any) => meta.value === flowDataType)
-      }
-      console.log(flowDataType, metaIndex)
-      if (metaIndex > -1) {
-        const fieldMeta: any = fieldMetas[metaIndex]
-        fieldMeta.children.push(resourceData);
-        updateFieldMetas(update(clone(fieldMetas), { [metaIndex]: { $set: fieldMeta } }))
-      } else {
-        let type = flowDataType + '_array'
-        if (resourceData.items.type === 'object' || resourceData.items.type === 'objectId') type = flowDataType + '_array_record'
-        const metaData = {
-          label: resourceData.type === 'array' ? labelNames[type] : labelNames[flowDataType],
-          value: resourceData.type === 'array' ? type : flowDataType,
-          children: [resourceData]
-        }
-        updateFieldMetas(update(clone(fieldMetas as any), { $push: [metaData] }))
-      }
+      flowGraph.addFlowMeta(flowDataType, resourceData)
     },
-    [fieldMetas, updateFieldMetas]
+    [fieldMetas]
   )
 
   const handleOk = () => {
@@ -409,8 +392,9 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       text: obj.text,
       expression: obj.expression,
     }
-    if (obj.valueType) {
-      resourceData.type = 'array'
+    const valueTypeLen = obj.valueType ? obj.valueType.length : undefined
+    if (valueTypeLen) {
+      resourceData.type = MetaValueType.ARRAY
       resourceData.items = { type: obj.type }
     }
     const flowDataType = obj.flowType

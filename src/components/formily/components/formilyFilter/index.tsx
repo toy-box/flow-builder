@@ -7,7 +7,7 @@ import { ResourceCreate } from '../../../form-model/ResourceCreate'
 import { useLocale } from '../../../../hooks'
 
 export const FormilyFilter: FC = observer((props: any) => {
-  const { fieldMetas, registers } = fieldMetaStore.fieldMetaStore
+  const { registers } = fieldMetaStore.fieldMetaStore
   const form = useForm()
   const formilyField = useField() as any
   const handleFilter = useCallback(
@@ -51,12 +51,13 @@ export const FormilyFilter: FC = observer((props: any) => {
       })
       return registerOps
     }
-    return fieldMetas
-  }, [fieldMetas, form.values, props.mataSource, props.reactionKey, registers])
+    return props.flowGraph.fieldMetas
+  }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas])
   return (
     <div style={{'display': props.display}}>
       {props.isShowResourceBtn && <ResourceCreate 
-        fieldMetas={fieldMetas as any[]}
+        fieldMetas={props.flowGraph.fieldMetas as any[]}
+        flowGraph={props.flowGraph}
       />}
       <FilterBuilder
         fieldMetas={resourceFieldMetas as any[]}

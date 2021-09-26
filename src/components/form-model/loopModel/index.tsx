@@ -150,7 +150,8 @@ export const LoopModel: FC<LoopModelPorps> = ({
                 value: IFlowResourceType.VARIABLE_ARRAY
               }, {
                 value: IFlowResourceType.VARIABLE_ARRAY_RECORD
-              }]
+              }],
+              flowGraph,
             },
           },
           web: {

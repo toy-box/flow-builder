@@ -6,7 +6,7 @@ import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon'
 import { ButtonProps } from 'antd/lib/button'
 import { useField, useFieldSchema, Schema } from '@formily/react'
 import { isValid } from '@formily/shared'
-import { FormilyFilterBuilder } from './FormilyFilterBuilder'
+// import { FormilyFilterBuilder } from './FormilyFilterBuilder'
 
 export interface IArrayBaseAdditionProps extends ButtonProps {
   title?: string
@@ -27,7 +27,7 @@ export interface IArrayBaseItemProps {
 export type ArrayBaseMixins = {
   Remove?: React.FC<any>
   Index?: React.FC<any>
-  FormilyFilterBuilder?: React.FC<any>
+  // FormilyFilterBuilder?: React.FC<any>
   useArray?: () => IArrayBaseContext
   useIndex?: () => number
 }
@@ -116,24 +116,24 @@ ArrayBase.Remove = React.forwardRef((props, ref) => {
   )
 })
 
-ArrayBase.FormilyFilterBuilder = React.forwardRef((props, ref) => {
-  const index = useIndex(props.index) as number
-  const array = useArray()
-  if (!array) return null
-  if (array.field?.pattern !== 'editable') return null
-  return (
-    <FormilyFilterBuilder
-      selectIndex={index}
-    />
-  )
-})
+// ArrayBase.FormilyFilterBuilder = React.forwardRef((props, ref) => {
+//   const index = useIndex(props.index) as number
+//   const array = useArray()
+//   if (!array) return null
+//   if (array.field?.pattern !== 'editable') return null
+//   return (
+//     <FormilyFilterBuilder
+//       selectIndex={index}
+//     />
+//   )
+// })
 
 ArrayBase.useArray = useArray
 // ArrayBase.useIndex = useIndex
 ArrayBase.mixin = (target: any) => {
   target.Index = ArrayBase.Index
   target.Remove = ArrayBase.Remove
-  target.FormilyFilterBuilder = ArrayBase.FormilyFilterBuilder
+  // target.FormilyFilterBuilder = ArrayBase.FormilyFilterBuilder
   target.useArray = ArrayBase.useArray
   target.useIndex = ArrayBase.useIndex
   return target

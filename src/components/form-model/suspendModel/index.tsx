@@ -257,6 +257,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       'x-component-props': {
                         isHiddenResourceBtn: true,
                         mataSource: 'metaData',
+                        flowGraph,
                       },
                       'x-reactions': myReaction.bind(this, false),
                     },
@@ -285,7 +286,8 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       'x-component-props': {
                         isHiddenResourceBtn: false,
                         mataSource: 'flowJson',
-                        placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>
+                        placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
+                        flowGraph,
                       },
                       'x-reactions': myReaction.bind(this, false),
                     },
@@ -302,7 +304,8 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       'x-component-props': {
                         isHiddenResourceBtn: false,
                         mataSource: 'flowJson',
-                        placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>
+                        placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>,
+                        flowGraph,
                       },
                       'x-reactions': myReaction.bind(this, true),
                     },

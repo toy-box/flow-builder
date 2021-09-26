@@ -174,6 +174,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
             'x-component-props': {
               isHiddenResourceBtn: true,
               mataSource: 'metaData',
+              flowGraph,
             },
           },
           web: {
@@ -194,6 +195,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
               simple: true,
               mataSource: 'metaData',
               reactionKey: 'registerId',
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['registerId'],
@@ -231,7 +233,8 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
               placeholder: <TextWidget>flow.form.placeholder.assignRecordIdToReference</TextWidget>,
               flowJsonTypes: [{
                 value: IFlowResourceType.VARIABLE
-              }]
+              }],
+              flowGraph,
             },
             'x-reactions': {
               dependencies: ['storeOutputAutomatically'],

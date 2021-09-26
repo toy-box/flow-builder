@@ -1,6 +1,38 @@
 import { FlowMeta } from '../../flow/types'
 
 export const flow: FlowMeta = {
+  "variables": [
+    {
+      key: 'deptId',
+      name: '部门',
+      parentKey: 'parent_id',
+      titleKey: 'name',
+      type: 'refId',
+      // unBasic: true,
+    },
+    {
+      key: 'date',
+      name: '日期',
+      type: 'date',
+    },
+    {
+      key: 'copId',
+      name: '公司',
+      options: [
+        {
+          label: '12323232',
+          value: '1',
+        },
+        {
+          label: 'bbbbbbb',
+          value: '2',
+        },
+      ],
+      titleKey: 'name',
+      type: 'singleOption',
+      // unBasic: true,
+    },
+  ],
   "start": {
     "id": "start",
     "name": "开始",

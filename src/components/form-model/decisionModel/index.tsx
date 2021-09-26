@@ -243,6 +243,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
                         mataSource: 'flowJson',
                         isShowResourceBtn: true,
                         specialMode: true,
+                        flowGraph,
                       },
                     },
                   },

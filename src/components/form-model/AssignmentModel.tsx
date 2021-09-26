@@ -6,7 +6,6 @@ import { observer } from '@formily/reactive-react'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { FormilyFilter } from '../formily/components/index'
 import './index.less'
-import { fieldMetaStore } from '../../store'
 import { TextWidget } from '../widgets'
 import { AutoFlow } from '../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from './RepeatErrorMessage'
@@ -56,10 +55,6 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
     }).catch((rejected) => {
     })
   };
-
-  useEffect(() => {
-    console.log(fieldMetaStore.fieldMetaStore, 'fieldMetas')
-  }, [])
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -180,6 +175,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
               mataSource: 'flowJson',
               isShowResourceBtn: true,
               specialMode: true,
+              flowGraph,
             },
           },
         },
