@@ -108,7 +108,34 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   if (metaFlowData) {
     const val = clone(metaFlowData)
-    form.setValues(val)
+    const quiredRules = val?.rules?.map((rule: any) => {
+      return {
+        id: rule.id,
+        name: rule.name,
+        connector: {
+          targetReference: rule?.connector?.targetReference || null,
+        },
+        dateValue: rule.dateValue,
+        registerId: rule.registerId,
+        field: rule.field,
+        sourceTime: rule.registerId ? false : true,
+        recordIdValue: rule.recordIdValue,
+        offsetNum: rule.offsetNum,
+        offsetUnit: rule.offsetUnit,
+      }
+    })
+    form.setValues({
+      id: val.id,
+      name: val.name,
+      connector: {
+        targetReference: val?.connector?.targetReference || null,
+      },
+      defaultConnector: {
+        targetReference: val?.defaultConnector?.targetReference || null,
+      },
+      description: val.description,
+      rules: quiredRules,
+    })
   } else {
     form.setValues(
       {
