@@ -49,8 +49,8 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
       connector: {
         targetReference: metaFlowData?.connector?.targetReference || null,
       },
-      defaultConnector: {
-        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
+      faultConnector: {
+        targetReference: metaFlowData?.faultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       inputAssignments: value.inputAssignments,

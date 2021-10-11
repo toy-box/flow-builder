@@ -11,6 +11,7 @@ export class FlowSuspend {
   description?: string
   connector?: TargetReference
   defaultConnector?: TargetReference
+  defaultConnectorName?: string
   rules?: FlowMetaParam[]
 
   constructor(suspend: FlowMetaParam) {
@@ -19,6 +20,7 @@ export class FlowSuspend {
     this.description = suspend.description
     this.connector = suspend.connector
     this.defaultConnector = suspend.defaultConnector
+    this.defaultConnectorName = suspend.defaultConnectorName
     this.rules = suspend.rules
     this.makeObservable()
   }
@@ -30,6 +32,7 @@ export class FlowSuspend {
       description: observable.ref,
       connector: observable.deep,
       defaultConnector: observable.deep,
+      defaultConnectorName: observable.deep,
       rules: observable.deep,
       onEdit: action
     })
@@ -41,6 +44,7 @@ export class FlowSuspend {
     this.description = flowSuspend.description
     this.connector = flowSuspend.connector
     this.defaultConnector = flowSuspend.defaultConnector
+    this.defaultConnectorName = flowSuspend.defaultConnectorName
     this.rules = flowSuspend.rules
   }
 }

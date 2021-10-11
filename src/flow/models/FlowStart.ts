@@ -9,13 +9,11 @@ export class FlowStart {
   id: string
   name: string
   connector?: TargetReference
-  defaultConnector?: TargetReference
 
   constructor(flowStart: FlowMetaParam) {
     this.id = flowStart.id
     this.name = flowStart.name
     this.connector = flowStart.connector
-    this.defaultConnector = flowStart.defaultConnector
     this.makeObservable()
   }
 
@@ -24,7 +22,6 @@ export class FlowStart {
       id: observable.ref,
       name: observable.ref,
       connector: observable.deep,
-      defaultConnector: observable.deep,
       onEdit: action
     })
   }
@@ -33,6 +30,5 @@ export class FlowStart {
     this.id = flowStart.id
     this.name = flowStart.name
     this.connector = flowStart.connector
-    this.defaultConnector = flowStart.defaultConnector
   }
 }

@@ -11,7 +11,7 @@ export class RecordLookup {
   name: string
   description?: string
   connector?: TargetReference
-  defaultConnector?: TargetReference
+  faultConnector?: TargetReference
   criteria?: Criteria
   registerId?: string
   outputAssignments?: ICompareOperation[]
@@ -27,7 +27,7 @@ export class RecordLookup {
     this.name = recordLookup.name
     this.description = recordLookup.description
     this.connector = recordLookup.connector
-    this.defaultConnector = recordLookup.defaultConnector
+    this.faultConnector = recordLookup.faultConnector
     this.registerId = recordLookup.registerId
     this.criteria = recordLookup.criteria
     this.outputAssignments = recordLookup.outputAssignments
@@ -46,7 +46,7 @@ export class RecordLookup {
       name: observable.ref,
       description: observable.ref,
       connector: observable.deep,
-      defaultConnector: observable.deep,
+      faultConnector: observable.deep,
       registerId: observable.ref,
       criteria: observable.deep,
       outputAssignments: observable.shallow,
@@ -65,7 +65,7 @@ export class RecordLookup {
     this.name = recordLookup.name
     this.description = recordLookup.description
     this.connector = recordLookup.connector
-    this.defaultConnector = recordLookup.defaultConnector
+    this.faultConnector = recordLookup.faultConnector
     this.registerId = recordLookup.registerId
     this.criteria = recordLookup.criteria
     this.outputAssignments = recordLookup.outputAssignments

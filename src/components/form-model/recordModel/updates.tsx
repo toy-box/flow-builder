@@ -50,8 +50,8 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       connector: {
         targetReference: metaFlowData?.connector?.targetReference || null,
       },
-      defaultConnector: {
-        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
+      faultConnector: {
+        targetReference: metaFlowData?.faultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       criteria: {

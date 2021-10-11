@@ -11,7 +11,7 @@ export class RecordUpdate {
   name: string
   description?: string
   connector?: TargetReference
-  defaultConnector?: TargetReference
+  faultConnector?: TargetReference
   criteria?: Criteria
   registerId?: string
   inputAssignments?: ICompareOperation[]
@@ -21,7 +21,7 @@ export class RecordUpdate {
     this.name = recordUpdate.name
     this.description = recordUpdate.description
     this.connector = recordUpdate.connector
-    this.defaultConnector = recordUpdate.defaultConnector
+    this.faultConnector = recordUpdate.faultConnector
     this.registerId = recordUpdate.registerId
     this.criteria = recordUpdate.criteria
     this.inputAssignments = recordUpdate.inputAssignments
@@ -34,7 +34,7 @@ export class RecordUpdate {
       name: observable.ref,
       description: observable.ref,
       connector: observable.deep,
-      defaultConnector: observable.deep,
+      faultConnector: observable.deep,
       registerId: observable.ref,
       criteria: observable.deep,
       inputAssignments: observable.shallow,
@@ -47,7 +47,7 @@ export class RecordUpdate {
     this.name = recordUpdate.name
     this.description = recordUpdate.description
     this.connector = recordUpdate.connector
-    this.defaultConnector = recordUpdate.defaultConnector
+    this.faultConnector = recordUpdate.faultConnector
     this.registerId = recordUpdate.registerId
     this.criteria = recordUpdate.criteria
     this.inputAssignments = recordUpdate.inputAssignments

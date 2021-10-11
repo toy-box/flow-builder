@@ -11,7 +11,7 @@ export class RecordCreate {
   name: string
   description?: string
   connector?: TargetReference
-  defaultConnector?: TargetReference
+  faultConnector?: TargetReference
   registerId?: string
   inputAssignments?: ICompareOperation[]
   storeOutputAutomatically?: boolean
@@ -22,7 +22,7 @@ export class RecordCreate {
     this.name = recordCreate.name
     this.description = recordCreate.description
     this.connector = recordCreate.connector
-    this.defaultConnector = recordCreate.defaultConnector
+    this.faultConnector = recordCreate.faultConnector
     this.registerId = recordCreate.registerId
     this.inputAssignments = recordCreate.inputAssignments
     this.storeOutputAutomatically = recordCreate.storeOutputAutomatically
@@ -36,7 +36,7 @@ export class RecordCreate {
       name: observable.ref,
       description: observable.ref,
       connector: observable.deep,
-      defaultConnector: observable.deep,
+      faultConnector: observable.deep,
       registerId: observable.ref,
       inputAssignments: observable.shallow,
       storeOutputAutomatically: observable.ref,
@@ -50,7 +50,7 @@ export class RecordCreate {
     this.name = recordCreate.name
     this.description = recordCreate.description
     this.connector = recordCreate.connector
-    this.defaultConnector = recordCreate.defaultConnector
+    this.faultConnector = recordCreate.faultConnector
     this.registerId = recordCreate.registerId
     this.inputAssignments = recordCreate.inputAssignments
     this.storeOutputAutomatically = recordCreate.storeOutputAutomatically

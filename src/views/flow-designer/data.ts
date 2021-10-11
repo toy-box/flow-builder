@@ -38,10 +38,7 @@ export const flow: FlowMeta = {
     "name": "开始",
     "connector": {
       "targetReference": 'decision1'
-    },
-    "defaultConnector": {
-      "targetReference": 'end'
-    },
+    }
   },
   "assignments": [
     {
@@ -81,7 +78,7 @@ export const flow: FlowMeta = {
       "id": "decision1",
       "name": "decision1",
       "connector": {
-        "targetReference": 'end'
+        "targetReference": null
       },
       "defaultConnector": {
         "targetReference": "2222"

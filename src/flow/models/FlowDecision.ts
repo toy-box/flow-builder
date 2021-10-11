@@ -11,6 +11,7 @@ export class FlowDecision {
   description?: string
   connector?: TargetReference
   defaultConnector?: TargetReference
+  defaultConnectorName?: string
   rules?: FlowMetaParam[]
 
   constructor(flowDecision: FlowMetaParam) {
@@ -19,6 +20,7 @@ export class FlowDecision {
     this.description = flowDecision.description
     this.connector = flowDecision.connector
     this.defaultConnector = flowDecision.defaultConnector
+    this.defaultConnectorName = flowDecision.defaultConnectorName
     this.rules = flowDecision.rules
     this.makeObservable()
   }
@@ -30,6 +32,7 @@ export class FlowDecision {
       description: observable.ref,
       connector: observable.deep,
       defaultConnector: observable.deep,
+      defaultConnectorName: observable.deep,
       rules: observable.deep,
       onEdit: action
     })
@@ -41,6 +44,7 @@ export class FlowDecision {
     this.description = flowDecision.description
     this.connector = flowDecision.connector
     this.defaultConnector = flowDecision.defaultConnector
+    this.defaultConnectorName = flowDecision.defaultConnectorName
     this.rules = flowDecision.rules
   }
 }

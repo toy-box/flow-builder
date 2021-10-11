@@ -57,8 +57,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       connector: {
         targetReference: metaFlowData?.connector?.targetReference || null,
       },
-      defaultConnector: {
-        targetReference: metaFlowData?.defaultConnector?.targetReference || null,
+      faultConnector: {
+        targetReference: metaFlowData?.faultConnector?.targetReference || null,
       },
       registerId: value.registerId,
       criteria: {

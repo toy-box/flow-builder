@@ -111,6 +111,7 @@ export interface FlowMetaParam {
   description?: string
   connector?: TargetReference
   defaultConnector?: TargetReference
+  faultConnector?: TargetReference
   nextValueConnector?: TargetReference
   defaultConnectorName?: string
   assignmentItems?: ICompareOperation[]

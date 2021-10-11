@@ -10,7 +10,7 @@ export class RecordDelete {
   name: string
   description?: string
   connector?: TargetReference
-  defaultConnector?: TargetReference
+  faultConnector?: TargetReference
   criteria?: Criteria
   registerId?: string
 
@@ -19,7 +19,7 @@ export class RecordDelete {
     this.name = recordDelete.name
     this.description = recordDelete.description
     this.connector = recordDelete.connector
-    this.defaultConnector = recordDelete.defaultConnector
+    this.faultConnector = recordDelete.faultConnector
     this.registerId = recordDelete.registerId
     this.criteria = recordDelete.criteria
     this.makeObservable()
@@ -31,7 +31,7 @@ export class RecordDelete {
       name: observable.ref,
       description: observable.ref,
       connector: observable.deep,
-      defaultConnector: observable.deep,
+      faultConnector: observable.deep,
       registerId: observable.ref,
       criteria: observable.deep,
       onEdit: action
@@ -43,7 +43,7 @@ export class RecordDelete {
     this.name = recordDelete.name
     this.description = recordDelete.description
     this.connector = recordDelete.connector
-    this.defaultConnector = recordDelete.defaultConnector
+    this.faultConnector = recordDelete.faultConnector
     this.registerId = recordDelete.registerId
     this.criteria = recordDelete.criteria
   }

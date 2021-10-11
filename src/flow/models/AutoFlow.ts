@@ -142,6 +142,9 @@ export class AutoFlow {
         } else if (meta.defaultConnector?.targetReference === nodeId) {
           meta.defaultConnector.targetReference = flowData.id
           this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
+        } else if (meta.faultConnector?.targetReference === nodeId) {
+          meta.faultConnector.targetReference = flowData.id
+          this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
         } else if (meta.nextValueConnector?.targetReference === nodeId) {
           meta.nextValueConnector.targetReference = flowData.id
           this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
@@ -235,6 +238,9 @@ export class AutoFlow {
       } else if (meta.defaultConnector?.targetReference === nodeId) {
         meta.defaultConnector.targetReference = targetId
         this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
+      } else if (meta.faultConnector?.targetReference === nodeId) {
+        meta.faultConnector.targetReference = targetId
+        this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
       } else if (meta.nextValueConnector?.targetReference === nodeId) {
         meta.nextValueConnector.targetReference = meta.id !== targetId ? targetId : null
         this.initMetaFields(meta.flowType, meta, MetaFieldType.EDIT, nodeId)
@@ -313,9 +319,9 @@ export class AutoFlow {
     data.connector = {
       targetReference: cycleBeginNode ? cycleBeginNode.id : (flowNode?.targets?.[0] || null)
     }
-    data.defaultConnector = {
-      targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
-    }
+    // data.defaultConnector = {
+    //   targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
+    // }
     if (metaType === FlowMetaType.START) {
       this.initMetaFields(metaType, data, MetaFieldType.EDIT)
       // flow[metaType] = data
@@ -332,9 +338,15 @@ export class AutoFlow {
         data.defaultConnector = {
           targetReference: null,
         }
+      } else if (metaType === FlowMetaType.RECORD_CREATE || metaType === FlowMetaType.RECORD_DELETE
+        || metaType === FlowMetaType.RECORD_LOOKUP || metaType === FlowMetaType.RECORD_UPDATE) {
+        data.faultConnector = {
+          targetReference: data?.faultConnector?.targetReference || this.flowEndId,
+        }
       }
     }
     this.initFlowNodes(metaType, data, flowNode)
+    console.log(this.mataFlowJson.flow, 'this.mataFlowJson.flow')
   }
 
   updataFlowMetaData = (flowNode: NodeProps | undefined, metaType: FlowMetaType, flowData: FlowMetaParam, currentUpdataData?: FlowMetaParam) => {
@@ -349,9 +361,9 @@ export class AutoFlow {
         targetReference: null
       }
     }
-    data.defaultConnector = {
-      targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
-    }
+    // data.defaultConnector = {
+    //   targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
+    // }
     this.metaFlowDatas = []
     for (const key in flow) {
       if (flow.hasOwnProperty(key)) {
@@ -383,7 +395,7 @@ export class AutoFlow {
       })
       const cycleBeginOfBackNode = this.flowNodes.find((node) => node.loopBackTarget === flowNode?.id)
       const cycleBeginOfEndNode = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
-      if (isObj(flow[meta.flowType])) {
+      if (isObj(flow[meta.flowType]) && baseNode?.type === 'begin') {
         this.updataCurrentFlowData(meta, data, metaType)
         const currentFlow = {
           ...flow[meta.flowType]
@@ -391,115 +403,116 @@ export class AutoFlow {
         currentFlow.connector.targetReference = data.id
         this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         return meta
-      }
-      const flowIdx = flow[meta.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === meta.id)
-      if (forkBeginOfEndNode?.id === meta.id) {
-        this.updataCurrentFlowData(meta, data, metaType)
-        if (flowIdx > -1) {
-          const currentFlow = {
-            ...flow[meta.flowType][flowIdx]
-          }
-          currentFlow.connector.targetReference = data.id
-          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-        }
-        return meta
-      } else if ((baseNode?.id === meta.id && !cycleBeginOfBackNode)) {
-        if (meta.flowType === FlowMetaType.LOOP) {
-          if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
-            data.defaultConnector.targetReference = meta?.id || (meta?.connector?.targetReference || null)
-          } else if (data.connector) {
-            data.connector.targetReference = meta?.nextValueConnector?.targetReference || (meta?.connector?.targetReference || null)
-          }
+      } else if (isArr(flow[meta.flowType])) {
+        const flowIdx = flow[meta.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === meta.id)
+        if (forkBeginOfEndNode?.id === meta.id) {
+          this.updataCurrentFlowData(meta, data, metaType)
           if (flowIdx > -1) {
+            const currentFlow = {
+              ...flow[meta.flowType][flowIdx]
+            }
+            currentFlow.connector.targetReference = data.id
+            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+          }
+          return meta
+        } else if ((baseNode?.id === meta.id && !cycleBeginOfBackNode)) {
+          if (meta.flowType === FlowMetaType.LOOP) {
+            if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
+              data.defaultConnector.targetReference = meta?.id || (meta?.connector?.targetReference || null)
+            } else if (data.connector) {
+              data.connector.targetReference = meta?.nextValueConnector?.targetReference || (meta?.connector?.targetReference || null)
+            }
+            if (flowIdx > -1) {
+              const currentFlow = {
+                ...flow[meta.flowType][flowIdx]
+              }
+              currentFlow.nextValueConnector.targetReference = data.id
+              this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+            }
+            // flow[metaType].push(data)
+            this.initMetaFields(metaType, data, MetaFieldType.ADD)
+            this.metaFlowDatas.push({
+              ...data,
+              flowType: metaType
+            });
+          } else {
+            this.updataCurrentFlowData(meta, data, metaType)
+            if (flowIdx > -1) {
+              const currentFlow = {
+                ...flow[meta.flowType][flowIdx]
+              }
+              currentFlow.connector.targetReference = data.id
+              this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+            }
+          }
+          return meta
+        } else if (forkBeginOfForwardNode?.id === meta.id) {
+          const idx = meta?.rules?.findIndex((rule) => rule.id === flowNode?.id)
+          if (isNum(idx) && idx > -1 && flowIdx > -1) {
+            if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
+              data.defaultConnector.targetReference = meta?.rules?.[idx]?.connector?.targetReference || null
+            } else if (data.connector) {
+              data.connector.targetReference = meta?.rules?.[idx]?.connector?.targetReference || null
+            }
+            this.initMetaFields(metaType, data, MetaFieldType.ADD)
+            const currentFlow = {
+              ...flow[meta.flowType][flowIdx]
+            }
+            currentFlow.rules[idx].connector.targetReference = data.id
+            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+          } else if (flowIdx > -1) {
+            if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
+              data.defaultConnector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
+            } else if (data.connector) {
+              data.connector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
+            }
+            this.initMetaFields(metaType, data, MetaFieldType.ADD)
+            const currentFlow = {
+              ...flow[meta.flowType][flowIdx]
+            }
+            currentFlow.defaultConnector.targetReference = data.id
+            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+          }
+          return meta
+        } else if (cycleBeginOfBackNode?.id === meta.id) {
+          if (meta?.nextValueConnector?.targetReference === null && flowIdx > -1) {
+            this.updataCurrentFlowData(meta, data, metaType)
             const currentFlow = {
               ...flow[meta.flowType][flowIdx]
             }
             currentFlow.nextValueConnector.targetReference = data.id
             this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-          }
-          // flow[metaType].push(data)
-          this.initMetaFields(metaType, data, MetaFieldType.ADD)
-          this.metaFlowDatas.push({
-            ...data,
-            flowType: metaType
-          });
-        } else {
-          this.updataCurrentFlowData(meta, data, metaType)
-          if (flowIdx > -1) {
-            const currentFlow = {
-              ...flow[meta.flowType][flowIdx]
+          } else {
+            this.updataCurrentFlowData(meta, data, metaType)
+            const node = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
+            const mTData = this.metaFlowDatas.find((mt) => mt.id === node?.id)
+            const mtIdx = mTData?.flowType && flow[mTData?.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === mTData?.id)
+            if (mTData && mtIdx && mTData.flowType === FlowMetaType.LOOP) {
+              const currentFlow = {
+                ...flow[mTData.flowType][mtIdx]
+              }
+              currentFlow.defaultConnector.targetReference = data.id
+              this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+              // flow[mTData.flowType][mtIdx].defaultConnector.targetReference = data.id
+            } else if (mTData && mtIdx) {
+              const currentFlow = {
+                ...flow[mTData.flowType][mtIdx]
+              }
+              currentFlow.connector.targetReference = data.id
+              this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+              // flow[mTData.flowType][mtIdx].connector.targetReference = data.id
             }
-            currentFlow.connector.targetReference = data.id
-            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
           }
-        }
-        return meta
-      } else if (forkBeginOfForwardNode?.id === meta.id) {
-        const idx = meta?.rules?.findIndex((rule) => rule.id === flowNode?.id)
-        if (isNum(idx) && idx > -1 && flowIdx > -1) {
-          if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
-            data.defaultConnector.targetReference = meta?.rules?.[idx]?.connector?.targetReference || null
-          } else if (data.connector) {
-            data.connector.targetReference = meta?.rules?.[idx]?.connector?.targetReference || null
-          }
-          this.initMetaFields(metaType, data, MetaFieldType.ADD)
-          const currentFlow = {
-            ...flow[meta.flowType][flowIdx]
-          }
-          currentFlow.rules[idx].connector.targetReference = data.id
-          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-        } else if (flowIdx > -1) {
-          if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
-            data.defaultConnector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
-          } else if (data.connector) {
-            data.connector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
-          }
-          this.initMetaFields(metaType, data, MetaFieldType.ADD)
+          return meta
+        } else if (cycleBeginOfEndNode?.id === meta.id) {
+          this.updataCurrentFlowData(meta, data, metaType)
           const currentFlow = {
             ...flow[meta.flowType][flowIdx]
           }
           currentFlow.defaultConnector.targetReference = data.id
           this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+          return meta
         }
-        return meta
-      } else if (cycleBeginOfBackNode?.id === meta.id) {
-        if (meta?.nextValueConnector?.targetReference === null && flowIdx > -1) {
-          this.updataCurrentFlowData(meta, data, metaType)
-          const currentFlow = {
-            ...flow[meta.flowType][flowIdx]
-          }
-          currentFlow.nextValueConnector.targetReference = data.id
-          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-        } else {
-          this.updataCurrentFlowData(meta, data, metaType)
-          const node = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
-          const mTData = this.metaFlowDatas.find((mt) => mt.id === node?.id)
-          const mtIdx = mTData?.flowType && flow[mTData?.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === mTData?.id)
-          if (mTData && mtIdx && mTData.flowType === FlowMetaType.LOOP) {
-            const currentFlow = {
-              ...flow[mTData.flowType][mtIdx]
-            }
-            currentFlow.defaultConnector.targetReference = data.id
-            this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-            // flow[mTData.flowType][mtIdx].defaultConnector.targetReference = data.id
-          } else if (mTData && mtIdx) {
-            const currentFlow = {
-              ...flow[mTData.flowType][mtIdx]
-            }
-            currentFlow.connector.targetReference = data.id
-            this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-            // flow[mTData.flowType][mtIdx].connector.targetReference = data.id
-          }
-        }
-        return meta
-      } else if (cycleBeginOfEndNode?.id === meta.id) {
-        this.updataCurrentFlowData(meta, data, metaType)
-        const currentFlow = {
-          ...flow[meta.flowType][flowIdx]
-        }
-        currentFlow.defaultConnector.targetReference = data.id
-        this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
-        return meta
       }
     })
   }
@@ -871,9 +884,13 @@ export class AutoFlow {
       const targetReference = target?.flowType === FlowMetaType.LOOP ?
         target?.nextValueConnector?.targetReference : target?.connector?.targetReference
       const defaultConnector = target?.defaultConnector?.targetReference
+      const faultConnector = target?.faultConnector?.targetReference
       const flowData = flowDatas.find(data => data.id === targetReference)
       if (flowData && targetReference) {
         this.filterFlowData(targetReference, flowDatas, flowData)
+      } else if (faultConnector) {
+        const flowData = flowDatas.find(data => data.id === faultConnector)
+        if (flowData && faultConnector) this.filterFlowData(faultConnector, flowDatas, flowData)
       } else {
         const flowData = flowDatas.find(data => data.id === defaultConnector)
         if (flowData && defaultConnector) this.filterFlowData(defaultConnector, flowDatas, flowData)
