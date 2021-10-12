@@ -6,7 +6,7 @@ export const FormulaEdit: FC = observer((props: any) => {
   const form = useForm()
   const onChange = useCallback(
     (value) => {
-      form.setFieldState('expression', (state) => {
+      form.setFieldState('formula', (state) => {
         state.value = value
       })
     },

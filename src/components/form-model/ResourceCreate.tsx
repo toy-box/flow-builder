@@ -132,7 +132,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
         formData.setFieldState('text', (state) => {
           state.display = field.value === IFlowResourceType.TEMPLATE ? 'visible' : 'none'
         })
-        formData.setFieldState('expression', (state) => {
+        formData.setFieldState('formula', (state) => {
           state.display = field.value === IFlowResourceType.FORMULA ? 'visible' : 'none'
         })
       })
@@ -329,7 +329,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               gridSpan: 2
             },
           },
-          expression: {
+          formula: {
             type: 'string',
             title: <TextWidget>flow.form.resourceCreate.expression</TextWidget>,
             required: true,
@@ -390,7 +390,8 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       defaultValue: obj.defaultValue,
       refObjectId: obj.refObjectId,
       text: obj.text,
-      expression: obj.expression,
+      calcType: obj.formula ? 'formula' : undefined,
+      formula: obj.formula,
     }
     const valueTypeLen = obj.valueType ? obj.valueType.length : undefined
     if (valueTypeLen) {
