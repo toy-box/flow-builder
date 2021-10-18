@@ -1,34 +1,56 @@
-import React, { FC, useState, CSSProperties } from 'react';
+import React, { FC, useState, CSSProperties, useCallback } from 'react';
 import { Modal, Button } from 'antd';
+import { clone, isArr } from '@toy-box/toybox-shared';
 import 'codemirror/lib/codemirror.css';
+import { AutoFlow } from '../../flow/models/AutoFlow'
+import * as AutoFlowModelService from '../../services/autoFlowModel.servie'
 
 export interface SaveInfoProps {
-  data: any
-  isFlag: boolean
-  onCallBack: () => void
+  flowGraph: AutoFlow
 }
 
 export const SaveInfoModel:FC<SaveInfoProps> = ({
-  data,
-  isFlag = false,
-  onCallBack
+  flowGraph
 }) => {
-  const [isModalVisible, setIsModalVisible] = useState(isFlag);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [flowJsonData, setFlowJsonData] = useState()
 
   const handleOk = () => {
     setIsModalVisible(false);
-    onCallBack()
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    onCallBack()
   };
+
+  const saveData = useCallback(() => {
+    const flowJson = clone(flowGraph.mataFlowJson.flow)
+    for (const key in flowJson) {
+      if (flowJson.hasOwnProperty(key)) {
+        if (isArr(flowJson[key])) {
+          flowJson[key].forEach((data: any) => {
+            delete data.onEdit
+          })
+        }
+      }
+    }
+    const href = window.location.href
+    const flowId = href.split('?flowId=')[1]
+    const params = {
+      flowType: 'AUTO_START_UP',
+      flows: flowJson,
+      id: flowId || undefined
+    }
+    setIsModalVisible(true)
+    setFlowJsonData(flowJson)
+    AutoFlowModelService.saveAutoFlowModel(params)
+  }, [])
 
   return (
     <>
+      <Button onClick={saveData} className="right-btn" type="primary">保存</Button>
       <Modal width={900} visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        {JSON.stringify(data)}
+        {JSON.stringify(flowJsonData)}
       </Modal>
     </>
   );

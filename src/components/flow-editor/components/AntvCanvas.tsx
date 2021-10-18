@@ -19,7 +19,7 @@ import { SuspendPanel } from './SuspendPanel';
 
 const STAND_SIZE = 56;
 
-export const AntvCanvas = observer(() => {
+export const AntvCanvas = () => {
   const flowGraph = useFlowGraph();
   const flow = flowGraph.flowGraph;
 
@@ -107,4 +107,4 @@ export const AntvCanvas = observer(() => {
   return (
     <div id="flow-canvas" style={{ flex: 1 }}></div>
   );
-});
+};
