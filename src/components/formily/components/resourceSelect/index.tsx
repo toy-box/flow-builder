@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react'
+import React, { FC, useCallback, useMemo, useState } from 'react'
 import { useForm, observer, useField } from '@formily/react'
 import { Select } from 'antd'
 import { isArr } from '@formily/shared'
@@ -28,7 +28,7 @@ export const ResourceSelect: FC = observer((props: any) => {
   const metaOptions = useMemo(() => {
     if (props.mataSource === 'metaData') {
       if (props.reactionKey) {
-        const reactionKey = form.values[props.reactionKey]
+        const reactionKey = props.reactionValue || form.values[props.reactionKey]
         let registerOps: IFieldOption[] = []
         registers.some((re) => {
           if (re.id === reactionKey) {
@@ -98,7 +98,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         }
       }
     })
-  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers])
+  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers, props.reactionValue])
 
   const optionRender = useMemo(() => {
     return metaOptions?.map((option: any) =>
@@ -134,9 +134,13 @@ export const ResourceSelect: FC = observer((props: any) => {
       />}
       <Select
         placeholder={props.placeholder || useLocale('flow.form.placeholder.resourceSelect')}
-        value={props.value}
+        value={formilyField.value}
         style={props.style}
         onChange={onChange}
+        filterOption={(input, option: any) =>
+          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+        showSearch
       >
         {optionRender}
       </Select>

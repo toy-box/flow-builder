@@ -98,9 +98,11 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
             state.title = `${filterName} ${register.name} ${record}`
+            state.value = []
           })
           form.setFieldState('inputAssignments', (state) => {
             state.title = `${setName} ${register.name} ${setField}`
+            state.value = []
           })
         }
       })

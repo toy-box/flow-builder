@@ -12,7 +12,6 @@ export const FormilyFilter: FC = observer((props: any) => {
   const formilyField = useField() as any
   const handleFilter = useCallback(
     (value) => {
-      setValue(value)
       form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
         formilyField.validate()
@@ -31,11 +30,9 @@ export const FormilyFilter: FC = observer((props: any) => {
     },
   ]
 
-  const [value, setValue] = useState(formilyField.value)
-
   const resourceFieldMetas = useMemo(() => {
     if (props.mataSource === 'metaData') {
-      const reactionKey = form.values[props.reactionKey]
+      const reactionKey = props.reactionValue || form.values[props.reactionKey]
       let registerOps: IFieldOption[] = []
       registers.some((re) => {
         if (re.id === reactionKey) {
@@ -52,7 +49,7 @@ export const FormilyFilter: FC = observer((props: any) => {
       return registerOps
     }
     return props.flowGraph.fieldMetas
-  }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas])
+  }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas, props.reactionValue])
   return (
     <div style={{'display': props.display}}>
       {props.isShowResourceBtn && <ResourceCreate 
@@ -61,7 +58,7 @@ export const FormilyFilter: FC = observer((props: any) => {
       />}
       <FilterBuilder
         fieldMetas={resourceFieldMetas as any[]}
-        value={value as any[]}
+        value={formilyField.value as any[]}
         specialOptions={specialOptions}
         specialMode={props.specialMode}
         onChange={(filterItem: Partial<ICompareOperation>[]) =>

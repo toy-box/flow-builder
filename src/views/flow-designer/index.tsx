@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { GlobalRegistry} from '../../designer'
 import { Navbar, FlowEditor} from '../../components'
 import { DesignerContext } from '../../designer'
-import { flow } from './data'
+import { flow, initData, getFlowData, getFlowModelData, getmetaObjectData } from './data'
+import { Button, notification } from 'antd';
 
 import './style.less'
 
@@ -281,13 +282,42 @@ GlobalRegistry.registerDesignerLocales({
 
 GlobalRegistry.setDesignerLanguage('zh-CN')
 
-const flowMeta = {
-  id: 'flow-meta-1',
-  name: 'flow',
-  flow: flow,
-}
+initData()
+getFlowData('6165263cea6c7b2123d59061').then(({data}) => {
+  console.log(data, 'getFlowData()')
+})
+// getFlowModelData('6166a9d5d5f7296d8552b137').then(({data}) => {
+//   // setFlowMeta({
+//   //   id: 'flow-meta-1',
+//   //   name: 'flow',
+//   //   flow: data.flows,
+//   // })
+// })
+
 
 export const FlowDesigner = () => {
+  const [flowMeta, setFlowMeta] = useState({
+    id: 'flow-meta-1',
+    name: 'flow',
+    flow: flow,
+  })
+  useEffect(() => {
+    const href = window.location.href
+    const flowId = href.split('?flowId=')[1]
+    if (flowId) {
+      getFlowModelData(flowId).then(({data}) => {
+        console.log(1111111111111111, 22222222222)
+        setFlowMeta({
+          id: 'flow-meta-1',
+          name: 'flow',
+          flow: data.flows || flow,
+        })
+      })
+    }
+    getmetaObjectData().then(({data}) => {
+      console.log(data)
+    })
+  }, [])
   return (
     <DesignerContext.Provider value={{ prefix: 'fd', GlobalRegistry }}>
       <Navbar />

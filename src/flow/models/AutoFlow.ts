@@ -600,7 +600,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.flowAssignments = this.flowAssignments.filter((assignment) => assignment.id !== nodeId)
         } else {
-          data[metaType].forEach((assignment: FlowAssignment) => {
+          data[metaType]?.forEach((assignment: FlowAssignment) => {
             this.flowAssignments.push(new FlowAssignment(assignment))
           });
         }
@@ -616,7 +616,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.flowDecisions = this.flowDecisions.filter((decision) => decision.id !== nodeId)
         } else {
-          data[metaType].forEach((decision: FlowDecision) => {
+          data[metaType]?.forEach((decision: FlowDecision) => {
             this.flowDecisions.push(new FlowDecision(decision))
           });
         }
@@ -632,7 +632,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.flowSuspends = this.flowSuspends.filter((suspend) => suspend.id !== nodeId)
         } else {
-          data[metaType].forEach((suspend: FlowSuspend) => {
+          data[metaType]?.forEach((suspend: FlowSuspend) => {
             this.flowSuspends.push(new FlowSuspend(suspend))
           });
         }
@@ -648,7 +648,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.flowLoops = this.flowLoops.filter((loop) => loop.id !== nodeId)
         } else {
-          data[metaType].forEach((loop: FlowLoop) => {
+          data[metaType]?.forEach((loop: FlowLoop) => {
             this.flowLoops.push(new FlowLoop(loop))
           });
         }
@@ -664,7 +664,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.flowSortCollections = this.flowSortCollections.filter((sortCollention) => sortCollention.id !== nodeId)
         } else {
-          data[metaType].forEach((sortCollention: FlowSortCollectionProcessor) => {
+          data[metaType]?.forEach((sortCollention: FlowSortCollectionProcessor) => {
             this.flowSortCollections.push(new FlowSortCollectionProcessor(sortCollention))
           });
         }
@@ -680,7 +680,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.recordCreates = this.recordCreates.filter((record) => record.id !== nodeId)
         } else {
-          data[metaType].forEach((record: RecordCreate) => {
+          data[metaType]?.forEach((record: RecordCreate) => {
             this.recordCreates.push(new RecordCreate(record))
           });
         }
@@ -696,7 +696,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.recordDeletes = this.recordDeletes.filter((record) => record.id !== nodeId)
         } else {
-          data[metaType].forEach((record: RecordDelete) => {
+          data[metaType]?.forEach((record: RecordDelete) => {
             this.recordDeletes.push(new RecordDelete(record))
           });
         }
@@ -712,7 +712,7 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.recordLookups = this.recordLookups.filter((record) => record.id !== nodeId)
         } else {
-          data[metaType].forEach((record: RecordLookup) => {
+          data[metaType]?.forEach((record: RecordLookup) => {
             this.recordLookups.push(new RecordLookup(record))
           });
         }
@@ -728,26 +728,26 @@ export class AutoFlow {
         } else if (metaFieldType === MetaFieldType.REMOVE) {
           this.recordUpdates = this.recordUpdates.filter((record) => record.id !== nodeId)
         } else {
-          data[metaType].forEach((record: RecordUpdate) => {
+          data[metaType]?.forEach((record: RecordUpdate) => {
             this.recordUpdates.push(new RecordUpdate(record))
           });
         }
         this.mataFlowJson.flow[FlowMetaType.RECORD_UPDATE] = this.recordUpdates
         break;
       case IFlowResourceType.VARIABLE:
-        this.flowVariables = data[metaType]
+        this.flowVariables = data[metaType] || []
         this.mataFlowJson.flow[IFlowResourceType.VARIABLE] = this.flowVariables
         break;
       case IFlowResourceType.CONSTANT:
-        this.flowConstants = data[metaType]
+        this.flowConstants = data[metaType] || []
         this.mataFlowJson.flow[IFlowResourceType.CONSTANT] = this.flowConstants
         break;
       case IFlowResourceType.FORMULA:
-        this.flowFormulas = data[metaType]
+        this.flowFormulas = data[metaType] || []
         this.mataFlowJson.flow[IFlowResourceType.FORMULA] = this.flowFormulas
         break;
       case IFlowResourceType.TEMPLATE:
-        this.flowTemplates = data[metaType]
+        this.flowTemplates = data[metaType] || []
         this.mataFlowJson.flow[IFlowResourceType.TEMPLATE] = this.flowTemplates
         break;
       default:
@@ -785,7 +785,7 @@ export class AutoFlow {
 
   getFieldMetas = (fieldMetaType?: IFlowResourceType) => {
     let metas: IFieldGroupMeta[] = []
-    this.flowVariables.forEach((meta: IFieldMeta) => {
+    this.flowVariables?.forEach((meta: IFieldMeta) => {
       if (meta?.type === MetaValueType.ARRAY) {
         if (meta?.items?.type === MetaValueType.OBJECT || meta?.items?.type  === MetaValueType.OBJECT_ID) {
           const obj = { ...meta }

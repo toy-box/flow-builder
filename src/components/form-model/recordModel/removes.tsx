@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
   Space, ArrayItems, Switch, Radio, NumberPicker } from '@formily/antd'
-import { createForm } from '@formily/core'
+import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
@@ -85,6 +85,11 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
   
   const form = createForm({
     effects: () => {
+      onFieldValueChange('registerId', (field) => {
+        form.setFieldState('criteria.conditions', (state) => {
+          state.value = []
+        })
+      })
     }
   })
 

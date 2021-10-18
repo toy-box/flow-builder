@@ -72,6 +72,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       storeOutputAutomatically: value.storeOutputAutomatically,
       getFirstRecordOnly: value.getFirstRecordOnly
     }
+    debugger
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
@@ -112,6 +113,16 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
             state.title = `${filterName} ${register.name} ${record}`
+            state.value = []
+          })
+          form.setFieldState('sortOrder', (state) => {
+            state.value = 'null'
+          })
+          form.setFieldState('sortField', (state) => {
+            state.value = undefined
+          })
+          form.setFieldState('storeOutputAutomatically', (state) => {
+            state.value = true
           })
         }
       })
@@ -162,11 +173,9 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     }
   })
 
-  useEffect(() => {
-    if (metaFlowData) {
-      form.setValues(metaFlowData)
-    }
-  }, [form, metaFlowData])
+  if (metaFlowData) {
+    form.setValues(metaFlowData)
+  }
 
   const myReaction = useCallback((type, field) => {
     const val = form.values

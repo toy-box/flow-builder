@@ -4,7 +4,21 @@
 
 .@{prefix-cls}-editor {
   height: calc(100vh - 56px);
-  display: flex;
+  &-content {
+    display: flex;
+    flex-wrap: wrap;
+    height: calc(100vh - 101px);
+  }
+  &-narbar {
+    height: 44px;
+    width: 100%;
+    border-bottom: solid 1px #ccc;
+    .right-btn {
+      float: right;
+      margin-right: 20px;
+      margin-top: 6px;
+    }
+  }
   &-canvas {
     flex: 1;
   }

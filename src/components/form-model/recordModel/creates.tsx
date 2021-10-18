@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
   Space, ArrayItems, Switch, Radio, NumberPicker } from '@formily/antd'
@@ -94,8 +94,10 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
         const registers = fieldMetaStore.fieldMetaStore.registers
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
+          // form.values.inputAssignments = []
           form.setFieldState('inputAssignments', (state) => {
             state.title = `${setName} ${register.name} ${setField}`
+            state.value = []
           })
           form.setFieldState('assignRecordIdToReference', (state) => {
             state.title = `${saveId} ${register.name} ID`
@@ -110,6 +112,12 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
       form.setValues(metaFlowData)
     }
   }, [form, metaFlowData])
+
+  const myReaction = useCallback((field) => {
+    const val = form.values
+    const registerId = val.registerId
+    field.display = registerId ? 'visible' : 'none';
+  }, [form.values])
   
 
   const schema = {
@@ -197,14 +205,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
               reactionKey: 'registerId',
               flowGraph,
             },
-            'x-reactions': {
-              dependencies: ['registerId'],
-              fulfill: {
-                schema: {
-                  'x-display': "{{$deps != '' ? 'visible' : 'none'}}",
-                },
-              },
-            },
+            'x-reactions': myReaction,
           },
           storeOutputAutomatically: {
             type: 'boolean',
