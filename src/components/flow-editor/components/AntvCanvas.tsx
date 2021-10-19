@@ -54,9 +54,6 @@ export const AntvCanvas = () => {
             RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
             RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
           },
-          // svgNodes: {
-          //   DecisionNode: makeDecisionNode
-          // }
         })
       );
       flow.setFlowNode(flowGraph.flowNodes as any[])

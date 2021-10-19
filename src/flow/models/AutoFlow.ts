@@ -15,8 +15,8 @@ import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
   RecordUpdate, RecordDelete, RecordLookup } from './index'
 import { useLocale } from '../../hooks'
-import { AnyARecord } from 'dns';
 // import { runEffects } from '../shared/effectbox'
+import { History } from './History'
 
 const STAND_SIZE = 56;
 
@@ -81,6 +81,7 @@ export class AutoFlow {
   flowFormulas: IFieldMeta[] = []
   flowTemplates: IFieldMeta[] = []
   flowVariables: IFieldMeta[] = []
+  history: History
 
   constructor(autoFlowMeta: FlowGraphMeta) {
     this.id = autoFlowMeta.id
@@ -90,10 +91,21 @@ export class AutoFlow {
       name: autoFlowMeta.name,
       flow: {}
     }
+    this.history = new History(undefined, {
+      onRedo: (item) => {
+        this.flowGraph = new Flow()
+        this.mataFlowJson.flow = item.data
+      },
+      onUndo: (item) => {
+        this.flowGraph = new Flow()
+        this.mataFlowJson.flow = item.data
+      },
+    })
     this.flowGraph = new Flow()
     this.flowEndId = uid()
     this.makeObservable()
     this.onInit()
+    this.history.push(this.mataFlowJson.flow)
   }
 
   protected makeObservable() {
@@ -159,6 +171,7 @@ export class AutoFlow {
       if (flowSuspend) this.decisionFlowData(flowSuspend, flowData, nodeId)
     }
     this.initMetaFields(metaType, flowData, MetaFieldType.EDIT, nodeId)
+    this.history.push(this.mataFlowJson.flow)
   }
 
   decisionFlowData = (flowDecision: FlowDecision | FlowSuspend, flowData: FlowMetaParam, nodeId: string) => {
@@ -256,6 +269,7 @@ export class AutoFlow {
       height: STAND_SIZE,
       component: 'EndNode',
     })
+    this.history.push(this.mataFlowJson.flow)
   }
 
   removeFlowDataFunc = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam, flag?: boolean) => {
@@ -346,6 +360,7 @@ export class AutoFlow {
       }
     }
     this.initFlowNodes(metaType, data, flowNode)
+    this.history.push(this.mataFlowJson.flow)
     console.log(this.mataFlowJson.flow, 'this.mataFlowJson.flow')
   }
 
@@ -777,6 +792,7 @@ export class AutoFlow {
       default:
         break;
     }
+    this.history.push(this.mataFlowJson.flow)
   }
 
   get fieldMetas() {

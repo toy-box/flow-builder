@@ -97,7 +97,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
           // form.values.inputAssignments = []
           form.setFieldState('inputAssignments', (state) => {
             state.title = `${setName} ${register.name} ${setField}`
-            state.value = []
+            // state.value = []
           })
           form.setFieldState('assignRecordIdToReference', (state) => {
             state.title = `${saveId} ${register.name} ID`
