@@ -28,7 +28,7 @@ export const ResourceSelect: FC = observer((props: any) => {
   const metaOptions = useMemo(() => {
     if (props.mataSource === 'metaData') {
       if (props.reactionKey) {
-        const reactionKey = props.reactionValue || form.values[props.reactionKey]
+        const reactionKey = form.values[props.reactionKey]
         let registerOps: IFieldOption[] = []
         registers.some((re) => {
           if (re.id === reactionKey) {
@@ -98,7 +98,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         }
       }
     })
-  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers, props.reactionValue])
+  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers, form.values[props.reactionKey]])
 
   const optionRender = useMemo(() => {
     return metaOptions?.map((option: any) =>

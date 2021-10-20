@@ -95,7 +95,7 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
 
   useEffect(() => {
     if (metaFlowData) {
-      form.setValues(metaFlowData)
+      form.initialValues = metaFlowData
     }
   }, [form, metaFlowData])
 

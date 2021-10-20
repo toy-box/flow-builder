@@ -111,7 +111,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
 
   useEffect(() => {
     if (metaFlowData) {
-      form.setValues(metaFlowData)
+      form.initialValues = metaFlowData
     }
   }, [form, metaFlowData])
 

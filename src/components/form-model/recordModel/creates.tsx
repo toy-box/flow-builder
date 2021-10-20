@@ -34,6 +34,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   const setField = useLocale('flow.form.recordCreate.setField')
   const saveId = useLocale('flow.form.recordCreate.saveId')
   const repeatName = useLocale('flow.form.validator.repeatName')
+  let count = 0
 
   
   useEffect(() => {
@@ -93,11 +94,11 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
       onFieldValueChange('registerId', (field) => {
         const registers = fieldMetaStore.fieldMetaStore.registers
         const register = registers.find((rg) => rg.id === field.value)
+        count = 1
         if (register) {
-          // form.values.inputAssignments = []
           form.setFieldState('inputAssignments', (state) => {
             state.title = `${setName} ${register.name} ${setField}`
-            // state.value = []
+            state.value = []
           })
           form.setFieldState('assignRecordIdToReference', (state) => {
             state.title = `${saveId} ${register.name} ID`
@@ -107,11 +108,9 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
     }
   })
 
-  useEffect(() => {
-    if (metaFlowData) {
-      form.setValues(metaFlowData)
-    }
-  }, [form, metaFlowData])
+  if (metaFlowData) {
+    form.initialValues = metaFlowData
+  }
 
   const myReaction = useCallback((field) => {
     const val = form.values
@@ -203,6 +202,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
               simple: true,
               mataSource: 'metaData',
               reactionKey: 'registerId',
+              count,
               flowGraph,
             },
             'x-reactions': myReaction,

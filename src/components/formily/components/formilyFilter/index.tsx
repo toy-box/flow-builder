@@ -32,13 +32,14 @@ export const FormilyFilter: FC = observer((props: any) => {
 
   const resourceFieldMetas = useMemo(() => {
     if (props.mataSource === 'metaData') {
-      const reactionKey = props.reactionValue || form.values[props.reactionKey]
+      const reactionKey = form.values[props.reactionKey]
       let registerOps: IFieldOption[] = []
       registers.some((re) => {
         if (re.id === reactionKey) {
           for (const key in re.properties) {
             if (re.properties.hasOwnProperty(key)) {
               const obj = re.properties[key];
+              obj.options = props.flowGraph.fieldMetas
               registerOps.push(obj)
             }
           }
@@ -49,7 +50,7 @@ export const FormilyFilter: FC = observer((props: any) => {
       return registerOps
     }
     return props.flowGraph.fieldMetas
-  }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas, props.reactionValue])
+  }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas, form.values[props.reactionKey]])
   return (
     <div style={{'display': props.display}}>
       {props.isShowResourceBtn && <ResourceCreate 

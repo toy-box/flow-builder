@@ -174,7 +174,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   })
 
   if (metaFlowData) {
-    form.setValues(metaFlowData)
+    form.initialValues = metaFlowData
   }
 
   const myReaction = useCallback((type, field) => {

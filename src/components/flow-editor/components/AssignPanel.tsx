@@ -50,7 +50,6 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph,
       const metaData = flowAssignments.find((meta) => meta.id === nodeId);
       if (type === OpartType.REMOVE && metaData) {
         flowGraph.removeFlowData(nodeId, FlowMetaType.ASSIGNMENT, metaData)
-        callbackFunc(nodeId, FlowMetaType.ASSIGNMENT, metaData)
       } else {
         setMetaFlowData(metaData)
         setShowModel(true)
