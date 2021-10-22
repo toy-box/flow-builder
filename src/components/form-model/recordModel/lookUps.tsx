@@ -6,8 +6,9 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
 import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { observer } from '@formily/react'
-import { IFieldOption, MetaValueType } from '@toy-box/meta-schema';
-import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { IFieldOption, MetaValueType, ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import { clone } from '@toy-box/toybox-shared';
+import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition, IOutputAssignment } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
 import { uid } from '../../../utils';
@@ -51,6 +52,20 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     const queriedFields = value?.queriedFields?.map((field: { field: string }) => {
       return field.field;
     })
+    const conditions = value?.criteria?.conditions.map((data: ICompareOperation) => {
+      return {
+        fieldPattern: data.source,
+        operation: data.op,
+        type: data.type,
+        value: data.target
+      }
+    })
+    const outputAssignments = value?.outputAssignments?.map((data: ICompareOperation) => {
+      return {
+        assignToReference: data.source,
+        field: data.target
+      }
+    })
     const paramData = {
       id: value.id,
       name: value.name,
@@ -62,9 +77,9 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       },
       registerId: value.registerId,
       criteria: {
-        conditions: value?.criteria?.conditions
+        conditions
       },
-      outputAssignments: value.outputAssignments,
+      outputAssignments,
       outputReference: value.outputReference,
       queriedFields,
       sortOrder: value.sortOrder,
@@ -72,7 +87,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       storeOutputAutomatically: value.storeOutputAutomatically,
       getFirstRecordOnly: value.getFirstRecordOnly
     }
-    debugger
     console.log(paramData);
     form.submit((resolve) => {
       setIsModalVisible(false);
@@ -174,7 +188,26 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   })
 
   if (metaFlowData) {
-    form.initialValues = metaFlowData
+    const flowData = clone(metaFlowData)
+    const conditions = flowData?.criteria.conditions.map((data: ICriteriaCondition) => {
+      return {
+        source: data.fieldPattern,
+        op: data.operation,
+        type: data.type,
+        target: data.value
+      }
+    })
+    const outputAssignments = flowData?.outputAssignments?.map((data: IOutputAssignment) => {
+      return {
+        source: data.assignToReference,
+        op: CompareOP.EQ,
+        type: 'REFERENCE',
+        target: data.field
+      }
+    })
+    flowData.criteria.conditions = conditions
+    flowData.outputAssignments = outputAssignments
+    form.initialValues = flowData
   }
 
   const myReaction = useCallback((type, field) => {
@@ -583,7 +616,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             },
             'x-component-props': {
               simple: true,
-              specialMode: false,
+              specialMode: true,
+              specialShowTypes: ['REFERENCE'],
               reactionKey: 'registerId',
               mataSource: 'metaData',
               flowGraph,

@@ -39,8 +39,8 @@ GlobalRegistry.registerDesignerLocales({
         template: '模板',
       },
       metaType: {
-        text: '文本',
-        str: '字符串',
+        text: '大段文本',
+        str: '文本',
         num: '数字',
         objectId: '记录',
         bool: '布尔值',
@@ -77,14 +77,15 @@ GlobalRegistry.registerDesignerLocales({
           sortField: '排序方式是必填项',
           flowType: '资源类型是必填项',
           name: '资源名称是必填项',
-          repeatName: '资源名称重复',
+          repeatName: 'API名称重复',
           type: '数据类型是必填项',
           refObjectId: '对象值是必填项',
           text: '模板是必填项',
           expression: '公式是必填项',
           inputAssignments: '字段值是必填项',
           sortOrderIsEmpty: '排序标准是必填项',
-          outputReference: '记录变量是必填项'
+          outputReference: '记录变量是必填项',
+          resourceRegRuleMessage: 'API名称仅可以包含下划线和字母数字字符'
         },
         placeholder: {
           recordIdValue: '请选择记录',
@@ -149,8 +150,8 @@ GlobalRegistry.registerDesignerLocales({
           sortTitle: '暂停配置',
           removeBtn: '删除暂停配置',
           option: {
-            time: '特定时间',
-            recordTime: '记录时间'
+            time: '恢复特定时间',
+            recordTime: '恢复记录时间'
           },
           rule: {
             name: '暂停配置标签',
@@ -162,6 +163,7 @@ GlobalRegistry.registerDesignerLocales({
             offsetNum: '偏移数字',
             offsetUnit: '偏移单位（小时或天数）',
           },
+          outParameters: '在变量中存储输出值',
           tip: '对于每个可以恢复流的事件，添加暂停配置。此事件可以指定时间或平台事件消息。暂停条件确定是否在事件发生之前暂停流。在未满足暂停条件时，流会使用默认路径，而不暂停。',
         },
         loop: {

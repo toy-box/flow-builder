@@ -5,9 +5,10 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonG
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { clone, isObj } from '@formily/shared';
+import { ICompareOperation } from '@toy-box/meta-schema';
 import { BranchArrays, FormilyFilter } from '../../formily/components/index'
 import { uid } from '../../../utils';
-import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, ICriteriaCondition } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
@@ -40,15 +41,22 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
     console.log(form.values)
     form.submit((resolve) => {
       const value = form.values;
-      if (!decisionData) {
-        value.rules.forEach((rule: any) => {
-          if (!isObj(rule.connector)) {
-            rule.connector = {
-              targetReference: null
-            }
+      value.rules.forEach((rule: any) => {
+        if (!isObj(rule.connector) && !decisionData) {
+          rule.connector = {
+            targetReference: null
+          }
+        }
+        const conditions = rule?.criteria?.conditions.map((data: ICompareOperation) => {
+          return {
+            fieldPattern: data.source,
+            operation: data.op,
+            type: data.type,
+            value: data.target
           }
         })
-      }
+        rule.criteria.conditions = conditions
+      })
       const paramData = {
         id: value.id,
         name: value.name,
@@ -91,8 +99,19 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
   const form = createForm()
 
   if (decisionData) {
-    const val = clone(decisionData)
-    form.setValues(val)
+    const flowData = clone(decisionData)
+    flowData.rules.forEach((rule: any) => {
+      const conditions = rule.criteria?.conditions?.map((data: ICriteriaCondition) => {
+        return {
+          source: data.fieldPattern,
+          op: data.operation,
+          type: data.type,
+          target: data.value
+        }
+      })
+      rule.criteria.conditions = conditions
+    })
+    form.setValues(flowData)
   } else {
     form.setValues(
       {

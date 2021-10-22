@@ -5,9 +5,11 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
   Space, ArrayItems, Switch, Radio, NumberPicker } from '@formily/antd'
 import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
+import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import { clone } from '@toy-box/toybox-shared';
 import { fieldMetaStore } from '../../../store'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam, IInputAssignment } from '../../../flow/types'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -34,7 +36,6 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   const setField = useLocale('flow.form.recordCreate.setField')
   const saveId = useLocale('flow.form.recordCreate.saveId')
   const repeatName = useLocale('flow.form.validator.repeatName')
-  let count = 0
 
   
   useEffect(() => {
@@ -44,6 +45,13 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   const handleOk = () => {
     console.log(form.values)
     const value = form.values;
+    const inputAssignments = value.inputAssignments.map((data: ICompareOperation) => {
+      return {
+        field: data.source,
+        type: data.type,
+        value: data.target
+      }
+    })
     const paramData = {
       id: value.id,
       name: value.name,
@@ -54,7 +62,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
         targetReference: metaFlowData?.faultConnector?.targetReference || null,
       },
       registerId: value.registerId,
-      inputAssignments: value.inputAssignments,
+      inputAssignments: inputAssignments,
       storeOutputAutomatically: value.storeOutputAutomatically,
       assignRecordIdToReference: value.assignRecordIdToReference,
     }
@@ -94,7 +102,6 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
       onFieldValueChange('registerId', (field) => {
         const registers = fieldMetaStore.fieldMetaStore.registers
         const register = registers.find((rg) => rg.id === field.value)
-        count = 1
         if (register) {
           form.setFieldState('inputAssignments', (state) => {
             state.title = `${setName} ${register.name} ${setField}`
@@ -109,7 +116,17 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
   })
 
   if (metaFlowData) {
-    form.initialValues = metaFlowData
+    const flowData = clone(metaFlowData)
+    const inputAssignments = flowData?.inputAssignments.map((data: IInputAssignment) => {
+      return {
+        source: data.field,
+        op: CompareOP.EQ,
+        type: data.type,
+        target: data.value
+      }
+    })
+    flowData.inputAssignments = inputAssignments
+    form.initialValues = flowData
   }
 
   const myReaction = useCallback((field) => {
@@ -200,9 +217,9 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
             },
             'x-component-props': {
               simple: true,
+              specialMode: true,
               mataSource: 'metaData',
               reactionKey: 'registerId',
-              count,
               flowGraph,
             },
             'x-reactions': myReaction,

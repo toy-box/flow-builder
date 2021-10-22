@@ -4,8 +4,10 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
   Space, ArrayItems, Switch, Radio, NumberPicker } from '@formily/antd'
 import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
+import { clone } from '@toy-box/toybox-shared';
+import { ICompareOperation } from '@toy-box/meta-schema';
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, ICriteriaCondition } from '../../../flow/types'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -38,6 +40,14 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
   const handleOk = () => {
     console.log(form.values)
     const value = form.values;
+    const conditions = value?.criteria?.conditions.map((data: ICompareOperation) => {
+      return {
+        fieldPattern: data.source,
+        operation: data.op,
+        type: data.type,
+        value: data.target
+      }
+    })
     const paramData = {
       id: value.id,
       name: value.name,
@@ -49,7 +59,7 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
       },
       registerId: value.registerId,
       criteria: {
-        conditions: value.criteria.conditions
+        conditions
       },
     }
     console.log(paramData);
@@ -93,11 +103,19 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
     }
   })
 
-  useEffect(() => {
-    if (metaFlowData) {
-      form.initialValues = metaFlowData
-    }
-  }, [form, metaFlowData])
+  if (metaFlowData) {
+    const flowData = clone(metaFlowData)
+    const conditions = flowData?.criteria.conditions.map((data: ICriteriaCondition) => {
+      return {
+        source: data.fieldPattern,
+        op: data.operation,
+        type: data.type,
+        target: data.value
+      }
+    })
+    flowData.criteria.conditions = conditions
+    form.initialValues = flowData
+  }
 
   const schema = {
     type: 'object',

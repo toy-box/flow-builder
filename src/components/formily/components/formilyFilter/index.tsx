@@ -1,10 +1,11 @@
 import React, { FC, useCallback, useState, useMemo } from 'react'
 import { useForm, observer, useField } from '@formily/react'
 import { FilterBuilder } from '@toy-box/meta-components';
-import { ICompareOperation, IFieldOption } from '@toy-box/meta-schema'
+import { ICompareOperation, IFieldOption, IFieldGroupMeta } from '@toy-box/meta-schema'
 import { fieldMetaStore } from '../../../../store'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
 import { useLocale } from '../../../../hooks'
+import { isArr } from '@toy-box/toybox-shared';
 
 export const FormilyFilter: FC = observer((props: any) => {
   const { registers } = fieldMetaStore.fieldMetaStore
@@ -19,16 +20,26 @@ export const FormilyFilter: FC = observer((props: any) => {
     },
     [form, formilyField],
   )
-  const specialOptions = [
-    {
-      label: useLocale('flow.form.comm.reference'),
-      value: 'REFERENCE',
-    },
-    {
-      label: useLocale('flow.form.comm.input'),
-      value: 'INPUT',
-    },
-  ]
+  const specialOptions = useMemo(() => {
+    const arr = [
+      {
+        label: useLocale('flow.form.comm.reference'),
+        value: 'REFERENCE',
+      },
+      {
+        label: useLocale('flow.form.comm.input'),
+        value: 'INPUT',
+      },
+    ]
+    const list = arr.filter((p) => {
+      if (isArr(props.specialShowTypes)) {
+        return props.specialShowTypes.find((type: string) => type === p.value)
+      } else {
+        return true
+      }
+    })
+    return list
+  }, [props.specialShowTypes])
 
   const resourceFieldMetas = useMemo(() => {
     if (props.mataSource === 'metaData') {
@@ -39,7 +50,11 @@ export const FormilyFilter: FC = observer((props: any) => {
           for (const key in re.properties) {
             if (re.properties.hasOwnProperty(key)) {
               const obj = re.properties[key];
-              obj.options = props.flowGraph.fieldMetas
+              props.flowGraph?.fieldMetas.forEach((meta: IFieldGroupMeta) => {
+                meta?.children.forEach((child) => {
+                  if (child.type === obj.type) obj.options = child.options
+                })
+              })
               registerOps.push(obj)
             }
           }

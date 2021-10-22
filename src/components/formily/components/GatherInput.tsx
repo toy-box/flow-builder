@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useMemo } from 'react'
 import { Input } from '@formily/antd'
+import { Input as antInput } from 'antd'
 import { MetaValueType } from '@toy-box/meta-schema';
 import { useForm, observer } from '@formily/react'
 import { FieldDate, FieldBoolean, FieldSelect } from '@toy-box/meta-components';
@@ -12,6 +13,7 @@ import { useLocale } from '../../../hooks'
 export const GatherInput: FC = observer((props: any) => {
   const form = useForm()
   const { registers } = fieldMetaStore.fieldMetaStore;
+  const { TextArea } = antInput
 
   const changeValue = useCallback((e) => {
     form.setFieldState('defaultValue', (state) => {
@@ -47,6 +49,12 @@ export const GatherInput: FC = observer((props: any) => {
   const filterValueInput = useMemo(() => {
     switch (form.values.type) {
       case MetaValueType.TEXT:
+        return <TextArea
+          onChange={changeValue} 
+          value={props.value}
+          placeholder={useLocale('flow.form.placeholder.formilyInput.input')}
+          autoSize={{ minRows: 3, maxRows: 5 }}
+        />
       case MetaValueType.STRING:
       case MetaValueType.NUMBER:
         return <Input placeholder={useLocale('flow.form.placeholder.formilyInput.input')} type={form.values.type} onChange={changeValue} value={props.value} />

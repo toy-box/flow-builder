@@ -83,7 +83,7 @@ export interface FlowMeta {
   start?: FlowMetaParam
   assignments?: FlowMetaParam[]
   decisions?: FlowMetaParam[]
-  suspends?: FlowMetaParam[]
+  waits?: FlowMetaParam[]
   loops?: FlowMetaParam[]
   sortCollectionProcessor?: FlowEdgeMeta[]
   recordCreates?: FlowMetaParam[]
@@ -96,7 +96,7 @@ export enum FlowMetaType {
   START = 'start',
   ASSIGNMENT = 'assignments',
   DECISION = 'decisions',
-  SUSPEND= 'suspends',
+  WAIT= 'waits',
   LOOP = 'loops',
   SORT_COLLECTION_PROCESSOR = 'sortCollectionProcessor',
   RECORD_CREATE = 'recordCreates',
@@ -131,6 +131,26 @@ export interface FlowMetaParam {
   sortOrder?: SortOrder
   sortField?: string
   getFirstRecordOnly?: boolean
+  waitEvents?: IwaitEvent[]
+}
+
+export interface IwaitEvent {
+  connector: TargetReference
+  outParameters: IOutParameter[]
+  id: string
+  name: string
+  recoveryTimeInfo: IRecoveryTimeInfo
+}
+
+export interface IRecoveryTimeInfo {
+  dateValue: string
+  dateValueType: string
+  field: string
+  offsetNum?: number
+  offsetUnit?: string
+  recordIdType: string
+  recordIdValue: string
+  registerId: string
 }
 
 export interface SortOption {
@@ -163,3 +183,35 @@ export enum OpartType {
   EDIT = 'edit',
   REMOVE = 'remove'
 }
+
+export interface IInputAssignment {
+  field: string
+  type: string
+  value: any
+}
+
+export interface IOutParameter {
+  id: string
+  type?: string
+  value?: any
+}
+
+export interface ICriteriaCondition {
+  fieldPattern: string
+  operation: string
+  type: string
+  value: any
+}
+
+export interface IAssignmentData {
+  assignToReference: string
+  operation: string
+  type: string
+  value: any
+}
+
+export interface IOutputAssignment {
+  assignToReference: string
+  field: string
+}
+

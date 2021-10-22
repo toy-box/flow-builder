@@ -3,7 +3,7 @@ import {
   define,
   observable,
 } from '@formily/reactive'
-import { FlowMetaParam, TargetReference } from '../types'
+import { FlowMetaParam, TargetReference, IwaitEvent } from '../types'
 
 export class FlowSuspend {
   id: string
@@ -12,7 +12,7 @@ export class FlowSuspend {
   connector?: TargetReference
   defaultConnector?: TargetReference
   defaultConnectorName?: string
-  rules?: FlowMetaParam[]
+  waitEvents?: IwaitEvent[]
 
   constructor(suspend: FlowMetaParam) {
     this.id = suspend.id
@@ -21,7 +21,7 @@ export class FlowSuspend {
     this.connector = suspend.connector
     this.defaultConnector = suspend.defaultConnector
     this.defaultConnectorName = suspend.defaultConnectorName
-    this.rules = suspend.rules
+    this.waitEvents = suspend.waitEvents
     this.makeObservable()
   }
 
@@ -33,7 +33,7 @@ export class FlowSuspend {
       connector: observable.deep,
       defaultConnector: observable.deep,
       defaultConnectorName: observable.deep,
-      rules: observable.deep,
+      waitEvents: observable.deep,
       onEdit: action
     })
   }
@@ -45,6 +45,6 @@ export class FlowSuspend {
     this.connector = flowSuspend.connector
     this.defaultConnector = flowSuspend.defaultConnector
     this.defaultConnectorName = flowSuspend.defaultConnectorName
-    this.rules = flowSuspend.rules
+    this.waitEvents = flowSuspend.waitEvents
   }
 }

@@ -4,6 +4,8 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonG
 import { createForm } from '@formily/core'
 import { observer } from '@formily/reactive-react'
 import { FormProvider, createSchemaField } from '@formily/react'
+import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import { clone } from '@toy-box/toybox-shared';
 import { FormilyFilter } from '../formily/components/index'
 import './index.less'
 import { TextWidget } from '../widgets'
@@ -11,7 +13,7 @@ import { AutoFlow } from '../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from './RepeatErrorMessage'
 import { useLocale } from '../../hooks'
 
-import { FlowMetaType, FlowMetaParam } from '../../flow/types'
+import { FlowMetaType, FlowMetaParam, IAssignmentData } from '../../flow/types'
 export interface AssignmentModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
@@ -36,6 +38,14 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
 
   const handleOk = () => {
     const value = form.values;
+    const assignmentItems = value?.assignmentItems.map((data: ICompareOperation) => {
+      return {
+        assignToReference: data.source,
+        operation: data.op,
+        type: data.type,
+        value: data.target
+      }
+    })
     const paramData = {
       id: value.id,
       name: value.name,
@@ -46,7 +56,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
         targetReference: assignmentData?.defaultConnector?.targetReference || null,
       },
       description: value.description,
-      assignmentItems: value.assignmentItems,
+      assignmentItems,
     }
     console.log(paramData, 'paramData')
     form.submit((resolve) => {
@@ -92,7 +102,17 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   const form = createForm()
 
   if (assignmentData) {
-    form.setValues(assignmentData)
+    const flowData = clone(assignmentData)
+    const assignmentItems = flowData?.assignmentItems.map((data: IAssignmentData) => {
+      return {
+        source: data.assignToReference,
+        op: data.operation,
+        type: data.type,
+        target: data.value
+      }
+    })
+    flowData.assignmentItems = assignmentItems
+    form.setValues(flowData)
   }
 
   const schema = {

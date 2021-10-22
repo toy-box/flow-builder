@@ -28,7 +28,7 @@ const MetaTypes = [
   },
   {
     label: <TextWidget>flow.extend.suppend</TextWidget>,
-    value: FlowMetaType.SUSPEND,
+    value: FlowMetaType.WAIT,
   },
   {
     label: <TextWidget>flow.extend.loop</TextWidget>,
@@ -86,7 +86,7 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ callbackFunc, flowGraph, clo
         return <AssignmentModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.DECISION:
         return <DecisionModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
-      case FlowMetaType.SUSPEND:
+      case FlowMetaType.WAIT:
         return <SuspendModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />
       case FlowMetaType.LOOP:
         return <LoopModel flowGraph={flowGraph} showModel={showModel} callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />

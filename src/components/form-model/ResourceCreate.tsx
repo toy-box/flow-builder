@@ -200,21 +200,22 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               gridSpan: 2
             },
           },
-          name: {
+          key: {
             type: 'string',
-            title: <TextWidget>flow.form.resourceCreate.name</TextWidget>,
+            title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
             'x-validator': [{
               triggerType: 'onBlur',
               required: true,
-              message: <TextWidget>flow.form.validator.name</TextWidget>,
+              message: <TextWidget>flow.form.validator.value</TextWidget>,
             }, {
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
+                if (!/^\w+$/.test(value)) return <TextWidget>flow.form.validator.resourceRegRuleMessage</TextWidget>
                 let idx = 0
                 fieldMetas.forEach((meta: any) => {
-                  const ch = meta.children.find((child: any) => child.name === value)
+                  const ch = meta.children.find((child: any) => child.key === value)
                   if (ch) idx += 1
                 })
                 if(idx > 0) return <TextWidget>flow.form.validator.repeatName</TextWidget>
@@ -375,12 +376,12 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       exclusiveMaximum: null,
       exclusiveMinimum: null,
       format: null,
-      key: uid(),
+      key: obj.key,
       maxLength: null,
       maximum: null,
       minLength: null,
       minimum: null,
-      name: obj.name,
+      name: obj.key,
       options: null,
       pattern: null,
       primary: null,

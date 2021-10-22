@@ -1,11 +1,12 @@
 import React, { FC, useState, useEffect, useCallback } from 'react';
-import { Modal } from 'antd';
+import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup, Radio, NumberPicker } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
+import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
-import { BranchArrays, ResourceSelect } from '../../formily/components/index'
-import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { BranchArrays, ResourceSelect, FormilyFilter } from '../../formily/components/index'
+import { FlowMetaType, FlowMetaParam, IOutParameter } from '../../../flow/types'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -38,7 +39,14 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   const handleOk = () => {
     console.log(form.values)
     const value = form.values;
-    const quiredRules = value?.rules?.map((rule: any) => {
+    const quiredRules = value?.waitEvents?.map((rule: any) => {
+      const outParameters = rule.outParameters.map((data: ICompareOperation) => {
+        return {
+          id: data.source,
+          type: data.type,
+          value: data.target
+        }
+      })
       if (rule.sourceTime) {
         return {
           id: uid(),
@@ -46,9 +54,12 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           connector: {
             targetReference: rule?.connector?.targetReference || null,
           },
-          dateValue: rule.dateValue,
-          offsetNum: rule.offsetNum,
-          offsetUnit: rule.offsetUnit,
+          recoveryTimeInfo: {
+            dateValue: rule.dateValue,
+            offsetNum: rule.offsetNum,
+            offsetUnit: rule.offsetUnit,
+          },
+          outParameters,
         }
       }
       return {
@@ -57,11 +68,14 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         connector: {
           targetReference: rule?.connector?.targetReference || null,
         },
-        registerId: rule.registerId,
-        field: rule.field,
-        recordIdValue: rule.recordIdValue,
-        offsetNum: rule.offsetNum,
-        offsetUnit: rule.offsetUnit,
+        recoveryTimeInfo: {
+          registerId: rule.registerId,
+          field: rule.field,
+          recordIdValue: rule.recordIdValue,
+          offsetNum: rule.offsetNum,
+          offsetUnit: rule.offsetUnit,
+        },
+        outParameters,
       }
     })
     const paramData = {
@@ -74,18 +88,24 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         targetReference: metaFlowData?.defaultConnector?.targetReference || null,
       },
       description: value.description,
-      rules: quiredRules,
+      waitEvents: quiredRules,
     }
     form.submit((resolve) => {
       setIsModalVisible(false);
-      callbackFunc(paramData, FlowMetaType.SUSPEND)
+      callbackFunc(paramData, FlowMetaType.WAIT)
     }).catch((rejected) => {
     })
   };
 
+  const WaitDesc = () => {
+    return <div className="wait-desc">
+      定义恢复时间
+    </div>
+  }
+
   const handleCancel = () => {
     setIsModalVisible(false);
-    callbackFunc(false, FlowMetaType.SUSPEND)
+    callbackFunc(false, FlowMetaType.WAIT)
   };
 
   const SchemaField = createSchemaField({
@@ -100,7 +120,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       BranchArrays,
       Radio,
       ResourceSelect,
-      NumberPicker
+      NumberPicker,
+      FormilyFilter,
+      WaitDesc
     },
   })
   
@@ -108,23 +130,32 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   if (metaFlowData) {
     const val = clone(metaFlowData)
-    const quiredRules = val?.rules?.map((rule: any) => {
+    const quiredRules = val?.waitEvents?.map((rule: any) => {
+      const outParameters = rule.outParameters.map((data: IOutParameter) => {
+        return {
+          source: data.id,
+          op: CompareOP.EQ,
+          type: data.type,
+          target: data.value
+        }
+      })
       return {
         id: rule.id,
         name: rule.name,
         connector: {
           targetReference: rule?.connector?.targetReference || null,
         },
-        dateValue: rule.dateValue,
-        registerId: rule.registerId,
-        field: rule.field,
-        sourceTime: rule.registerId ? false : true,
-        recordIdValue: rule.recordIdValue,
-        offsetNum: rule.offsetNum,
-        offsetUnit: rule.offsetUnit,
+        dateValue: rule.recoveryTimeInfo.dateValue,
+        registerId: rule.recoveryTimeInfo.registerId,
+        field: rule.recoveryTimeInfo.field,
+        sourceTime: rule.recoveryTimeInfo.registerId ? false : true,
+        recordIdValue: rule.recoveryTimeInfo.recordIdValue,
+        offsetNum: rule.recoveryTimeInfo.offsetNum,
+        offsetUnit: rule.recoveryTimeInfo.offsetUnit,
+        outParameters,
       }
     })
-    form.setValues({
+    form.initialValues = {
       id: val.id,
       name: val.name,
       connector: {
@@ -134,12 +165,12 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         targetReference: val?.defaultConnector?.targetReference || null,
       },
       description: val.description,
-      rules: quiredRules,
-    })
+      waitEvents: quiredRules,
+    }
   } else {
     form.setValues(
       {
-        rules: [{
+        waitEvents: [{
           name: '',
           id: uid(),
           criteria: {
@@ -154,7 +185,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   const myReaction = useCallback((bool, field) => {
     const val = form.values
     const idx = field?.path?.segments[1];
-    const sourceTime = idx > -1 && val?.rules[idx]?.sourceTime
+    const sourceTime = idx > -1 && val?.waitEvents[idx]?.sourceTime
     field.display = sourceTime === bool ? 'visible' : 'none';
   }, [form.values])
 
@@ -213,7 +244,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
               gridSpan: 2
             },
           },
-          rules: {
+          waitEvents: {
             type: 'array',
             title: '',
             'x-decorator': 'FormItem',
@@ -267,6 +298,15 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       ],
                       'x-decorator': 'FormItem',
                       'x-component': 'Radio.Group',
+                      "x-decorator-props": {
+                        gridSpan: 2
+                      },
+                    },
+                    desc: {
+                      type: 'string',
+                      title: '',
+                      // 'x-decorator': 'FormItem',
+                      'x-component': 'WaitDesc',
                       "x-decorator-props": {
                         gridSpan: 2
                       },
@@ -355,6 +395,23 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                         }
                       }],
                     },
+                    outParameters: {
+                      type: 'array',
+                      title: <TextWidget>flow.form.suspend.outParameters</TextWidget>,
+                      required: true,
+                      'x-decorator': 'FormItem',
+                      'x-component': 'FormilyFilter',
+                      "x-decorator-props": {
+                        gridSpan: 2
+                      },
+                      'x-component-props': {
+                        simple: true,
+                        specialMode: true,
+                        isShowResourceBtn: true,
+                        mataSource: 'flowJson',
+                        flowGraph,
+                      },
+                    },
                   },
                 },
               },
@@ -370,7 +427,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 
   return (
     <>
-      <Modal width={900} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
+      <Modal width={1080} title={title} visible={isModalVisible} onOk={handleOk} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onCancel={handleCancel}>
         <div className="suspend-index">
           <PreviewText.Placeholder value={<TextWidget>flow.form.comm.empty</TextWidget>}>
             <FormLayout layout='vertical' colon={false}>
