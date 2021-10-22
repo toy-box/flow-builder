@@ -203,7 +203,7 @@ export const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
 
   useEffect(() => {
     MetaObjectService.metaObjectData().then(({data}) => {
-      initRegisters(data);
+      initRegisters(data.content);
     })
   }, [initFieldMetas, initFieldServices, initRegisters])
 
