@@ -29,9 +29,6 @@ const SchemaField = createSchemaField({
 })
 
 const metaDataOps = [{
-  value: MetaValueType.TEXT,
-  label: <TextWidget>flow.metaType.text</TextWidget>,
-}, {
   value: MetaValueType.STRING,
   label: <TextWidget>flow.metaType.str</TextWidget>,
 }, {
@@ -40,6 +37,9 @@ const metaDataOps = [{
 }, {
   value: MetaValueType.OBJECT_ID,
   label: <TextWidget>flow.metaType.objectId</TextWidget>,
+}, {
+  value: MetaValueType.TEXT,
+  label: <TextWidget>flow.metaType.text</TextWidget>,
 }, {
   value: MetaValueType.BOOLEAN,
   label: <TextWidget>flow.metaType.bool</TextWidget>,
