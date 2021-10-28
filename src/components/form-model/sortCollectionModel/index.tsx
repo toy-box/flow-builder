@@ -183,6 +183,11 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     field.display = refObjectId ? 'visible' : 'none'
   }, [])
 
+  const limitReaction = useCallback((field) => {
+    const flowType = field.query('limitFlag').get('value')
+    field.display = flowType === 'all' ? 'none' : 'visible'
+  }, [])
+
   const schema = {
     type: 'object',
     properties: {
@@ -390,6 +395,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
             },
             'x-decorator': 'FormItem',
             'x-component': 'NumberPicker',
+            "x-reactions": limitReaction
           },
         },
       },

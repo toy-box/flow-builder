@@ -51,7 +51,7 @@ GlobalRegistry.registerDesignerLocales({
       },
       form: {
         comm: {
-          label: '标签',
+          label: '标题',
           value: 'API名称',
           description: '描述',
           cencel: '取消',
@@ -62,9 +62,9 @@ GlobalRegistry.registerDesignerLocales({
         },
         validator: {
           filter: '筛选记录是必填项',
-          label: '标签是必填项',
+          label: '标题是必填项',
           value: 'API名称是必填项',
-          suspendLabel: '暂停配置标签是必填项',
+          suspendLabel: '暂停配置标题是必填项',
           registerId: '对象记录是必填项',
           field: '字段是必填项',
           recordIdValue: '记录是必填项',
@@ -154,7 +154,7 @@ GlobalRegistry.registerDesignerLocales({
             recordTime: '恢复记录时间'
           },
           rule: {
-            name: '暂停配置标签',
+            name: '暂停配置标题',
             sourceTime: '时间源',
             registerId: '获取对象记录',
             field: '字段',

@@ -7,6 +7,9 @@ import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { observer } from '@formily/react'
 import { IFieldOption, MetaValueType, ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import {
+  ArrowRightOutlined,
+} from '@ant-design/icons'
 import { clone } from '@toy-box/toybox-shared';
 import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition, IOutputAssignment } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
@@ -52,7 +55,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     const queriedFields = value?.queriedFields?.map((field: { field: string }) => {
       return field.field;
     })
-    const conditions = value?.criteria?.conditions.map((data: ICompareOperation) => {
+    debugger
+    const conditions = value?.criteria?.conditions?.map((data: ICompareOperation) => {
       return {
         fieldPattern: data.source,
         operation: data.op,
@@ -60,12 +64,12 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         value: data.target
       }
     })
-    const outputAssignments = value?.outputAssignments?.map((data: ICompareOperation) => {
-      return {
-        assignToReference: data.source,
-        field: data.target
-      }
-    })
+    // const outputAssignments = value?.outputAssignments?.map((data: ICompareOperation) => {
+    //   return {
+    //     assignToReference: data.source,
+    //     field: data.target
+    //   }
+    // })
     const paramData = {
       id: value.id,
       name: value.name,
@@ -79,7 +83,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       criteria: {
         conditions
       },
-      outputAssignments,
+      outputAssignments: value?.outputAssignments,
       outputReference: value.outputReference,
       queriedFields,
       sortOrder: value.sortOrder,
@@ -94,6 +98,12 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     }).catch((rejected) => {
     })
   };
+
+  const ArrowRightOutlinedIcon = () => {
+    return <ArrowRightOutlined style={ {position: 'relative',
+      top: '-10px',
+      fontSize: '18px'}} />
+  }
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -116,6 +126,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       NumberPicker,
       FormilyFilter,
       TextTemplate,
+      ArrowRightOutlinedIcon,
     },
   })
   
@@ -197,16 +208,16 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         target: data.value
       }
     })
-    const outputAssignments = flowData?.outputAssignments?.map((data: IOutputAssignment) => {
-      return {
-        source: data.assignToReference,
-        op: CompareOP.EQ,
-        type: 'REFERENCE',
-        target: data.field
-      }
-    })
+    // const outputAssignments = flowData?.outputAssignments?.map((data: IOutputAssignment) => {
+    //   return {
+    //     source: data.assignToReference,
+    //     op: CompareOP.EQ,
+    //     type: 'REFERENCE',
+    //     target: data.field
+    //   }
+    // })
     flowData.criteria.conditions = conditions
-    flowData.outputAssignments = outputAssignments
+    // flowData.outputAssignments = outputAssignments
     form.initialValues = flowData
   }
 
@@ -607,20 +618,66 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-reactions': reactionQueriedFields,
           },
           outputAssignments: {
-            type: 'number',
-            title: <TextWidget>flow.form.recordLookUp.outputAssignments</TextWidget>,
+            type: 'array',
+            'x-component': 'ArrayItems',
             'x-decorator': 'FormItem',
-            'x-component': 'FormilyFilter',
+            title: <TextWidget>flow.form.recordLookUp.outputAssignments</TextWidget>,
             "x-decorator-props": {
               gridSpan: 2
             },
-            'x-component-props': {
-              simple: true,
-              specialMode: true,
-              specialShowTypes: ['REFERENCE'],
-              reactionKey: 'registerId',
-              mataSource: 'metaData',
-              flowGraph,
+            items: {
+              type: 'object',
+              properties: {
+                space: {
+                  type: 'void',
+                  'x-component': 'Space',
+                  properties: {
+                    field: {
+                      type: 'string',
+                      title: '',
+                      'x-decorator': 'FormItem',
+                      'x-component': 'Select',
+                      'x-reactions': reactionField,
+                      'x-component-props': {
+                        style: {
+                          width: 300,
+                        },
+                      },
+                    },
+                    icon: {
+                      type: 'string',
+                      title: '',
+                      // 'x-decorator': 'FormItem',
+                      'x-component': 'ArrowRightOutlinedIcon',
+                    },
+                    assignToReference: {
+                      type: 'string',
+                      title: '',
+                      'x-decorator': 'FormItem',
+                      'x-component': 'ResourceSelect',
+                      'x-component-props': {
+                        isHiddenResourceBtn: true,
+                        flowGraph,
+                        style: {
+                          width: 300,
+                        },
+                      },
+                    },
+                    remove: {
+                      type: 'void',
+                      'x-decorator': 'FormItem',
+                      'x-component': 'ArrayItems.Remove',
+                    },
+                  },
+                },
+              },
+            },
+            properties: {
+              add: {
+                type: 'void',
+                title: <TextWidget>flow.form.recordLookUp.addField</TextWidget>,
+                'x-component': 'ArrayItems.Addition',
+              },
             },
             'x-reactions': {
               dependencies: ['address'],
@@ -631,6 +688,31 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               },
             },
           },
+          // outputAssignments: {
+          //   type: 'number',
+          //   title: <TextWidget>flow.form.recordLookUp.outputAssignments</TextWidget>,
+          //   'x-decorator': 'FormItem',
+          //   'x-component': 'FormilyFilter',
+          //   "x-decorator-props": {
+          //     gridSpan: 2
+          //   },
+          //   'x-component-props': {
+          //     simple: true,
+          //     specialMode: true,
+          //     specialShowTypes: ['REFERENCE'],
+          //     reactionKey: 'registerId',
+          //     mataSource: 'metaData',
+          //     flowGraph,
+          //   },
+          //   'x-reactions': {
+          //     dependencies: ['address'],
+          //     fulfill: {
+          //       schema: {
+          //         'x-display': "{{$deps == 'false' ? 'visible' : 'none'}}",
+          //       },
+          //     },
+          //   },
+          // },
         },
       },
     },
