@@ -84,7 +84,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       },
       outputAssignments: value?.outputAssignments,
       outputReference: value.address ? value.outputReference: undefined,
-      queriedFields: value.automaticallyType ? queriedFields : undefined,
+      queriedFields,
       sortOrder: value.sortOrder,
       sortField: value.sortField,
       storeOutputAutomatically: value.storeOutputAutomatically,
@@ -216,22 +216,22 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     //   }
     // })
     flowData.criteria.conditions = conditions
-    if (!flowData.queriedFields && !flowData.outputReference) {
+    if (flowData.queriedFields && !flowData.outputReference) {
+      flowData.automaticallyType = true
+    } else {
       flowData.automaticallyType = false
       if (!flowData.outputReference) {
         flowData.address = false
       } else {
         flowData.address = true
       }
-    } else {
-      // flowData.automaticallyType = true
-      const queriedFields = flowData?.queriedFields?.map((field: string) => {
-        return {
-          field: field
-        }
-      })
-      flowData.queriedFields = queriedFields
     }
+    const queriedFields = flowData?.queriedFields?.map((field: string) => {
+      return {
+        field: field
+      }
+    })
+    flowData.queriedFields = queriedFields
     // flowData.outputAssignments = outputAssignments
     form.initialValues = flowData
   }
