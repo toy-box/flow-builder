@@ -55,7 +55,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     const queriedFields = value?.queriedFields?.map((field: { field: string }) => {
       return field.field;
     })
-    debugger
     const conditions = value?.criteria?.conditions?.map((data: ICompareOperation) => {
       return {
         fieldPattern: data.source,
@@ -84,8 +83,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         conditions
       },
       outputAssignments: value?.outputAssignments,
-      outputReference: value.outputReference,
-      queriedFields,
+      outputReference: value.address ? value.outputReference: undefined,
+      queriedFields: value.automaticallyType ? queriedFields : undefined,
       sortOrder: value.sortOrder,
       sortField: value.sortField,
       storeOutputAutomatically: value.storeOutputAutomatically,
@@ -165,12 +164,12 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       onFieldValueChange('automaticallyType', (field) => {
         const automaticallyType = field.value
         const outputReference = field.query('outputReference').get('value')
-        const flag = (automaticallyType === true && !outputReference) || (!automaticallyType && outputReference)
+        const flag = (automaticallyType === true) || (!automaticallyType && outputReference)
         form.setFieldState('outputReference', (state) => {
           state.value = undefined
         })
         form.setFieldState('queriedFields', (state) => {
-          state.value = []
+          // state.value = []
           state.display = flag? 'visible' : 'none'
         })
       })
@@ -180,16 +179,16 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         })
         const automaticallyType = field.query('automaticallyType').get('value')
         const outputReference = field.query('outputReference').get('value')
-        const flag = (automaticallyType === true && !outputReference) || (!automaticallyType && outputReference)
+        const flag = (automaticallyType === true) || (!automaticallyType && outputReference)
         form.setFieldState('queriedFields', (state) => {
-          state.value = []
+          // state.value = []
           state.display = flag? 'visible' : 'none'
         })
       })
       onFieldValueChange('outputReference', (field) => {
         const automaticallyType = field.query('automaticallyType').get('value')
         const outputReference = field.value
-        const flag = (automaticallyType === true && !outputReference) || (!automaticallyType && outputReference)
+        const flag = (automaticallyType === true) || (!automaticallyType && outputReference)
         form.setFieldState('queriedFields', (state) => {
           state.value = []
           state.display = flag? 'visible' : 'none'
@@ -200,7 +199,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
 
   if (metaFlowData) {
     const flowData = clone(metaFlowData)
-    const conditions = flowData?.criteria.conditions.map((data: ICriteriaCondition) => {
+    const conditions = flowData?.criteria.conditions?.map((data: ICriteriaCondition) => {
       return {
         source: data.fieldPattern,
         op: data.operation,
@@ -217,6 +216,22 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     //   }
     // })
     flowData.criteria.conditions = conditions
+    if (!flowData.queriedFields && !flowData.outputReference) {
+      flowData.automaticallyType = false
+      if (!flowData.outputReference) {
+        flowData.address = false
+      } else {
+        flowData.address = true
+      }
+    } else {
+      // flowData.automaticallyType = true
+      const queriedFields = flowData?.queriedFields?.map((field: string) => {
+        return {
+          field: field
+        }
+      })
+      flowData.queriedFields = queriedFields
+    }
     // flowData.outputAssignments = outputAssignments
     form.initialValues = flowData
   }
@@ -262,7 +277,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     const automaticallyType = form.values.automaticallyType
     const storeOutputAutomatically = field.query('storeOutputAutomatically').get('value')
     const outputReference = field.query('outputReference').get('value')
-    console.log(automaticallyType, storeOutputAutomatically, outputReference)
     field.display = (storeOutputAutomatically === false && automaticallyType !== false) || outputReference ? 'visible' : 'none'
   }, [form.values.automaticallyType])
 
@@ -580,6 +594,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-component': 'ArrayItems',
             'x-decorator': 'FormItem',
             title: <TextWidget>flow.form.recordLookUp.queriedFields</TextWidget>,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.queriedFields</TextWidget>
+            },
+            required: true,
             items: {
               type: 'object',
               properties: {
@@ -677,6 +696,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                 type: 'void',
                 title: <TextWidget>flow.form.recordLookUp.addField</TextWidget>,
                 'x-component': 'ArrayItems.Addition',
+                'x-component-props': {
+                  style: {
+                    width: 150,
+                  },
+                },
               },
             },
             'x-reactions': {

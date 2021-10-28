@@ -85,7 +85,8 @@ GlobalRegistry.registerDesignerLocales({
           inputAssignments: '字段值是必填项',
           sortOrderIsEmpty: '排序标准是必填项',
           outputReference: '记录变量是必填项',
-          resourceRegRuleMessage: 'API名称仅可以包含下划线和字母数字字符'
+          resourceRegRuleMessage: 'API名称仅可以包含下划线和字母数字字符',
+          queriedFields: '指定字段不能为空'
         },
         placeholder: {
           recordIdValue: '请选择记录',
@@ -265,9 +266,9 @@ GlobalRegistry.registerDesignerLocales({
           },
           outputReference: '选择记录变量',
           outputReferenceLabel: '记录（单个）变量',
-          queriedFields: '选择字段',
+          queriedFields: '选择指定id字段',
           addField: '添加字段',
-          outputAssignments: '设置字段值',
+          outputAssignments: '设置字段',
           textTemplate: '如果您仅存储第一个记录，按唯一字段筛选，例如 ID。'
         },
         formula: {
