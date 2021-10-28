@@ -64,7 +64,31 @@ export const FormilyFilter: FC = observer((props: any) => {
       })
       return registerOps
     }
-    return props.flowGraph.fieldMetas
+    const resourceFieldMetas = props.flowGraph.fieldMetas as any[]
+    let metas = resourceFieldMetas;
+    if (isArr(props.flowJsonTypes)) {
+      metas = []
+      props.flowJsonTypes.forEach((op: any) => {
+        if (isArr(op.children)) {
+          const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
+          const children = meta?.children.filter((child: any) => {
+            const opIdx = op?.children.findIndex((type: string) => child.type === type)
+            return opIdx > -1 ? child : undefined
+          })
+          if (children) {
+            metas.push({
+              label: op.label || meta.label,
+              value: op.value || meta.value,
+              children,
+            })
+          }
+        } else {
+          const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
+          if (meta) metas.push(meta)
+        }
+      })
+    }
+    return metas
   }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas, form.values[props.reactionKey]])
   return (
     <div style={{'display': props.display}}>

@@ -13,7 +13,7 @@ import { AutoFlow } from '../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from './RepeatErrorMessage'
 import { useLocale } from '../../hooks'
 
-import { FlowMetaType, FlowMetaParam, IAssignmentData } from '../../flow/types'
+import { FlowMetaType, FlowMetaParam, IAssignmentData, IFlowResourceType } from '../../flow/types'
 export interface AssignmentModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
@@ -195,6 +195,13 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
               mataSource: 'flowJson',
               isShowResourceBtn: true,
               specialMode: true,
+              flowJsonTypes: [{
+                value: IFlowResourceType.VARIABLE
+              }, {
+                value: IFlowResourceType.VARIABLE_ARRAY
+              }, {
+                value: IFlowResourceType.VARIABLE_ARRAY_RECORD
+              }],
               flowGraph,
             },
           },
