@@ -126,7 +126,7 @@ export const BranchArrays: FC = observer((props: any) => {
         },
         description: '',
       }
-      form.setFieldState('rules', (state) => {
+      form.setFieldState(field?.path?.entire, (state) => {
         state.value = update(state.value, { $push: [ruleItem] })
       })
     },

@@ -1,6 +1,13 @@
+import Cookies from 'universal-cookie';
 import Axios from 'axios'
+
+const cookies = new Cookies();
+
+export const getToken = () => {
+  return cookies.get('_hrm_airclass_key');
+}
 
 export const http = Axios.create({
   baseURL: 'toolbox/studio/web/admin/v1',
-  headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUyMTRiYWMxMmQyYjQ0OWVhZWI3NDg5ZWUyMjIzOTk3Iiwic3ViIjoiNTIxNGJhYzEyZDJiNDQ5ZWFlYjc0ODllZTIyMjM5OTciLCJncm91cElkIjoiMDRlM2IxYmRiMjY5NDRlNzgyOTU3MTFmODZmZTNkOWEiLCJ0ZW5hbnRJZCI6IjA0ZTNiMWJkYjI2OTQ0ZTc4Mjk1NzExZjg2ZmUzZDlhIiwiaWF0IjoxNjM1MzkxMTgyLCJleHAiOjE2MzU4MjMxODIsImF1ZCI6Ind3dy5haXJjbGFzcy50b3AiLCJpc3MiOiJ3d3cuYWlyY2xhc3MudG9wIn0.ClXBb9ekTXAICkmWV-IgangphEkm99N90PDM1uvlH6g' }
+  headers: { 'Authorization': getToken() }
 })

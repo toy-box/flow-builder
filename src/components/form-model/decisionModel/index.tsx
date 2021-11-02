@@ -111,6 +111,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       })
       rule.criteria.conditions = conditions
     })
+    setDefaultConnectorName(flowData.defaultConnectorName)
     form.setValues(flowData)
   } else {
     form.setValues(
