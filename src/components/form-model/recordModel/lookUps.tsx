@@ -6,15 +6,15 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
 import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { observer } from '@formily/react'
-import { IFieldOption, MetaValueType, ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import { IFieldOption, MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
 import {
   ArrowRightOutlined,
 } from '@ant-design/icons'
 import { clone } from '@toy-box/toybox-shared';
-import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition, IOutputAssignment } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
-import { uid } from '../../../utils';
+// import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'

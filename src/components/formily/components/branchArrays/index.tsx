@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
+import React, { FC, useState, useCallback } from 'react';
 import update from 'immutability-helper'
 import classnames from 'classnames'
 import { ISchema  } from '@formily/json-schema'
@@ -78,7 +78,7 @@ export const BranchArrays: FC = observer((props: any) => {
       // })
       field.remove(selectIndex)
       setSelectIndex(selectIndex - 1 < 0 ? selectIndex : selectIndex - 1)
-    },[field, form, selectIndex]
+    },[field, selectIndex]
   )
 
   const selectValue = useCallback(

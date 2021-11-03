@@ -55,7 +55,7 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph,
         setShowModel(true)
       }
     },
-    [closeExtend, flowGraph.flowAssignments, node.node.id],
+    [closeExtend, flowGraph, flowGraph.flowAssignments, node.node.id],
   )
   return (
     <div className={prefixCls}>

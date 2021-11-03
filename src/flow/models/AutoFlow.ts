@@ -9,7 +9,7 @@ import { IFieldMeta, IFieldGroupMeta, MetaValueType, IFieldOption } from '@toy-b
 import { isArr } from '@formily/shared';
 import { clone, isNum, isObj } from '@toy-box/toybox-shared';
 import update from 'immutability-helper'
-import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, FlowMeta } from '../types'
+import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType } from '../types'
 import { uid } from '../../utils';
 import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
@@ -534,6 +534,7 @@ export class AutoFlow {
           return meta
         }
       }
+      return false
     })
   }
 
@@ -944,6 +945,7 @@ export class AutoFlow {
         } else if (flowData?.nextValueConnector) {
           return flowData?.defaultConnector?.targetReference === data.id
         }
+        return false
       })
     }
     console.log(loopLastData, flowData, 'loopLastData')

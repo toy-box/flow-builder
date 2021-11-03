@@ -8,7 +8,7 @@ import { IFieldOption } from '@toy-box/meta-schema';
 import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { fieldMetaStore } from '../../../store'
-import { uid } from '../../../utils';
+// import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
@@ -130,7 +130,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
   }
 
   const isRecord = useCallback((flowType) => {
-    const resourceFieldMetas = flowGraph.fieldMetas as any[]
+    const resourceFieldMetas = flowGraph.fieldMetas
     let refObjectId: string = ''
     resourceFieldMetas.some((metaData: any) => {
       const idx = metaData.children.findIndex((data: any) => data.key === flowType)

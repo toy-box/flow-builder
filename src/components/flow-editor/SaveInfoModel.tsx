@@ -1,4 +1,4 @@
-import React, { FC, useState, CSSProperties, useCallback } from 'react';
+import React, { FC, useState, useCallback } from 'react';
 import { Modal, Button } from 'antd';
 import { clone, isArr } from '@toy-box/toybox-shared';
 import 'codemirror/lib/codemirror.css';
@@ -44,7 +44,7 @@ export const SaveInfoModel:FC<SaveInfoProps> = ({
     setIsModalVisible(true)
     setFlowJsonData(flowJson)
     AutoFlowModelService.saveAutoFlowModel(params)
-  }, [])
+  }, [flowGraph.mataFlowJson.flow])
 
   return (
     <>

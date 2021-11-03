@@ -17,8 +17,6 @@ import { RecordEditPanel } from './RecordEditPanel';
 import { RecordSearchPanel } from './RecordSearchPanel';
 import { SuspendPanel } from './SuspendPanel';
 
-const STAND_SIZE = 56;
-
 export const AntvCanvas = observer(() => {
   const flowGraph = useFlowGraph();
   const flow = flowGraph.flowGraph;

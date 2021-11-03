@@ -10,7 +10,7 @@ import { clone } from '@toy-box/toybox-shared';
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { fieldMetaStore } from '../../../store'
 import { FlowMetaType, FlowMetaParam, IInputAssignment, ICriteriaCondition } from '../../../flow/types'
-import { uid } from '../../../utils';
+// import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'

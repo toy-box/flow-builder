@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react'
+import React, { FC, useCallback, useMemo } from 'react'
 import { useForm, observer, useField } from '@formily/react'
 import { Select } from 'antd'
 import { isArr } from '@formily/shared'

@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react'
 import {
   DeleteOutlined,
 } from '@ant-design/icons'
-import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon'
+// import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon'
 import { ButtonProps } from 'antd/lib/button'
 import { useField, useFieldSchema, Schema } from '@formily/react'
 import { isValid } from '@formily/shared'
@@ -61,19 +61,19 @@ const useIndex = (index?: number) => {
   return ctx ? ctx.index : index
 }
 
-const getDefaultValue: any = (defaultValue: any, schema: Schema) => {
-  if (isValid(defaultValue)) return defaultValue
-  if (Array.isArray(schema?.items))
-    return getDefaultValue(defaultValue, schema.items[0])
-  if (schema?.items?.type === 'array') return []
-  if (schema?.items?.type === 'boolean') return true
-  if (schema?.items?.type === 'date') return ''
-  if (schema?.items?.type === 'datetime') return ''
-  if (schema?.items?.type === 'number') return 0
-  if (schema?.items?.type === 'object') return {}
-  if (schema?.items?.type === 'string') return ''
-  return null
-}
+// const getDefaultValue: any = (defaultValue: any, schema: Schema) => {
+//   if (isValid(defaultValue)) return defaultValue
+//   if (Array.isArray(schema?.items))
+//     return getDefaultValue(defaultValue, schema.items[0])
+//   if (schema?.items?.type === 'array') return []
+//   if (schema?.items?.type === 'boolean') return true
+//   if (schema?.items?.type === 'date') return ''
+//   if (schema?.items?.type === 'datetime') return ''
+//   if (schema?.items?.type === 'number') return 0
+//   if (schema?.items?.type === 'object') return {}
+//   if (schema?.items?.type === 'string') return ''
+//   return null
+// }
 
 export const ArrayBase: ComposedArrayBase = (props) => {
   const field = useField<Formily.Core.Models.ArrayField>()

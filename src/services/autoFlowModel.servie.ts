@@ -1,6 +1,5 @@
 import { http } from './http'
 import { AxiosResponse } from 'axios'
-import { type } from 'os'
 
 const path = 'auto_flow_model'
 

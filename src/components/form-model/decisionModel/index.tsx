@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { FC, useState, useEffect, useCallback } from 'react';
-import { Modal, Divider } from 'antd';
+import React, { FC, useState, useEffect } from 'react';
+import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'

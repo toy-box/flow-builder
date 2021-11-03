@@ -6,7 +6,7 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType } from '../../../flow/types'
 import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
-import { uid } from '../../../utils';
+// import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'

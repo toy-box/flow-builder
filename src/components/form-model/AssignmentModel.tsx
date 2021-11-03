@@ -1,10 +1,10 @@
-import React, { FC, useState, useEffect, useCallback } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { observer } from '@formily/reactive-react'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import { ICompareOperation } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { FormilyFilter } from '../formily/components/index'
 import './index.less'

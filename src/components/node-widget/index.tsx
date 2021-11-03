@@ -1,4 +1,3 @@
-import React from 'react'
 import { useFlowNodes } from '../../flow/hooks/useFlowNodes'
 import { usePrefix } from '../../hooks'
 

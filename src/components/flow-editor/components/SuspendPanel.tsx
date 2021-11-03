@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback, useMemo } from 'react'
+import React, { FC, useState, useCallback } from 'react'
 import { useNode } from '@toy-box/flow-nodes'
 import { isBool } from '@toy-box/toybox-shared'
 import { SuspendModel } from '../../form-model'

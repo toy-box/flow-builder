@@ -83,14 +83,14 @@ const insertHTML = (editorState: any, htmlString: any, source?: any) => {
 
 export const BraftEditorTemplate: FC<any> = observer((props: any) => {
   const form = useForm()
-  const [content, setContent] = useState(props.value)
+  const [content] = useState(props.value)
   const [editorState, setEditorState] = useState()
-  const [outputHTML, setOutputHTML] = useState<any>()
+  // const [setOutputHTML] = useState<any>()
 
   useEffect(() => {
     const htmlContent = content;
     setEditorState(BraftEditor.createEditorState(htmlContent, { editorId: 'demo-editor-with-entity-extension' }))
-    setOutputHTML(null)
+    // setOutputHTML(null)
   }, [content])
 
   const insertHello = useCallback((obj: { fieldId: any; fieldName: any; }) => {
@@ -99,7 +99,7 @@ export const BraftEditorTemplate: FC<any> = observer((props: any) => {
 
   const handleChange = useCallback((editorState: any) => {
     setEditorState(editorState)
-    setOutputHTML(editorState.toHTML())
+    // setOutputHTML(editorState.toHTML())
     form.setFieldState('text', (state) => {
       state.value = editorState.toHTML()
     })
@@ -110,7 +110,7 @@ export const BraftEditorTemplate: FC<any> = observer((props: any) => {
       // editorContent.focus();
       editorContent.click();
     }
-  }, [])
+  }, [form])
 
   const excludeControls = ['media'];
   const offerFields = [

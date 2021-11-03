@@ -3,7 +3,7 @@ import { GlobalRegistry} from '../../designer'
 import { Navbar, FlowEditor} from '../../components'
 import { DesignerContext } from '../../designer'
 import { flow, initData, getFlowData, getFlowModelData, getmetaObjectData } from './data'
-import { Button, notification } from 'antd';
+// import { Button, notification } from 'antd';
 
 import './style.less'
 
