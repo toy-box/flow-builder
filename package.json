@@ -34,6 +34,8 @@
     "codemirror": "^5.62.0",
     "craco-antd": "^1.19.0",
     "craco-less": "^1.17.1",
+    "dumi": "^1.1.32",
+    "father-build": "^1.20.5-0",
     "immutability-helper": "^3.1.1",
     "lodash.get": "^4.4.2",
     "react": "^16.14.0",
@@ -50,24 +52,21 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "dumi dev"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
+  "gitHooks": {
+    "pre-commit": "lint-staged"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
     ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
     ]
   },
   "devDependencies": {
