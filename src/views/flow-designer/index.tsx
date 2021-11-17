@@ -18,6 +18,14 @@ GlobalRegistry.registerDesignerLocales({
         edit: '编辑元素',
         delete: '删除元素',
       },
+      metaValueType: {
+        add: '添加',
+        subtract: '减少',
+        assign: '等于',
+        addAtStart: '添加到第一个',
+        removeFirst: '移除第一个',
+        removeAll: '移除所有',
+      },
       extend: {
         title: '添加流程节点',
         assign: '分配',
@@ -32,6 +40,7 @@ GlobalRegistry.registerDesignerLocales({
       },
       autoFlow: {
         variable: '变量',
+        variableRecord: '记录（单个）变量',
         variableArray: '集合变量',
         variableArrayRecord: '集合记录变量',
         constant: '常量',
@@ -164,7 +173,7 @@ GlobalRegistry.registerDesignerLocales({
             offsetNum: '偏移数字',
             offsetUnit: '偏移单位（小时或天数）',
           },
-          outParameters: '在变量中存储输出值',
+          outputParameters: '在变量中存储输出值',
           tip: '对于每个可以恢复流的事件，添加暂停配置。此事件可以指定时间或平台事件消息。暂停条件确定是否在事件发生之前暂停流。在未满足暂停条件时，流会使用默认路径，而不暂停。',
         },
         loop: {

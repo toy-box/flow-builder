@@ -64,7 +64,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         if (isArr(op.children)) {
           const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
           const children = meta?.children.filter((child: any) => {
-            const opIdx = op?.children.findIndex((type: string) => child.type === type)
+            const opIdx = op?.children.findIndex((type: string) => child.webType === type)
             return opIdx > -1 ? child : undefined
           })
           if (children) {

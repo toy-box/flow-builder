@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react'
+import React, { FC, useCallback, useMemo, useState } from 'react'
 import { useForm, observer, useField } from '@formily/react'
 import { FilterBuilder } from '@toy-box/meta-components';
 import { ICompareOperation, IFieldOption, IFieldGroupMeta } from '@toy-box/meta-schema'
@@ -72,7 +72,14 @@ export const FormilyFilter: FC = observer((props: any) => {
         if (isArr(op.children)) {
           const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
           const children = meta?.children.filter((child: any) => {
-            const opIdx = op?.children.findIndex((type: string) => child.type === type)
+            if (props.operatType) {
+              const operatOptions = props?.operatOptions.find((option: any) => child.webType === option.type)
+              if (operatOptions && operatOptions?.children.length > 0) {
+                const option = operatOptions.find((option: any) => child.type === option.type)
+                if (option && option?.children) child.operatOptions = option?.children
+              }
+            }
+            const opIdx = op?.children.findIndex((type: string) => child.webType === type)
             return opIdx > -1 ? child : undefined
           })
           if (children) {
@@ -84,12 +91,25 @@ export const FormilyFilter: FC = observer((props: any) => {
           }
         } else {
           const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
-          if (meta) metas.push(meta)
+          const children = meta?.children.filter((child: any) => {
+            if (props.operatType) {
+              const operatOptions = props?.operatOptions.find((option: any) => child.webType === option.type)
+              if (operatOptions && operatOptions?.children.length > 0) {
+                const option = operatOptions?.children.find((option: any) => child.type === option.type)
+                if (option && option?.children) child.operatOptions = option?.children
+              }
+            }
+            return child
+          })
+          if (meta) {
+            meta.children = children
+            metas.push(meta)
+          }
         }
       })
     }
     return metas
-  }, [form.values, props.mataSource, props.reactionKey, registers, props.flowGraph.fieldMetas, form.values[props.reactionKey]])
+  }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, props?.operatOptions, form.values, registers])
   return (
     <div style={{'display': props.display}}>
       {props.isShowResourceBtn && <ResourceCreate 
@@ -101,6 +121,7 @@ export const FormilyFilter: FC = observer((props: any) => {
         value={formilyField.value as any[]}
         specialOptions={specialOptions}
         specialMode={props.specialMode}
+        operatType={props.operatType}
         onChange={(filterItem: Partial<ICompareOperation>[]) =>
           handleFilter(filterItem)
         }

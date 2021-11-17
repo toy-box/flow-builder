@@ -4,7 +4,7 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonG
 import { createForm } from '@formily/core'
 import { observer } from '@formily/reactive-react'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { ICompareOperation } from '@toy-box/meta-schema';
+import { ICompareOperation, MetaValueType } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { FormilyFilter } from '../formily/components/index'
 import './index.less'
@@ -12,6 +12,7 @@ import { TextWidget } from '../widgets'
 import { AutoFlow } from '../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from './RepeatErrorMessage'
 import { useLocale } from '../../hooks'
+import { AssignmentOpEnum } from './interface'
 
 import { FlowMetaType, FlowMetaParam, IAssignmentData, IFlowResourceType } from '../../flow/types'
 export interface AssignmentModelPorps {
@@ -31,6 +32,57 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const repeatName = useLocale('flow.form.validator.repeatName')
+  const textOps = [
+    { label: useLocale('flow.metaValueType.assign'), value: AssignmentOpEnum.ASSIGN },
+    { label: useLocale('flow.metaValueType.add'), value: AssignmentOpEnum.ADD }
+  ]
+  const numOps = [
+    { label: useLocale('flow.metaValueType.assign'), value: AssignmentOpEnum.ASSIGN },
+    { label: useLocale('flow.metaValueType.add'), value: AssignmentOpEnum.ADD },
+    { label: useLocale('flow.metaValueType.subtract'), value: AssignmentOpEnum.SUBTRACT },
+  ]
+  const eqOps = [
+    { label: useLocale('flow.metaValueType.assign'), value: AssignmentOpEnum.ASSIGN },
+  ]
+  const varArrayOps = [
+    { label: useLocale('flow.metaValueType.assign'), value: AssignmentOpEnum.ASSIGN },
+    { label: useLocale('flow.metaValueType.add'), value: AssignmentOpEnum.ADD },
+    { label: useLocale('flow.metaValueType.addAtStart'), value: AssignmentOpEnum.ADD_AT_START },
+    { label: useLocale('flow.metaValueType.removeFirst'), value: AssignmentOpEnum.REMOVE_FIRST },
+    { label: useLocale('flow.metaValueType.removeAll'), value: AssignmentOpEnum.REMOVE_ALL },
+  ]
+  const operatOptions = [{
+    type: IFlowResourceType.VARIABLE,
+    children: [
+      { type: MetaValueType.STRING, children: textOps },
+      { type: MetaValueType.TEXT, children: textOps },
+      { type: MetaValueType.NUMBER, children: numOps },
+      { type: MetaValueType.BOOLEAN, children: eqOps },
+      { type: MetaValueType.DATE, children: numOps },
+      { type: MetaValueType.DATETIME, children: eqOps },
+    ]
+  }, {
+    type: IFlowResourceType.VARIABLE_RECORD,
+    children: [
+      { type: MetaValueType.OBJECT_ID, children: eqOps },
+      { type: MetaValueType.OBJECT, children: eqOps },
+    ]
+  }, {
+    type: IFlowResourceType.VARIABLE_ARRAY,
+    children: [
+      { type: MetaValueType.STRING, children: varArrayOps },
+      { type: MetaValueType.TEXT, children: varArrayOps },
+      { type: MetaValueType.NUMBER, children: varArrayOps },
+      { type: MetaValueType.BOOLEAN, children: varArrayOps },
+      { type: MetaValueType.DATE, children: varArrayOps },
+      { type: MetaValueType.DATETIME, children: varArrayOps },
+    ]
+  }, {
+    type: IFlowResourceType.VARIABLE_ARRAY_RECORD,
+    children: [
+      { type: MetaValueType.ARRAY, children: varArrayOps },
+    ]
+  }]
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -195,8 +247,12 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
               mataSource: 'flowJson',
               isShowResourceBtn: true,
               specialMode: true,
+              operatType: 'replace',
+              operatOptions: operatOptions,
               flowJsonTypes: [{
                 value: IFlowResourceType.VARIABLE
+              }, {
+                value: IFlowResourceType.VARIABLE_RECORD
               }, {
                 value: IFlowResourceType.VARIABLE_ARRAY
               }, {

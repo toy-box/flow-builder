@@ -9,7 +9,7 @@ import { IFieldMeta, IFieldGroupMeta, MetaValueType, IFieldOption } from '@toy-b
 import { isArr } from '@formily/shared';
 import { clone, isNum, isObj } from '@toy-box/toybox-shared';
 import update from 'immutability-helper'
-import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType } from '../types'
+import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, IFieldMetaFlow } from '../types'
 import { uid } from '../../utils';
 import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
@@ -810,26 +810,52 @@ export class AutoFlow {
     this.flowVariables?.forEach((meta: IFieldMeta) => {
       if (meta?.type === MetaValueType.ARRAY) {
         if (meta?.items?.type === MetaValueType.OBJECT || meta?.items?.type  === MetaValueType.OBJECT_ID) {
-          const obj = { ...meta }
-          obj.type = IFlowResourceType.VARIABLE_ARRAY_RECORD
+          const obj: IFieldMetaFlow = { ...meta }
+          obj.webType = IFlowResourceType.VARIABLE_ARRAY_RECORD
           metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_ARRAY_RECORD, fieldMetaType)
         } else {
-          const obj = { ...meta }
-          obj.type = IFlowResourceType.VARIABLE_ARRAY
+          const obj: IFieldMetaFlow = { ...meta }
+          obj.webType = IFlowResourceType.VARIABLE_ARRAY
           metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_ARRAY, fieldMetaType)
         }
+      } else if (meta?.type === MetaValueType.OBJECT || meta?.type  === MetaValueType.OBJECT_ID) {
+        const obj: IFieldMetaFlow = { ...meta }
+        obj.webType = IFlowResourceType.VARIABLE_RECORD
+        metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE_RECORD, fieldMetaType)
       } else {
-        metas = this.setFieldMeta(metas, meta, IFlowResourceType.VARIABLE, fieldMetaType)
+        const obj: IFieldMetaFlow = { ...meta }
+        obj.webType = IFlowResourceType.VARIABLE
+        metas = this.setFieldMeta(metas, obj, IFlowResourceType.VARIABLE, fieldMetaType)
       }
     });
-    this.flowConstants.forEach((meta: IFieldMeta) => {
+    this.flowConstants?.forEach((meta: IFieldMeta) => {
       metas = this.setFieldMeta(metas, meta, IFlowResourceType.CONSTANT, fieldMetaType)
     });
-    this.flowFormulas.forEach((meta: IFieldMeta) => {
+    this.flowFormulas?.forEach((meta: IFieldMeta) => {
       metas = this.setFieldMeta(metas, meta, IFlowResourceType.FORMULA, fieldMetaType)
     });
-    this.flowTemplates.forEach((meta: IFieldMeta) => {
+    this.flowTemplates?.forEach((meta: IFieldMeta) => {
       metas = this.setFieldMeta(metas, meta, IFlowResourceType.TEMPLATE, fieldMetaType)
+    });
+    this.recordLookups?.forEach((record: RecordLookup) => {
+      if (record.storeOutputAutomatically || (record.queriedFields && !record.outputReference)) {
+        let resourceData: IFieldMetaFlow = {
+          name: `来自${record.id}的 应用程序`,
+          webType: record.getFirstRecordOnly ? IFlowResourceType.VARIABLE_RECORD : IFlowResourceType.VARIABLE_ARRAY_RECORD,
+          type: record.getFirstRecordOnly ? MetaValueType.OBJECT_ID : MetaValueType.ARRAY,
+          key: record.id,
+        }
+        if (resourceData.type === MetaValueType.ARRAY) {
+          resourceData = {
+            ...resourceData,
+            items: {
+              type: MetaValueType.OBJECT_ID
+            }
+          }
+        }
+        const type = record.getFirstRecordOnly ? IFlowResourceType.VARIABLE_RECORD : IFlowResourceType.VARIABLE_ARRAY_RECORD
+        metas = this.setFieldMeta(metas, resourceData, type, fieldMetaType)
+      }
     });
     return metas
   }
@@ -842,6 +868,7 @@ export class AutoFlow {
     }
     const templateObj: any = {
       [IFlowResourceType.VARIABLE]: useLocale('flow.autoFlow.variable'),
+      [IFlowResourceType.VARIABLE_RECORD]: useLocale('flow.autoFlow.variableRecord'),
       [IFlowResourceType.VARIABLE_ARRAY]: useLocale('flow.autoFlow.variableArray'),
       [IFlowResourceType.VARIABLE_ARRAY_RECORD]: useLocale('flow.autoFlow.variableArrayRecord'),
       [IFlowResourceType.CONSTANT]: useLocale('flow.autoFlow.constant'),

@@ -40,7 +40,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     console.log(form.values)
     const value = form.values;
     const quiredRules = value?.waitEvents?.map((rule: any) => {
-      const outParameters = rule.outParameters.map((data: ICompareOperation) => {
+      const outputParameters = rule.outputParameters.map((data: ICompareOperation) => {
         return {
           id: data.source,
           type: data.type,
@@ -59,7 +59,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
             offsetNum: rule.offsetNum,
             offsetUnit: rule.offsetUnit,
           },
-          outParameters,
+          outputParameters,
         }
       }
       return {
@@ -75,7 +75,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           offsetNum: rule.offsetNum,
           offsetUnit: rule.offsetUnit,
         },
-        outParameters,
+        outputParameters,
       }
     })
     const paramData = {
@@ -131,7 +131,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   if (metaFlowData) {
     const val = clone(metaFlowData)
     const quiredRules = val?.waitEvents?.map((rule: any) => {
-      const outParameters = rule.outParameters.map((data: IOutParameter) => {
+      const outputParameters = rule.outputParameters.map((data: IOutParameter) => {
         return {
           source: data.id,
           op: CompareOP.EQ,
@@ -152,7 +152,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         recordIdValue: rule.recoveryTimeInfo.recordIdValue,
         offsetNum: rule.recoveryTimeInfo.offsetNum,
         offsetUnit: rule.recoveryTimeInfo.offsetUnit,
-        outParameters,
+        outputParameters,
       }
     })
     form.initialValues = {
@@ -395,9 +395,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                         }
                       }],
                     },
-                    outParameters: {
+                    outputParameters: {
                       type: 'array',
-                      title: <TextWidget>flow.form.suspend.outParameters</TextWidget>,
+                      title: <TextWidget>flow.form.suspend.outputParameters</TextWidget>,
                       required: true,
                       'x-decorator': 'FormItem',
                       'x-component': 'FormilyFilter',

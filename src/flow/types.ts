@@ -68,6 +68,7 @@ export type LifeCyclePayload<T> = (
 
 export enum IFlowResourceType {
   VARIABLE = 'variables',
+  VARIABLE_RECORD = 'variables_record',
   VARIABLE_ARRAY = 'variables_array',
   VARIABLE_ARRAY_RECORD = 'variables_array_record',
   CONSTANT = 'constants',
@@ -136,7 +137,7 @@ export interface FlowMetaParam {
 
 export interface IwaitEvent {
   connector: TargetReference
-  outParameters: IOutParameter[]
+  outputParameters: IOutParameter[]
   id: string
   name: string
   recoveryTimeInfo: IRecoveryTimeInfo
@@ -213,5 +214,9 @@ export interface IAssignmentData {
 export interface IOutputAssignment {
   assignToReference: string
   field: string
+}
+
+export interface IFieldMetaFlow extends IFieldMeta {
+  webType?: string
 }
 

@@ -169,7 +169,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           state.value = undefined
         })
         form.setFieldState('queriedFields', (state) => {
-          // state.value = []
+          state.value = []
           state.display = flag? 'visible' : 'none'
         })
       })
@@ -561,9 +561,9 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               mataSource: 'flowJson',
               placeholder: <TextWidget>flow.form.placeholder.outputReference</TextWidget>,
               flowJsonTypes: [{ 
-                value: IFlowResourceType.VARIABLE,
+                value: IFlowResourceType.VARIABLE_RECORD,
                 label: <TextWidget>flow.form.recordLookUp.outputReferenceLabel</TextWidget>,
-                children: [MetaValueType.OBJECT, MetaValueType.OBJECT_ID]
+                children: [IFlowResourceType.VARIABLE_RECORD, IFlowResourceType.VARIABLE_ARRAY_RECORD]
               }],
               flowGraph,
             },
