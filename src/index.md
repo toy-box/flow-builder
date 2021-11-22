@@ -18,6 +18,7 @@ import {
   GlobalRegistry,
   Navbar, FlowEditor,
   DesignerContext,
+  AutoFlow,
   flow, initData, getFlowData, getFlowModelData, getmetaObjectData
 } from 'flow-builder';
 // import 'antd/dist/antd.css';
@@ -338,10 +339,11 @@ export default () => {
       console.log(data)
     })
   }, [])
+  const flowGraph = new AutoFlow(flowMeta)
   return (
     <DesignerContext.Provider value={{ prefix: 'fd', GlobalRegistry }}>
       <Navbar />
-      <FlowEditor flowMeta={flowMeta} />
+      <FlowEditor flowGraph={flowGraph} />
     </DesignerContext.Provider>
   );
 };

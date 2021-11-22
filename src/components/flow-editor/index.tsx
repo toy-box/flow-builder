@@ -6,6 +6,7 @@ import { FlowContext } from '../../flow/shared'
 import { AutoFlow } from '../../flow/models/AutoFlow'
 import { fieldMetaStore } from '../../store'
 import { CompositePanel } from '../composite-panel'
+import { ResourceWidget } from '../widgets'
 import { usePrefix } from '../../hooks'
 
 import './styles'
@@ -13,9 +14,9 @@ import { NodeWidget } from '../node-widget'
 import * as MetaObjectService from '../../services/metaObject.service'
 import { SaveInfoModel } from './SaveInfoModel'
 
-export const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
+export const FlowEditor: FC<{ flowGraph: AutoFlow }> = ({ flowGraph }) => {
   const prefixCls = usePrefix('-editor')
-  const flowGraph = new AutoFlow(flowMeta)
+  // const flowGraph = new AutoFlow(flowMeta)
   const { initFieldMetas, initFieldServices, initRegisters} = fieldMetaStore.fieldMetaStore
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export const FlowEditor: FC<{ flowMeta: FlowGraphMeta }> = ({ flowMeta }) => {
               <NodeWidget />
             </CompositePanel.Item>
             <CompositePanel.Item title="panels.Data" icon={<ListUnordered />}>
-              Resource
+              <ResourceWidget flowGraph={flowGraph}/>
             </CompositePanel.Item>
           </CompositePanel>
           <AntvCanvas />

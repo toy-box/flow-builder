@@ -801,6 +801,62 @@ export class AutoFlow {
     this.history.push(this.mataFlowJson.flow)
   }
 
+  editFlowMeta = (metaType: IFlowResourceType, flowMeta: IFieldMeta) => {
+    let index = 0
+    switch (metaType) {
+      case IFlowResourceType.VARIABLE:
+        index = this.flowVariables?.findIndex(val => val.key === flowMeta.key)
+        this.flowVariables = update(this.flowVariables, { [index]: { $set: flowMeta } })
+        this.mataFlowJson.flow[IFlowResourceType.VARIABLE] = this.flowVariables
+        break;
+      case IFlowResourceType.CONSTANT:
+        index = this.flowConstants?.findIndex(val => val.key === flowMeta.key)
+        this.flowConstants = update(this.flowConstants, { [index]: { $set: flowMeta } })
+        this.mataFlowJson.flow[IFlowResourceType.CONSTANT] = this.flowConstants
+        break;
+      case IFlowResourceType.FORMULA:
+        index = this.flowFormulas?.findIndex(val => val.key === flowMeta.key)
+        this.flowFormulas = update(this.flowFormulas, { [index]: { $set: flowMeta } })
+        this.mataFlowJson.flow[IFlowResourceType.FORMULA] = this.flowFormulas
+        break;
+      case IFlowResourceType.TEMPLATE:
+        index = this.flowTemplates?.findIndex(val => val.key === flowMeta.key)
+        this.flowTemplates = update(this.flowTemplates, { [index]: { $set: flowMeta } })
+        this.mataFlowJson.flow[IFlowResourceType.TEMPLATE] = this.flowTemplates
+        break;
+      default:
+        break;
+    }
+    this.history.push(this.mataFlowJson.flow)
+  }
+
+  updateQuoteFilterMeta = (flowMeta: IFieldMeta, quoteId: string) => {
+    this.flowAssignments.forEach((assignment) => {
+      assignment.assignmentItems?.forEach((item) => {
+        if (item.assignToReference === quoteId) item.assignToReference = flowMeta.key
+        const val = item.value?.split('.')?.[0]
+        if (val && val === quoteId) {
+          item.value = item.value.replace(val, flowMeta.key)
+        } else if (item.value === quoteId) {
+          item.value = flowMeta.key
+        }
+      })
+    })
+    this.flowDecisions.forEach((decision) => {
+      decision.rules?.forEach((rule) => {
+        rule.criteria?.conditions.forEach((condition) => {
+          if (condition.fieldPattern === quoteId) condition.fieldPattern = flowMeta.key
+          const val = condition.value?.split('.')?.[0]
+          if (val && val === quoteId) {
+            condition.value = condition.value.replace(val, flowMeta.key)
+          } else if (condition.value === quoteId) {
+            condition.value = flowMeta.key
+          }
+        })
+      })
+    })
+  }
+
   get fieldMetas() {
     return this.getFieldMetas()
   }

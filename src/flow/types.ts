@@ -115,14 +115,14 @@ export interface FlowMetaParam {
   faultConnector?: TargetReference
   nextValueConnector?: TargetReference
   defaultConnectorName?: string
-  assignmentItems?: ICompareOperation[]
+  assignmentItems?: IAssignmentData[]
   rules?: FlowMetaParam[]
   collectionReference?: string
   iterationOrder?: string
   limit?: null | number
   sortOptions?: SortOption[]
   registerId?: string
-  inputAssignments?: ICompareOperation[]
+  inputAssignments?: IInputAssignment[]
   storeOutputAutomatically?: boolean
   assignRecordIdToReference?: string
   criteria?: Criteria
@@ -171,7 +171,7 @@ export interface TargetReference {
 }
 
 export interface Criteria {
-  conditions: ICompareOperation[]
+  conditions: ICriteriaCondition[]
 }
 
 export type FlowNodeComm = {

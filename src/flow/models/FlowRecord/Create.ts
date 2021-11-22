@@ -4,7 +4,7 @@ import {
   observable,
 } from '@formily/reactive'
 import { ICompareOperation } from '@toy-box/meta-schema';
-import { FlowMetaParam, TargetReference } from '../../types'
+import { FlowMetaParam, TargetReference, IInputAssignment } from '../../types'
 
 export class RecordCreate {
   id: string
@@ -13,7 +13,7 @@ export class RecordCreate {
   connector?: TargetReference
   faultConnector?: TargetReference
   registerId?: string
-  inputAssignments?: ICompareOperation[]
+  inputAssignments?: IInputAssignment[]
   storeOutputAutomatically?: boolean
   assignRecordIdToReference?: string
 

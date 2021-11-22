@@ -5,9 +5,9 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { Button, Modal } from 'antd'
 import { action } from '@formily/reactive'
 import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
-// import { clone } from '@formily/shared';
+import { clone } from '@formily/shared';
 // import update from 'immutability-helper'
-import { IFlowResourceType } from '../../flow/types'
+import { IFlowResourceType, IFieldMetaFlow } from '../../flow/types'
 import { GatherInput } from '../formily/index'
 import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 // import { uid } from '../../utils'
@@ -86,11 +86,19 @@ const labelNames: any = {
 interface ResourceCreateProps {
   fieldMetas?: ICompareOperation[]
   flowGraph: AutoFlow
+  opName?: string | JSX.Element
+  isOpBtn?: boolean
+  title?: string | JSX.Element
+  value?: IFieldMetaFlow
 }
 
 export const ResourceCreate:FC<ResourceCreateProps> = ({
   fieldMetas = [],
   flowGraph,
+  opName = <TextWidget>flow.form.resourceCreate.addResource</TextWidget>,
+  title = <TextWidget>flow.form.resourceCreate.addResource</TextWidget>,
+  isOpBtn = true,
+  value
 }) => {
   const useAsyncDataSource = (
     pattern: Formily.Core.Types.FormPathPattern,
@@ -180,6 +188,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           flowType: {
             type: 'string',
             title: <TextWidget>flow.form.resourceCreate.flowType</TextWidget>,
+            'x-disabled': !!value,
             required: true,
             'x-validator': {
               required: true,
@@ -204,6 +213,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
+            'x-disabled': !!value,
             'x-validator': [{
               triggerType: 'onBlur',
               required: true,
@@ -246,6 +256,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             type: 'string',
             title: <TextWidget>flow.form.resourceCreate.type</TextWidget>,
             required: true,
+            'x-disabled': !!value,
             'x-validator': {
               required: true,
               message: <TextWidget>flow.form.validator.type</TextWidget>
@@ -259,6 +270,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           valueType: {
             type: 'string',
             title: <TextWidget>flow.form.resourceCreate.valueType</TextWidget>,
+            'x-disabled': !!value,
             enum: [
               {
                 label: <TextWidget>flow.form.resourceCreate.valueTypeOption.array</TextWidget>,
@@ -279,6 +291,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           refObjectId: {
             type: 'string',
             title: <TextWidget>flow.form.resourceCreate.refObjectId</TextWidget>,
+            'x-disabled': !!value,
             required: true,
             'x-validator': {
               required: true,
@@ -355,6 +368,12 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form, setForm] = useState(formData)
 
+  if (value) {
+    const flowDataVal = clone(value)
+    flowDataVal.flowType = value.webType
+    form.setValues(flowDataVal)
+  }
+
   const showModal = () => {
     formData.values = {}
     formData.clearErrors()
@@ -364,7 +383,11 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
 
   const submitResource = useCallback(
     (resourceData, flowDataType) => {
-      flowGraph.addFlowMeta(flowDataType, resourceData)
+      if (value) {
+        flowGraph.editFlowMeta(flowDataType, resourceData)
+      } else {
+        flowGraph.addFlowMeta(flowDataType, resourceData)
+      }
     },
     [fieldMetas]
   )
@@ -376,7 +399,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       exclusiveMaximum: null,
       exclusiveMinimum: null,
       format: null,
-      key: obj.key,
+      key: value ? value.key : obj.key,
       maxLength: null,
       maximum: null,
       minLength: null,
@@ -414,9 +437,12 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   return (
     <>
       <div>
-        <Button onClick={showModal} size="small"><TextWidget>flow.form.resourceCreate.addResource</TextWidget></Button>
+        {
+          isOpBtn ? <Button onClick={showModal} size="small">{opName}</Button>
+          : <span onClick={showModal}>{opName}</span>
+        }
       </div>
-      <Modal width={900} title={<TextWidget>flow.form.resourceCreate.addResource</TextWidget>} visible={isModalVisible} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
+      <Modal width={900} title={title} visible={isModalVisible} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
         <FormLayout layout='vertical' colon={false}>
           <FormProvider form={form}>
             <SchemaField schema={schema} />

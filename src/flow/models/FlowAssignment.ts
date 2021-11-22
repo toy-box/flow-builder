@@ -4,7 +4,7 @@ import {
   action
 } from '@formily/reactive'
 import { ICompareOperation } from '@toy-box/meta-schema';
-import { FlowMetaParam, TargetReference } from '../types'
+import { FlowMetaParam, TargetReference, IAssignmentData } from '../types'
 
 export class FlowAssignment {
   id: string
@@ -12,7 +12,7 @@ export class FlowAssignment {
   description?: string
   connector?: TargetReference
   defaultConnector?: TargetReference
-  assignmentItems?: ICompareOperation[]
+  assignmentItems?: IAssignmentData[]
 
   constructor(flowAssignment: FlowMetaParam) {
     this.id = flowAssignment.id

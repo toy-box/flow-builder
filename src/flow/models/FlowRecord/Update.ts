@@ -4,7 +4,7 @@ import {
   observable,
 } from '@formily/reactive'
 import { ICompareOperation } from '@toy-box/meta-schema';
-import { FlowMetaParam, TargetReference, Criteria } from '../../types'
+import { FlowMetaParam, TargetReference, Criteria, IInputAssignment } from '../../types'
 
 export class RecordUpdate {
   id: string
@@ -14,7 +14,7 @@ export class RecordUpdate {
   faultConnector?: TargetReference
   criteria?: Criteria
   registerId?: string
-  inputAssignments?: ICompareOperation[]
+  inputAssignments?: IInputAssignment[]
 
   constructor(recordUpdate: FlowMetaParam) {
     this.id = recordUpdate.id
