@@ -1,6 +1,4 @@
 import { FlowMeta } from '../../flow/types'
-import * as AutoFlowService from '../../services/autoFlow.service'
-import * as AutoFlowModelService from '../../services/autoFlowModel.servie'
 import * as MetaObjectService from '../../services/metaObject.service'
 
 export const flow: FlowMeta = {
@@ -136,18 +134,6 @@ export const flow: FlowMeta = {
   // ],
 }
 
-export const initData = async (page: number = 0, pageSize: number = 10, name?: string, userId?: string) => {
-  return AutoFlowService.autoFlows(page, pageSize, name, userId)
-}
-
-export const getFlowData = async (id: string) => {
-  return AutoFlowService.autoFlowData(id)
-}
-
-export const getFlowModelData = async (id: string) => {
-  return AutoFlowModelService.autoFlowModel(id)
-}
-
-export const getmetaObjectData = async (value?: string) => {
+export const getMetaObjectData = async (value?: string) => {
   return MetaObjectService.metaObjectData(value)
 }

@@ -172,6 +172,7 @@ export interface TargetReference {
 
 export interface Criteria {
   conditions: ICriteriaCondition[]
+  logic: string
 }
 
 export type FlowNodeComm = {

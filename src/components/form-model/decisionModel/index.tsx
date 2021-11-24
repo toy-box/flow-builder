@@ -56,6 +56,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
           }
         })
         rule.criteria.conditions = conditions
+        rule.criteria.logic = '$and'
       })
       const paramData = {
         id: value.id,

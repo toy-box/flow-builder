@@ -19,8 +19,8 @@ import {
   Navbar, FlowEditor,
   DesignerContext,
   AutoFlow,
-  flow, initData, getFlowData, getFlowModelData, getmetaObjectData
-} from 'flow-builder';
+  flow, getMetaObjectData
+} from '@toy-box/flow-builder';
 // import 'antd/dist/antd.css';
 // import 'codemirror/lib/codemirror.css';
 
@@ -311,37 +311,18 @@ GlobalRegistry.registerDesignerLocales({
 
 GlobalRegistry.setDesignerLanguage('zh-CN')
 
-initData()
-getFlowData('6165263cea6c7b2123d59061').then(({data}) => {
-  console.log(data, 'getFlowData()')
-})
-
 export default () => {
   const [flowMeta, setFlowMeta] = useState({
     id: 'flow-meta-1',
     name: 'flow',
     flow: flow,
   })
-  useEffect(() => {
-    const href = window.location.href
-    const flowId = href.split('?flowId=')[1]
-    if (flowId) {
-      getFlowModelData(flowId).then(({data}) => {
-        console.log(1111111111111111, 22222222222)
-        setFlowMeta({
-          id: 'flow-meta-1',
-          name: 'flow',
-          flow: data.flows || flow,
-        })
-      })
-    }
-    getmetaObjectData().then(({data}) => {
-      console.log(data)
-    })
-  }, [])
   const flowGraph = new AutoFlow(flowMeta)
+  const serviceObj = {
+    getMetaObjectData
+  };
   return (
-    <DesignerContext.Provider value={{ prefix: 'fd', GlobalRegistry }}>
+    <DesignerContext.Provider value={{ prefix: 'fd', GlobalRegistry, serviceObj }}>
       <Navbar />
       <FlowEditor flowGraph={flowGraph} />
     </DesignerContext.Provider>

@@ -123,6 +123,7 @@ export const BranchArrays: FC = observer((props: any) => {
         id: uid(),
         criteria: {
           conditions: [{}],
+          logic: '$and'
         },
         description: '',
       }

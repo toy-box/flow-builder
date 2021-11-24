@@ -72,7 +72,8 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       },
       registerId: value.registerId,
       criteria: {
-        conditions: conditions
+        conditions: conditions,
+        logic: '$and'
       },
       inputAssignments: inputAssignments,
     }

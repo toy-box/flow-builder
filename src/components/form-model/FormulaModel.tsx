@@ -1,8 +1,12 @@
 import React, { FC, useState, CSSProperties } from 'react';
 import { Modal, Input } from 'antd';
 import 'codemirror/lib/codemirror.css';
-import { FormulaEditor } from '@toy-box/form-formula';
-import { IFieldMeta } from '@toy-box/meta-schema';
+// import { FormulaEditor } from '@toy-box/form-formula';
+import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
+import {
+  Editor,
+  ITbexpLangErrorAndCode
+} from '@toy-box/formula-editor';
 import { TextWidget } from '../widgets'
 import { useLocale } from '../../hooks'
 
@@ -10,7 +14,7 @@ export interface AssignmentModelPorps {
   metaSchema?: Toybox.MetaSchema.Types.IFieldMeta[] | MetaSchemaObj
   value?: string
   onChange: (value: string) => void
-  inputStyle?: CSSProperties,
+  inputStyle?: CSSProperties
 }
 
 export interface MetaSchemaObj {
@@ -29,6 +33,18 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
   const [formulaValue, setFormulaValue] = useState(value || '')
   const style = {
     border: '1px solid gray',
+  };
+
+  const globalVariables: Record<string, IFieldMeta> = {}
+  const localVariables: Record<string, IFieldMeta> = {}
+  const flowAllResource = {
+    globalVariables,
+    localVariables,
+  };
+  const formulaText: string = 'COUNT(1)';
+  const formulaType: MetaValueType | undefined =  MetaValueType.NUMBER;//undefined;
+  const callback = (res: ITbexpLangErrorAndCode) => {
+    console.log('回调结果：', res);
   };
   const customInputStyle = {
     ...inputStyle,
@@ -129,15 +145,17 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
       <div title={formulaValue} onClick={showModal}>
         <Input disabled style={customInputStyle} placeholder={useLocale('flow.placeholder.formula')} value={formulaValue}  />
       </div>
-      <Modal width={900} title={<TextWidget>flow.form.formula.editTitle</TextWidget>} visible={isModalVisible} cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
-        <FormulaEditor
-          title={useLocale('flow.form.formula.formulaEditorTitle')}
-          style={style}
-          // metaSchema={metaSchema1}
-          value={formulaValue}
-          onChange={setFormulaValue}
-          path={'projects.total'}
-        />
+      <Modal width={900} 
+        title={<TextWidget>flow.form.formula.editTitle</TextWidget>} 
+        visible={isModalVisible} 
+        cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} 
+        okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
+        <Editor 
+          flowAllResource={flowAllResource}
+          formulaText={formulaText}
+          formulaType={formulaType}
+          onChange={callback}>
+        </Editor>
       </Modal>
     </>
   );

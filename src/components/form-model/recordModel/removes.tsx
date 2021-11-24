@@ -59,7 +59,8 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
       },
       registerId: value.registerId,
       criteria: {
-        conditions
+        conditions,
+        logic: '$and'
       },
     }
     console.log(paramData);

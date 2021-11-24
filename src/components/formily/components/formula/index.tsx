@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react'
 import { useForm, observer } from '@formily/react'
-import { FormulaModel } from '../../../form-model/FormulaModel'
+import { FormulaModel } from '../../../form-model'
 
 export const FormulaEdit: FC = observer((props: any) => {
   const form = useForm()

@@ -7,39 +7,36 @@ import { AutoFlow } from '../../flow/models/AutoFlow'
 import { fieldMetaStore } from '../../store'
 import { CompositePanel } from '../composite-panel'
 import { ResourceWidget } from '../widgets'
-import { usePrefix } from '../../hooks'
+import { usePrefix, useService } from '../../hooks'
 
 import './styles'
 import { NodeWidget } from '../node-widget'
 import * as MetaObjectService from '../../services/metaObject.service'
-import { SaveInfoModel } from './SaveInfoModel'
 
 export const FlowEditor: FC<{ flowGraph: AutoFlow }> = ({ flowGraph }) => {
   const prefixCls = usePrefix('-editor')
+  const { getMetaObjectData } = useService()
   // const flowGraph = new AutoFlow(flowMeta)
-  const { initFieldMetas, initFieldServices, initRegisters} = fieldMetaStore.fieldMetaStore
+  const { initRegisters } = fieldMetaStore.fieldMetaStore
 
   useEffect(() => {
-    MetaObjectService.metaObjectData().then(({data}) => {
+    getMetaObjectData().then(({ data }) => {
       initRegisters(data);
     })
-  }, [initFieldMetas, initFieldServices, initRegisters])
+  }, [initRegisters])
 
   return (
     <div className={prefixCls}>
-      <div className={`${prefixCls}-narbar`}>
-        {<SaveInfoModel flowGraph={flowGraph}></SaveInfoModel>}
-      </div>
       <div className={`${prefixCls}-content`}>
         <FlowContext.Provider value={flowGraph}>
-          <CompositePanel>
+          {/* <CompositePanel>
             <CompositePanel.Item title="panels.Flow" icon={<FlowChart />}>
               <NodeWidget />
             </CompositePanel.Item>
             <CompositePanel.Item title="panels.Data" icon={<ListUnordered />}>
               <ResourceWidget flowGraph={flowGraph}/>
             </CompositePanel.Item>
-          </CompositePanel>
+          </CompositePanel> */}
           <AntvCanvas />
         </FlowContext.Provider>
       </div>

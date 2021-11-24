@@ -80,7 +80,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       },
       registerId: value.registerId,
       criteria: {
-        conditions
+        conditions,
+        logic: '$and'
       },
       outputAssignments: value?.outputAssignments,
       outputReference: value.address ? value.outputReference: undefined,
@@ -140,7 +141,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             state.value = []
           })
           form.setFieldState('sortOrder', (state) => {
-            state.value = 'null'
+            state.value = null
           })
           form.setFieldState('sortField', (state) => {
             state.value = undefined
@@ -240,7 +241,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     const val = form.values
     const sortOrder = val.sortOrder
     if (type === 'sortOrderIsEmpty') {
-      field.display = sortOrder === 'null' ? 'visible' : 'none';
+      field.display = sortOrder === null ? 'visible' : 'none';
     } else {
       field.display = sortOrder === 'asc' || sortOrder === 'desc' ? 'visible' : 'none';
     }
@@ -381,7 +382,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           sortOrder: {
             type: 'string',
             title: <TextWidget>flow.form.recordLookUp.sortOrder</TextWidget>,
-            default: 'null',
+            default: null,
             enum: [
               {
                 label: <TextWidget>flow.form.recordLookUp.sortOrderOption.asc</TextWidget>,
@@ -393,7 +394,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               },
               {
                 label: <TextWidget>flow.form.recordLookUp.sortOrderOption.no</TextWidget>,
-                value: 'null',
+                value: null,
               },
             ],
             'x-decorator': 'FormItem',

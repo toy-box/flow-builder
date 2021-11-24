@@ -173,9 +173,6 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         waitEvents: [{
           name: '',
           id: uid(),
-          criteria: {
-            conditions: [{}],
-          },
           description: '',
         }]
       }

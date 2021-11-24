@@ -1,7 +1,7 @@
 {
-  "name": "flow-builder",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@toy-box/flow-builder",
+  "version": "0.1.3",
+  "private": false,
   "dependencies": {
     "@ahooksjs/use-request": "^2.8.10",
     "@airclass/icons": "^4.3.4",
@@ -20,6 +20,7 @@
     "@toy-box/flow-graph": "^1.0.22",
     "@toy-box/flow-nodes": "^1.0.22",
     "@toy-box/form-formula": "^1.0.26",
+    "@toy-box/formula-editor": "^1.0.0",
     "@toy-box/meta-components": "^2.0.15",
     "@toy-box/meta-schema": "^2.0.15",
     "@toy-box/toybox-shared": "^2.0.15",
@@ -53,7 +54,9 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "dev": "dumi dev"
+    "dev": "dumi dev",
+    "build:dumi": "father-build",
+    "release": "npm run build:dumi && npm publish --access public --registry https://registry.npmjs.org"
   },
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

@@ -7,7 +7,9 @@ export const getToken = () => {
   return cookies.get('_hrm_airclass_key');
 }
 
+const appId = 'ceshi'
+
 export const http = Axios.create({
-  baseURL: 'toolbox/studio/web/admin/v1',
+  baseURL: `toolbox/studio/web/admin/v1/apps/${appId}`,
   headers: { 'Authorization': getToken() }
 })

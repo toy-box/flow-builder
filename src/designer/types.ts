@@ -12,4 +12,11 @@ export interface IDesignerLocales {
 export interface IDesignerContext {
   prefix: string
   GlobalRegistry: IDesignerRegistry
+  serviceObj: IFieldService
+}
+
+export interface IFieldService {
+  getMetaObjectData: (
+    value?: string
+  ) => Promise<any>
 }

@@ -15,6 +15,11 @@
 # production
 /build
 
+# dist
+/dist
+/lib
+/es
+
 # umi
 .umi
 .umi-production

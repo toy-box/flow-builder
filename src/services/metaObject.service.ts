@@ -1,8 +1,8 @@
 import { http } from './http'
 import { AxiosResponse } from 'axios'
 
-const path = 'meta_object'
+const path = 'entities'
 
 export function metaObjectData(value?: string): Promise<AxiosResponse<any>> {
-  return http.post(`${path}/search`, { value })
+  return http.get(`${path}`, { params: { value } })
 }

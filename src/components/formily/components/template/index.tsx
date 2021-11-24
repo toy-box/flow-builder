@@ -2,7 +2,7 @@ import 'braft-editor/dist/index.css';
 import './index.less';
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import BraftEditor from 'braft-editor';
-import { Modifier, EditorState, convertFromRaw } from 'draft-js'
+// import { Modifier, EditorState, convertFromRaw } from 'draft-js'
 import { convertHTMLToRaw } from 'braft-convert'
 import { useForm, observer } from '@formily/react'
 import { TextWidget } from '../../../widgets'
@@ -68,11 +68,11 @@ const insertHTML = (editorState: any, htmlString: any, source?: any) => {
 
   try {
 
-    const { blockMap } = convertFromRaw(convertHTMLToRaw(htmlString, options, source))
+    // const { blockMap } = convertFromRaw(convertHTMLToRaw(htmlString, options, source))
 
-    return EditorState.push(editorState, Modifier.replaceWithFragment(
-      contentState, selectionState, blockMap
-    ), 'insert-fragment')
+    // return EditorState.push(editorState, Modifier.replaceWithFragment(
+    //   contentState, selectionState
+    // ), 'insert-fragment')
 
   } catch (error) {
     console.warn(error)
