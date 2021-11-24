@@ -123,7 +123,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       })
       service(fieldObj).then(
         action((data) => {
-          fieldObj.dataSource = data
+          // fieldObj.dataSource = data
           fieldObj.inputValue = null
           fieldObj.loading = false
         })
@@ -147,22 +147,26 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useAsyncDataSource('type', async (field) => {
         const flowType = field.query('flowType').get('value')
-        if (!flowType) return []
+        if (!flowType) return field.dataSource = []
         return new Promise((resolve) => {
           switch (flowType) {
             case IFlowResourceType.VARIABLE:
+              field.dataSource = metaDataOps
               return resolve(metaDataOps);
             case IFlowResourceType.CONSTANT:
               const ops = constMetaOps.map((op) => {
                 return metaDataOps.find((metaData) => metaData.value === op) 
               });
+              field.dataSource = ops as any[]
               return resolve(ops as any[]);
             case IFlowResourceType.FORMULA:
               const Fops = formulaMetaOps.map((op) => {
                 return metaDataOps.find((metaData) => metaData.value === op) 
               });
+              field.dataSource = Fops as any[]
               return resolve(Fops as any[]);
             default:
+              field.dataSource = []
               return resolve([]);
           }
         })

@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect } from 'react';
 import { Modal, Divider } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup } from '@formily/antd'
 import { createForm } from '@formily/core'
-import { observer } from '@formily/reactive-react'
+// import { observer } from '@formily/reactive-react'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, MetaValueType } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
@@ -23,7 +23,7 @@ export interface AssignmentModelPorps {
   flowGraph: AutoFlow,
 }
 
-export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
+export const AssignmentModel:FC<AssignmentModelPorps> = ({
   showModel = false,
   callbackFunc,
   title= <TextWidget>flow.form.assignment.addTitle</TextWidget>,
@@ -154,6 +154,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
   const form = createForm()
 
   if (assignmentData) {
+    debugger
     const flowData = clone(assignmentData)
     const assignmentItems = flowData?.assignmentItems.map((data: IAssignmentData) => {
       return {
@@ -281,4 +282,4 @@ export const AssignmentModel:FC<AssignmentModelPorps> = observer(({
       </Modal>
     </>
   );
-});
+};

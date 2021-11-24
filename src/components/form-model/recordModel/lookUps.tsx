@@ -652,7 +652,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                   type: 'void',
                   'x-component': 'Space',
                   properties: {
-                    field: {
+                    assignToReference: {
                       type: 'string',
                       title: '',
                       'x-decorator': 'FormItem',
@@ -670,7 +670,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                       // 'x-decorator': 'FormItem',
                       'x-component': 'ArrowRightOutlinedIcon',
                     },
-                    assignToReference: {
+                    field: {
                       type: 'string',
                       title: '',
                       'x-decorator': 'FormItem',
