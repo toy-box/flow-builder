@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react'
 import { FormItem, FormLayout, Input, Select, Checkbox, FormGrid } from '@formily/antd'
-import { createForm, onFieldReact, onFieldValueChange } from '@formily/core'
+import { createForm, onFieldReact, onFieldValueChange, FormPathPattern, Field } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { Button, Modal } from 'antd'
 import { action } from '@formily/reactive'
@@ -101,10 +101,10 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   value
 }) => {
   const useAsyncDataSource = (
-    pattern: Formily.Core.Types.FormPathPattern,
+    pattern: FormPathPattern,
     service: (
-      field: Formily.Core.Models.Field
-    ) => Promise<{ label: string | JSX.Element; value: any }[]>
+      field: Field
+    ) => any
   ) => {
     onFieldReact(pattern, (field) => {
       const fieldObj = field as any
@@ -122,7 +122,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
         console.log(isShowDefault, valFlag, state.display)
       })
       service(fieldObj).then(
-        action((data) => {
+        action(() => {
           // fieldObj.dataSource = data
           fieldObj.inputValue = null
           fieldObj.loading = false
