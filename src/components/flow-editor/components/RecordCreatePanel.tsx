@@ -10,7 +10,6 @@ import { AutoFlow } from '../../../flow/models/AutoFlow'
 import '../styles/extendPanel.less'
 
 interface ExtendEditPanelProps {
-  callbackFunc: (id: string, type: FlowMetaType, data: any) => void,
   flowGraph: AutoFlow,
   closeExtend?: () => void,
 }
@@ -26,7 +25,7 @@ const MetaTypes = [
   },
 ]
 
-export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flowGraph, closeExtend }) => {
+export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }) => {
   const prefixCls = usePrefix('-extend-panel')
   const node = useNode()
   const [showModel, setShowModel] = useState(false)
@@ -36,11 +35,10 @@ export const RecordCreatePanel: FC<ExtendEditPanelProps> = ({ callbackFunc, flow
     (data, type) => {
       if (!isBool(data)) {
         flowGraph.editFlowData(node.node.id, type, data)
-        callbackFunc(node.node.id, type, data)
       }
       setShowModel(false)
     },
-    [callbackFunc, flowGraph, node.node.id],
+    [flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
     (type) => {

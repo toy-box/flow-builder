@@ -3,8 +3,7 @@ import {
   observable,
   action
 } from '@formily/reactive'
-import { ICompareOperation } from '@toy-box/meta-schema';
-import { FlowMetaParam, TargetReference, Criteria, SortOrder } from '../../types'
+import { FlowMetaParam, TargetReference, Criteria, SortOrder, IOutputAssignment } from '../../types'
 
 export class RecordLookup {
   id: string
@@ -14,7 +13,7 @@ export class RecordLookup {
   faultConnector?: TargetReference
   criteria?: Criteria
   registerId?: string
-  outputAssignments?: ICompareOperation[]
+  outputAssignments?: IOutputAssignment[]
   outputReference?: null | string
   queriedFields?: string[]
   sortOrder?: SortOrder

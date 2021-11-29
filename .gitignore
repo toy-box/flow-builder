@@ -3,6 +3,7 @@
 # IDE
 /.vscode
 /.idea
+/playground/node_modules
 
 # dependencies
 /node_modules

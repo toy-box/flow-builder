@@ -2,6 +2,7 @@ import React, { FC, useState, useCallback } from 'react';
 import update from 'immutability-helper'
 import classnames from 'classnames'
 import { ISchema  } from '@formily/json-schema'
+import { ArrayField } from '@formily/core'
 import { Button } from 'antd';
 import {
   PlusOutlined,
@@ -29,7 +30,7 @@ const isOperationComponent = (schema: ISchema) => {
 
 export const BranchArrays: FC = observer((props: any) => {
   const form = useForm()
-  const field = useField<Formily.Core.Models.ArrayField>()
+  const field = useField<ArrayField>()
   const schema = useFieldSchema()
   const dataSource = Array.isArray(field.value) ? field.value : []
   const [selectIndex, setSelectIndex] = useState(0)

@@ -154,7 +154,6 @@ export const AssignmentModel:FC<AssignmentModelPorps> = ({
   const form = createForm()
 
   if (assignmentData) {
-    debugger
     const flowData = clone(assignmentData)
     const assignmentItems = flowData?.assignmentItems.map((data: IAssignmentData) => {
       return {

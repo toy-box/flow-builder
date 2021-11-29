@@ -251,6 +251,8 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
               placeholder: <TextWidget>flow.form.placeholder.assignRecordIdToReference</TextWidget>,
               flowJsonTypes: [{
                 value: IFlowResourceType.VARIABLE
+              }, {
+                value: IFlowResourceType.VARIABLE_RECORD
               }],
               flowGraph,
             },

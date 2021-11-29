@@ -17,6 +17,7 @@ import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
 import { useLocale } from '../../hooks'
 // import { runEffects } from '../shared/effectbox'
 import { History } from './History'
+import { QuoteMetaOfUpdate } from './QuoteMetaOfUpdate'
 
 const STAND_SIZE = 56;
 
@@ -138,7 +139,7 @@ export class AutoFlow {
   }
 
   editFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
-    this.flowGraph = new Flow()
+    // this.flowGraph = new Flow()
     if (flowData.id !== nodeId) {
       this.flowNodes.forEach((node) => {
         if (node.targets?.includes(nodeId)) {
@@ -171,6 +172,14 @@ export class AutoFlow {
       if (flowSuspend) this.decisionFlowData(flowSuspend, flowData, nodeId)
     }
     this.initMetaFields(metaType, flowData, MetaFieldType.EDIT, nodeId)
+    if (metaType === FlowMetaType.RECORD_LOOKUP && nodeId !== flowData.id) {
+      this.fieldMetas.some((meta) => {
+        const data = meta.children.find((child) => child.key === nodeId || child.key === flowData.id)
+        if (data) QuoteMetaOfUpdate(this, data, nodeId)
+        return data
+      })
+    }
+    this.flowGraph = new Flow()
     this.history.push(this.mataFlowJson.flow)
   }
 
@@ -363,7 +372,8 @@ export class AutoFlow {
       }
     }
     this.initFlowNodes(metaType, data, flowNode)
-    this.history.push(this.mataFlowJson.flow)
+    this.flowGraph = new Flow()
+    // this.history.push(this.mataFlowJson.flow)
     console.log(this.mataFlowJson.flow, 'this.mataFlowJson.flow')
   }
 
@@ -801,7 +811,7 @@ export class AutoFlow {
     this.history.push(this.mataFlowJson.flow)
   }
 
-  editFlowMeta = (metaType: IFlowResourceType, flowMeta: IFieldMeta) => {
+  editFlowMeta = (metaType: IFlowResourceType, flowMeta: IFieldMeta, quoteId: string) => {
     let index = 0
     switch (metaType) {
       case IFlowResourceType.VARIABLE:
@@ -827,34 +837,8 @@ export class AutoFlow {
       default:
         break;
     }
+    if (flowMeta.key !== quoteId) QuoteMetaOfUpdate(this, flowMeta, quoteId)
     this.history.push(this.mataFlowJson.flow)
-  }
-
-  updateQuoteFilterMeta = (flowMeta: IFieldMeta, quoteId: string) => {
-    this.flowAssignments.forEach((assignment) => {
-      assignment.assignmentItems?.forEach((item) => {
-        if (item.assignToReference === quoteId) item.assignToReference = flowMeta.key
-        const val = item.value?.split('.')?.[0]
-        if (val && val === quoteId) {
-          item.value = item.value.replace(val, flowMeta.key)
-        } else if (item.value === quoteId) {
-          item.value = flowMeta.key
-        }
-      })
-    })
-    this.flowDecisions.forEach((decision) => {
-      decision.rules?.forEach((rule) => {
-        rule.criteria?.conditions.forEach((condition) => {
-          if (condition.fieldPattern === quoteId) condition.fieldPattern = flowMeta.key
-          const val = condition.value?.split('.')?.[0]
-          if (val && val === quoteId) {
-            condition.value = condition.value.replace(val, flowMeta.key)
-          } else if (condition.value === quoteId) {
-            condition.value = flowMeta.key
-          }
-        })
-      })
-    })
   }
 
   get fieldMetas() {

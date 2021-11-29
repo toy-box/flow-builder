@@ -6,7 +6,7 @@ import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
 import {
   Editor,
   ITbexpLangErrorAndCode
-} from '@toy-box/formula-editor';
+} from '@toy-box/formula-editor/lib';
 import { TextWidget } from '../widgets'
 import { useLocale } from '../../hooks'
 
@@ -37,13 +37,12 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
 
   const globalVariables: Record<string, IFieldMeta> = {}
   const localVariables: Record<string, IFieldMeta> = {}
-  const flowAllResource = {
+  const variableMap = {
     globalVariables,
     localVariables,
   };
-  const formulaText: string = 'COUNT(1)';
-  const formulaType: MetaValueType | undefined =  MetaValueType.NUMBER;//undefined;
   const callback = (res: ITbexpLangErrorAndCode) => {
+    setFormulaValue(res.text)
     console.log('回调结果：', res);
   };
   const customInputStyle = {
@@ -62,6 +61,7 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
   };
 
   const handleCancel = () => {
+    setFormulaValue(value || '')
     setIsModalVisible(false);
   };
 
@@ -150,12 +150,16 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
         visible={isModalVisible} 
         cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} 
         okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
-        <Editor 
-          flowAllResource={flowAllResource}
-          formulaText={formulaText}
-          formulaType={formulaType}
-          onChange={callback}>
+        {isModalVisible && <Editor 
+          variableMap={variableMap}
+          value={formulaValue}
+          valueType={MetaValueType.NUMBER}
+          onChange={callback}
+          style={{
+            height: '400px',
+          }}>
         </Editor>
+        }
       </Modal>
     </>
   );

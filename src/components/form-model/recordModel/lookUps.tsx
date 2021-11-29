@@ -200,7 +200,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
 
   if (metaFlowData) {
     const flowData = clone(metaFlowData)
-    const conditions = flowData?.criteria.conditions?.map((data: ICriteriaCondition) => {
+    const conditions = flowData?.criteria?.conditions?.map((data: ICriteriaCondition) => {
       return {
         source: data.fieldPattern,
         op: data.operation,

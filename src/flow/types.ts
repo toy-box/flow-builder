@@ -126,7 +126,7 @@ export interface FlowMetaParam {
   storeOutputAutomatically?: boolean
   assignRecordIdToReference?: string
   criteria?: Criteria
-  outputAssignments?: ICompareOperation[]
+  outputAssignments?: IOutputAssignment[]
   outputReference?: null | string
   queriedFields?: string[]
   sortOrder?: SortOrder

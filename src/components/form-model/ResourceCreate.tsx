@@ -90,6 +90,7 @@ interface ResourceCreateProps {
   isOpBtn?: boolean
   title?: string | JSX.Element
   value?: IFieldMetaFlow
+  fieldType?: string
 }
 
 export const ResourceCreate:FC<ResourceCreateProps> = ({
@@ -98,7 +99,8 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   opName = <TextWidget>flow.form.resourceCreate.addResource</TextWidget>,
   title = <TextWidget>flow.form.resourceCreate.addResource</TextWidget>,
   isOpBtn = true,
-  value
+  value,
+  fieldType
 }) => {
   const useAsyncDataSource = (
     pattern: FormPathPattern,
@@ -217,7 +219,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             type: 'string',
             title: <TextWidget>flow.form.comm.value</TextWidget>,
             required: true,
-            'x-disabled': !!value,
+            // 'x-disabled': !!value,
             'x-validator': [{
               triggerType: 'onBlur',
               required: true,
@@ -374,7 +376,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
 
   if (value) {
     const flowDataVal = clone(value)
-    flowDataVal.flowType = value.webType
+    flowDataVal.flowType = fieldType
     form.setValues(flowDataVal)
   }
 
@@ -388,7 +390,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   const submitResource = useCallback(
     (resourceData, flowDataType) => {
       if (value) {
-        flowGraph.editFlowMeta(flowDataType, resourceData)
+        flowGraph.editFlowMeta(flowDataType, resourceData, value.key)
       } else {
         flowGraph.addFlowMeta(flowDataType, resourceData)
       }

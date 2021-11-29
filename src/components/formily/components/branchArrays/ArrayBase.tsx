@@ -4,8 +4,10 @@ import {
 } from '@ant-design/icons'
 // import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon'
 import { ButtonProps } from 'antd/lib/button'
+import { ArrayField, JSXComponent } from '@formily/core'
 import { useField, useFieldSchema, Schema } from '@formily/react'
 import { isValid } from '@formily/shared'
+
 // import { FormilyFilterBuilder } from './FormilyFilterBuilder'
 
 export interface IArrayBaseAdditionProps extends ButtonProps {
@@ -16,7 +18,7 @@ export interface IArrayBaseAdditionProps extends ButtonProps {
 
 export interface IArrayBaseContext {
   props: IArrayBaseProps
-  field: Formily.Core.Models.ArrayField
+  field: ArrayField
   schema: Schema
 }
 
@@ -40,7 +42,7 @@ export interface IArrayBaseProps {
 type ComposedArrayBase = React.FC<IArrayBaseProps> &
   ArrayBaseMixins & {
     Item: React.FC<IArrayBaseItemProps>
-    mixin: <T extends Formily.React.Types.JSXComponent>(
+    mixin: <T extends JSXComponent>(
       target: T
     ) => T & ArrayBaseMixins
   }
@@ -76,7 +78,7 @@ const useIndex = (index?: number) => {
 // }
 
 export const ArrayBase: ComposedArrayBase = (props) => {
-  const field = useField<Formily.Core.Models.ArrayField>()
+  const field = useField<ArrayField>()
   const schema = useFieldSchema()
   return (
     <ArrayBaseContext.Provider value={{ field, schema, props }}>

@@ -21,44 +21,6 @@ export const AntvCanvas = observer(() => {
   const flowGraph = useFlowGraph();
   const flow = flowGraph.flowGraph;
 
-  const submit = useCallback(
-    (id, type, data) => {
-      const graph = new Graph({
-        container: document.getElementById('flow-canvas') || undefined,
-        panning: true,
-        grid: true,
-        background: {
-          color: '#fafafa',
-        },
-        frozen: true,
-      });
-      flow.setCanvas(
-        new FlowCanvas({
-          flowGraph: flow.flowGraph,
-          canvas: graph,
-          components: {
-            StartNode: connect(StartNode, () => {
-              return <div>start</div>;
-            }),
-            ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
-            EndNode: connect(EndNode),
-            AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-            RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          },
-        })
-      );
-      flow.setFlowNode(flowGraph.flowNodes as any[])
-    },
-    [flow, flowGraph],
-  )
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const graph = new Graph({
@@ -78,21 +40,21 @@ export const AntvCanvas = observer(() => {
           StartNode: connect(StartNode, () => {
             return <div>start</div>;
           }),
-          ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) =>submit(id, type, data)} />),
+          ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} />),
           EndNode: connect(EndNode),
-          AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
-          RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} callbackFunc={(id: string, type, data) => submit(id, type, data)} />),
+          AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} />),
+          DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} />),
+          SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} />),
+          LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} />),
+          CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} />),
+          RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} />),
+          RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} />),
+          RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} />),
+          RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} />),
         }
       })
     );
-  }, [flow, flowGraph, submit]);
+  }, [flow, flowGraph]);
 
   useEffect(() => {
     console.log(111111111111)

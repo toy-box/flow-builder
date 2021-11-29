@@ -73,7 +73,7 @@ export const CompositePanel: React.FC & {
             return item.icon
           }
           return (
-            <Tooltip placement="right" title={<TextWidget>{item.title}</TextWidget>}>
+            <Tooltip key={index} placement="right" title={<TextWidget>{item.title}</TextWidget>}>
               <div
                 className={classNames(prefix + '-tabs-pane', {
                   active: activeKey === index && visible,
