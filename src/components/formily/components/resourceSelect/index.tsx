@@ -30,7 +30,7 @@ export const ResourceSelect: FC = observer((props: any) => {
       if (props.reactionKey) {
         const reactionKey = form.values[props.reactionKey]
         let registerOps: IFieldOption[] = []
-        registers.some((re) => {
+        registers?.some((re) => {
           if (re.id === reactionKey) {
             for (const key in re.properties) {
               if (re.properties.hasOwnProperty(key)) {
@@ -48,7 +48,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         })
         return registerOps
       }
-      const options = registers.map((r) => {
+      const options = registers?.map((r) => {
         return {
           label: r.name,
           value: r.id,

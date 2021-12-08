@@ -1,5 +1,6 @@
 import React, { FC, useEffect } from 'react'
 import { FlowChart, ListUnordered } from '@airclass/icons'
+import { isArr } from '@toy-box/toybox-shared'
 import { AntvCanvas } from './components'
 import { FlowGraphMeta } from '../../flow/types'
 import { FlowContext } from '../../flow/shared'
@@ -21,7 +22,7 @@ export const FlowEditor: FC<{ flowGraph: AutoFlow }> = ({ flowGraph }) => {
 
   useEffect(() => {
     getMetaObjectData().then(({ data }) => {
-      initRegisters(data);
+      if (isArr(data)) initRegisters(data);
     })
   }, [initRegisters])
 

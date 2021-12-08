@@ -5,6 +5,7 @@ import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
 import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { IFieldOption } from '@toy-box/meta-schema';
+import { isArr } from '@toy-box/toybox-shared';
 import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
 import { fieldMetaStore } from '../../../store'
@@ -147,25 +148,27 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     field.display = refObjectId ? 'visible' : 'none'
     const registers = fieldMetaStore.fieldMetaStore.registers
     let registerOps: IFieldOption[] = []
-    registers.some((re) => {
-      if (re.id === refObjectId) {
-        for (const key in re.properties) {
-          if (re.properties.hasOwnProperty(key)) {
-            const obj = re.properties[key];
-            const value = form.values;
-            const idx = value.sortOptions.findIndex((option: sortOption) => option.sortField === obj.key)
-            const option = {
-              label: obj.name,
-              value: obj.key,
-              disabled: idx > -1,
+    if (isArr(registers)) {
+      registers?.some((re) => {
+        if (re.id === refObjectId) {
+          for (const key in re.properties) {
+            if (re.properties.hasOwnProperty(key)) {
+              const obj = re.properties[key];
+              const value = form.values;
+              const idx = value.sortOptions.findIndex((option: sortOption) => option.sortField === obj.key)
+              const option = {
+                label: obj.name,
+                value: obj.key,
+                disabled: idx > -1,
+              }
+              registerOps.push(option)
             }
-            registerOps.push(option)
           }
+          return true
         }
-        return true
-      }
-      return false
-    })
+        return false
+      })
+    }
     field.dataSource = registerOps
   }, [form.values])
 

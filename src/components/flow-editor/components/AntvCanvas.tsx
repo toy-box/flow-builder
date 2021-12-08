@@ -16,6 +16,8 @@ import { RecordDeletePanel } from './RecordDeletePanel';
 import { RecordEditPanel } from './RecordEditPanel';
 import { RecordSearchPanel } from './RecordSearchPanel';
 import { SuspendPanel } from './SuspendPanel';
+import { LabelPanel } from './LabelPanel';
+import { FlowMetaType } from '../../../flow/types';
 
 export const AntvCanvas = observer(() => {
   const flowGraph = useFlowGraph();
@@ -32,6 +34,7 @@ export const AntvCanvas = observer(() => {
       },
       frozen: true,
     });
+    graph.positionContent('top')
     flow.setCanvas(
       new FlowCanvas({
         flowGraph: flow.flowGraph,
@@ -42,15 +45,15 @@ export const AntvCanvas = observer(() => {
           }),
           ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} />),
           EndNode: connect(EndNode),
-          AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} />),
-          DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} />),
-          SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} />),
-          LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} />),
-          CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} />),
-          RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} />),
-          RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} />),
-          RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} />),
-          RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} />),
+          AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
+          DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.DECISION} />),
+          SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.WAIT} />),
+          LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.LOOP} />),
+          CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.SORT_COLLECTION_PROCESSOR} />),
+          RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_CREATE} />),
+          RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_DELETE} />),
+          RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_UPDATE} />),
+          RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_LOOKUP} />),
         }
       })
     );

@@ -49,7 +49,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       })
       if (rule.sourceTime) {
         return {
-          id: uid(),
+          id: rule.id || uid(),
           name: rule.name,
           connector: {
             targetReference: rule?.connector?.targetReference || null,
@@ -63,7 +63,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         }
       }
       return {
-        id: uid(),
+        id: rule.id || uid(),
         name: rule.name,
         connector: {
           targetReference: rule?.connector?.targetReference || null,
@@ -402,7 +402,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                         gridSpan: 2
                       },
                       'x-component-props': {
-                        simple: true,
+                        // simple: true,
                         specialMode: true,
                         isShowResourceBtn: true,
                         mataSource: 'flowJson',

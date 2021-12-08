@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 
 function resolve(dir) {
@@ -6,10 +7,11 @@ function resolve(dir) {
 }
 module.exports = {
     mode: 'development',
+    devtool: 'source-map',
     entry: {
         app: './src/index.tsx',
-        "editor.worker": 'monaco-editor-core/esm/vs/editor/editor.worker.js',
-        "tbexpLangWorker": "@toy-box/formula-editor/lib/tbexp-lang/tbexp.worker.js",
+        "editor.worker": 'monaco-editor/esm/vs/editor/editor.worker.js',
+        "tbexpLangWorker": "@toy-box/expression-editor/es/tbexp-lang/TbexpLangWorker.js",
         // "tbexpLangWorker": './src/tbexp-lang/tbexp.worker.ts'
     },
     output: {
@@ -28,8 +30,17 @@ module.exports = {
         },
         path: path.resolve(__dirname, 'dist')
     },
+    node: {
+        fs: 'empty',
+        child_process: 'empty',
+        net: 'empty',
+        crypto: 'empty',
+    },
     resolve: {
-        extensions: ['.ts', '.tsx', '.js', '.jsx', '.css']
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.css'],
+        alias: {
+            vscode: 'monaco-languageclient/lib/vscode-compatibility',
+        },
     },
     module: {
         // rules: [
@@ -44,6 +55,10 @@ module.exports = {
                 loader: 'ts-loader'
             },
             {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader',
+            },
+            {
                 test: /\.css/,
                 use: ['style-loader', 'css-loader']
             }
@@ -52,6 +67,10 @@ module.exports = {
     plugins: [
         new htmlWebpackPlugin({
             template: './src/index.html'
-        })
+        }),
+        new webpack.IgnorePlugin(
+        /^((fs)|(path)|(os)|(crypto)|(source-map-support))$/,
+        /vs(\/|\\)language(\/|\\)typescript(\/|\\)lib/,
+        ),
     ]
 }

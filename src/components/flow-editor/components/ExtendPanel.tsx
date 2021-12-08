@@ -16,7 +16,7 @@ interface ExtendPanelProps {
   closeExtend?: () => void,
 }
 
-const MetaTypes = [
+export const MetaTypes = [
   {
     label: <TextWidget>flow.extend.assign</TextWidget>,
     value: FlowMetaType.ASSIGNMENT,

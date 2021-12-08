@@ -191,21 +191,22 @@ export class AutoFlow {
     const ids: any = []
     const rules = flowDecision.rules || flowDecision.waitEvents
     const flowDataRules: any = flowData.rules || flowData.waitEvents
+    let flowNodes:NodeProps[] = clone(this.flowNodes)
     rules?.forEach((rule) => {
       if (!flowDataRules?.find((rl: { id: string; }) => rl.id === rule.id)) {
         if (rule?.connector?.targetReference) {
           const targetReference = rule.connector.targetReference as string
-          this.flowNodes = this.flowNodes.filter((node) => !node.targets?.includes(targetReference))
-          const currnetNode = this.flowNodes.find((node) => node.id === targetReference)
-          this.flowNodes = this.flowNodes.filter((node) => node.id !== targetReference)
+          flowNodes = flowNodes.filter((node) => !node.targets?.includes(targetReference))
+          const currnetNode = flowNodes.find((node) => node.id === targetReference)
+          flowNodes = flowNodes.filter((node) => node.id !== targetReference)
           if (currnetNode) this.removeFlowNode(currnetNode, endId)
         } else {
-          this.flowNodes = this.flowNodes.filter((node) => node.id !== rule.id)
+          flowNodes = flowNodes.filter((node) => node.id !== rule.id)
         }
       }
     })
     flowDataRules?.forEach((rl: { id: string; connector: { targetReference: any; }; }) => {
-      const fn = this.flowNodes.find((node) => node.id === rl.id)
+      const fn = flowNodes.find((node) => node.id === rl.id)
       if (!fn) {
         ids.push(rl.id)
         decisions.push({
@@ -222,7 +223,8 @@ export class AutoFlow {
     })
     ids.push(targets?.[targets?.length - 1])
     if (flowNode?.targets) flowNode.targets = ids
-    this.flowNodes.push(...decisions)
+    flowNodes.push(...decisions)
+    this.flowNodes = flowNodes
     console.log(this.flowNodes)
   }
 

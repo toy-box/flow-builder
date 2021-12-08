@@ -3,10 +3,7 @@ import { Modal, Input } from 'antd';
 import 'codemirror/lib/codemirror.css';
 // import { FormulaEditor } from '@toy-box/form-formula';
 import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
-import {
-  Editor,
-  ITbexpLangErrorAndCode
-} from '@toy-box/formula-editor/lib';
+import { ExpressionEditor } from '@toy-box/expression-editor';
 import { TextWidget } from '../widgets'
 import { useLocale } from '../../hooks'
 
@@ -34,14 +31,8 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
   const style = {
     border: '1px solid gray',
   };
-
-  const globalVariables: Record<string, IFieldMeta> = {}
-  const localVariables: Record<string, IFieldMeta> = {}
-  const variableMap = {
-    globalVariables,
-    localVariables,
-  };
-  const callback = (res: ITbexpLangErrorAndCode) => {
+  const variableMap: Record<string, IFieldMeta> = {};
+  const callback = (res: any) => {
     setFormulaValue(res.text)
     console.log('回调结果：', res);
   };
@@ -150,15 +141,14 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
         visible={isModalVisible} 
         cancelText={<TextWidget>flow.form.comm.cencel</TextWidget>} 
         okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
-        {isModalVisible && <Editor 
-          variableMap={variableMap}
+        {isModalVisible && <ExpressionEditor
           value={formulaValue}
+          variableMap={variableMap}
           valueType={MetaValueType.NUMBER}
           onChange={callback}
-          style={{
-            height: '400px',
-          }}>
-        </Editor>
+          width={'100%'}
+          height={'400px'}
+        />
         }
       </Modal>
     </>

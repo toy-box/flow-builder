@@ -109,7 +109,7 @@ export const FormilyFilter: FC = observer((props: any) => {
       })
     }
     return metas
-  }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, props?.operatOptions, form.values, registers])
+  }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, form.values, registers])
   return (
     <div style={{'display': props.display}}>
       {props.isShowResourceBtn && <ResourceCreate 

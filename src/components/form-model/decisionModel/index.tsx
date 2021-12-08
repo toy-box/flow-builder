@@ -67,7 +67,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         defaultConnector: {
           targetReference: decisionData?.defaultConnector?.targetReference || null,
         },
-        defaultConnectorName: defaultConnectorName,
+        defaultConnectorName: decisionData?.defaultConnectorName || defaultConnectorName,
         rules: value.rules,
       }
       console.log(paramData, defaultConnectorName);
@@ -112,7 +112,6 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
       })
       rule.criteria.conditions = conditions
     })
-    setDefaultConnectorName(flowData.defaultConnectorName)
     form.setValues(flowData)
   } else {
     form.setValues(

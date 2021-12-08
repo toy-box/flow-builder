@@ -1,10 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
-import { Editor } from '@toy-box/formula-editor'
+import { ExpressionEditor } from '@toy-box/expression-editor'
+// import { GlobalRegistry,
+//   Navbar, FlowEditor,
+//   DesignerContext,
+//   AutoFlow,
+//   flow, getMetaObjectData } from '../../src'
 
-const globalVariables: Record<string, IFieldMeta> = {
-  currentUser: {
+const variableMap = {
+  $currentUser: {
     key: '123',
     name: 'currentUser',
     type: 'object',
@@ -90,7 +95,7 @@ const globalVariables: Record<string, IFieldMeta> = {
       },
     },
   },
-  tags: {
+  $tags: {
     key: '333',
     name: 'tags',
     type: 'array',
@@ -99,7 +104,7 @@ const globalVariables: Record<string, IFieldMeta> = {
     },
     required: true,
   },
-  books: {
+  $books: {
     key: '444',
     name: 'books',
     type: 'array',
@@ -139,25 +144,6 @@ const globalVariables: Record<string, IFieldMeta> = {
       },
     },
   },
-  //外键关联
-  // ObjectRefId:{
-  // },
-  //多维数组，meta-schema lib不支持
-  // ManyDiemension: {
-  //   key: '333',
-  //   name: 'ManyDiemension',
-  //   type: 'array',
-  //   items: {
-  //     type: 'array',
-  //     items: {
-  //       type: 'string'
-  //     }
-  //   },
-  //   required: true
-  // },
-};
-
-const localVariables: Record<string, IFieldMeta> = {
   address: {
     key: 'address',
     name: 'Address',
@@ -245,25 +231,20 @@ const localVariables: Record<string, IFieldMeta> = {
     },
   },
 };
-
-const variableMap = {
-  globalVariables,
-  localVariables,
-}
+console.log(1111111111)
 const callback = (res: any) => {
   console.log('回调结果：', res);
 };
 const value = ""
 
 const App = () => (
-  <Editor
+  <ExpressionEditor
     variableMap={variableMap}
     value={value}
     valueType={MetaValueType.NUMBER}
     onChange={callback}
-    style={{
-      height: '400px',
-    }}
+    width={'100%'}
+    height={'400px'}
   />
 );
 
