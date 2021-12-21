@@ -2,17 +2,18 @@ import React, { FC, useCallback, useMemo, useState } from 'react'
 import { useForm, observer, useField } from '@formily/react'
 import { FilterBuilder } from '@toy-box/meta-components';
 import { ICompareOperation, IFieldOption, IFieldGroupMeta } from '@toy-box/meta-schema'
-import { fieldMetaStore } from '../../../../store'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
 import { useLocale } from '../../../../hooks'
 import { isArr } from '@toy-box/toybox-shared';
+import { CustomValueElement } from './CustomValueElement'
 
 export const FormilyFilter: FC = observer((props: any) => {
-  const { registers } = fieldMetaStore.fieldMetaStore
+  const [idx, setIndex] = useState(-1)
   const form = useForm()
   const formilyField = useField() as any
   const handleFilter = useCallback(
-    (value) => {
+    (value, index) => {
+      setIndex(index)
       form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
         formilyField.validate()
@@ -45,7 +46,7 @@ export const FormilyFilter: FC = observer((props: any) => {
     if (props.mataSource === 'metaData') {
       const reactionKey = form.values[props.reactionKey]
       let registerOps: IFieldOption[] = []
-      registers.some((re) => {
+      props.flowGraph.registers.some((re: { id: any; properties: { [x: string]: any; hasOwnProperty: (arg0: string) => any; }; }) => {
         if (re.id === reactionKey) {
           for (const key in re.properties) {
             if (re.properties.hasOwnProperty(key)) {
@@ -109,7 +110,29 @@ export const FormilyFilter: FC = observer((props: any) => {
       })
     }
     return metas
-  }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, form.values, registers])
+  }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, form.values, props.flowGraph.registers])
+
+  const customValueElement = useMemo(() => {
+    if (idx >= 0) {
+      const value = formilyField.value?.[idx]?.target
+      const source = formilyField.value?.[idx]?.source
+      let resourceFieldMeta = undefined as any
+      resourceFieldMetas.some((meta) => {
+        if (meta.children) {
+          resourceFieldMeta = meta.children.find((child: { key: any; }) => child.key === source)
+          if (resourceFieldMeta) return resourceFieldMeta
+        }
+      })
+      return <CustomValueElement flowGraph={props.flowGraph} value={value} valueType={resourceFieldMeta?.type} onChange={(value: string) => changeFormaluValue(value)} />
+    }
+  }, [props.flowGraph, formilyField.value, resourceFieldMetas, idx])
+
+  const changeFormaluValue = useCallback(
+    (value) => {
+      formilyField.value[idx].target = value
+    },
+    [formilyField.value],
+  )
   return (
     <div style={{'display': props.display}}>
       {props.isShowResourceBtn && <ResourceCreate 
@@ -122,11 +145,22 @@ export const FormilyFilter: FC = observer((props: any) => {
         specialOptions={specialOptions}
         specialMode={props.specialMode}
         operatType={props.operatType}
-        onChange={(filterItem: Partial<ICompareOperation>[]) =>
-          handleFilter(filterItem)
+        customValueElement={CustomValueElement}
+        customValueProps={{
+          flowGraph: props.flowGraph,
+          value: formilyField.value,
+          resourceFieldMetas: resourceFieldMetas,
+          onChange: (value: string) => changeFormaluValue(value)
+        }}
+        onChange={(filterItem: Partial<ICompareOperation>[], index?: number) =>
+          handleFilter(filterItem, index)
         }
         simple={props.simple}
       />
     </div>
   )
 })
+
+function value(value: any) {
+  throw new Error('Function not implemented.');
+}

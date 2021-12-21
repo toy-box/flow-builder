@@ -2,35 +2,33 @@ import React, { FC, useCallback, useMemo } from 'react'
 import { useForm, observer, useField } from '@formily/react'
 import { Select } from 'antd'
 import { isArr } from '@formily/shared'
-import { IFieldOption } from '@toy-box/meta-schema'
+import { IFieldOption, MetaValueType } from '@toy-box/meta-schema'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
-import { fieldMetaStore } from '../../../../store'
 import { useLocale } from '../../../../hooks'
 
 
 const { OptGroup, Option } = Select
 
+export interface IFieldOptionProp {
+  label: string
+  value: string
+}
+export interface IOptionProp extends IFieldOptionProp {
+  type: MetaValueType
+  children?: IFieldOptionProp[]
+}
+
 export const ResourceSelect: FC = observer((props: any) => {
-  const { registers } = fieldMetaStore.fieldMetaStore
 
   const form = useForm()
   const formilyField = useField() as any
-  const onChange = useCallback(
-    (value) => {
-      form.setFieldState(formilyField?.path?.entire, (state) => {
-        state.value = value
-        formilyField.validate()
-      })
-    },
-    [form, formilyField],
-  )
 
   const metaOptions = useMemo(() => {
     if (props.mataSource === 'metaData') {
       if (props.reactionKey) {
         const reactionKey = form.values[props.reactionKey]
         let registerOps: IFieldOption[] = []
-        registers?.some((re) => {
+        props.flowGraph.registers?.some((re: { id: any; properties: { [x: string]: any; hasOwnProperty: (arg0: string) => any } }) => {
           if (re.id === reactionKey) {
             for (const key in re.properties) {
               if (re.properties.hasOwnProperty(key)) {
@@ -48,7 +46,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         })
         return registerOps
       }
-      const options = registers?.map((r) => {
+      const options = props.flowGraph.registers?.map((r: { name: any; id: any }) => {
         return {
           label: r.name,
           value: r.id,
@@ -85,6 +83,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         const children = field?.children.map((child: any) => ({
           label: child?.name,
           value: child?.key,
+          type: child.type,
         }))
         return {
           label: field?.label,
@@ -95,13 +94,41 @@ export const ResourceSelect: FC = observer((props: any) => {
         return {
           label: field?.name,
           value: field?.key,
+          type: field.type,
         }
       }
     })
-  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, registers, form.values[props.reactionKey]])
+  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, props.flowGraph.registers, form.values[props.reactionKey]])
+
+  const metaTypeOps = useMemo(() => {
+    const ops: IOptionProp[] = []
+    if (props.metaTypes) {
+      metaOptions.forEach((op: IOptionProp) => {
+        if (op.children) {
+          const childs: any[] = op.children.filter((cld: any) => {
+            return props.metaTypes.includes(cld.type)
+            || cld.type === MetaValueType.OBJECT || cld.type === MetaValueType.OBJECT_ID
+          })
+          if (childs.length > 0) {
+            ops.push({
+              label: op.label,
+              value: op?.value,
+              type: op.type,
+              children: childs
+            })
+          }
+        } else if (props.metaTypes.includes(op.type)
+          || op.type === MetaValueType.OBJECT || op.type === MetaValueType.OBJECT_ID) {
+          ops.push(op)
+        }
+      });
+      return ops
+    }
+    return metaOptions
+  }, [props.metaTypes, metaOptions])
 
   const optionRender = useMemo(() => {
-    return metaOptions?.map((option: any) =>
+    return metaTypeOps?.map((option: any) =>
       option.children ? (
         <OptGroup key={option.value} label={option.label}>
           {option.children.map((child: any) => (
@@ -124,7 +151,20 @@ export const ResourceSelect: FC = observer((props: any) => {
         </Option>
       )
     )
-  }, [metaOptions])
+  }, [metaTypeOps])
+
+  const onChange = useCallback(
+    (value) => {
+      console.log(metaTypeOps, props.flowGraph.fieldMetas)
+      debugger
+      props.onChange(value)
+      form.setFieldState(formilyField?.path?.entire, (state) => {
+        state.value = value
+        formilyField.validate()
+      })
+    },
+    [form, formilyField, metaTypeOps],
+  )
 
   return (
     <div>

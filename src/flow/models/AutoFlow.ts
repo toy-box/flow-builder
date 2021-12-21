@@ -83,6 +83,7 @@ export class AutoFlow {
   flowTemplates: IFieldMeta[] = []
   flowVariables: IFieldMeta[] = []
   history: History
+  registers: any[] = []
 
   constructor(autoFlowMeta: FlowGraphMeta) {
     this.id = autoFlowMeta.id
@@ -129,13 +130,19 @@ export class AutoFlow {
       flowVariables: observable.shallow,
       flowFormulas: observable.shallow,
       flowTemplates: observable.shallow,
+      registers: observable.shallow,
       fieldMetas: observable.computed,
+      formulaMap: observable.computed,
       // onInit: batch,
     })
   }
 
   setId = (id: string) => {
     this.id = id
+  }
+
+  initRegisters(data: any[]) {
+    this.registers = data
   }
 
   editFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
@@ -960,6 +967,58 @@ export class AutoFlow {
     }
     return fieldMetas
   }
+
+  get formulaMap() {
+    let formulaMeta: Record<string, IFieldMeta> = {}
+    this.flowVariables?.forEach((meta: IFieldMeta) => {
+      formulaMeta = this.getFormulaMap(formulaMeta, meta)
+    });
+    this.flowConstants?.forEach((meta: IFieldMeta) => {
+      formulaMeta = this.getFormulaMap(formulaMeta, meta)
+    });
+    this.flowFormulas?.forEach((meta: IFieldMeta) => {
+      formulaMeta = this.getFormulaMap(formulaMeta, meta)
+    });
+    this.flowTemplates?.forEach((meta: IFieldMeta) => {
+      formulaMeta = this.getFormulaMap(formulaMeta, meta)
+    });
+    this.recordLookups?.forEach((record: RecordLookup) => {
+      if (record.storeOutputAutomatically || (record.queriedFields && !record.outputReference)) {
+        const register = this.registers.find((reg) => reg.id === record.registerId)
+        let resourceData: IFieldMetaFlow = {
+          name: `来自${record.id}的 应用程序`,
+          webType: record.getFirstRecordOnly ? IFlowResourceType.VARIABLE_RECORD : IFlowResourceType.VARIABLE_ARRAY_RECORD,
+          type: record.getFirstRecordOnly ? MetaValueType.OBJECT_ID : MetaValueType.ARRAY,
+          key: record.id,
+          properties: register?.properties
+        }
+        formulaMeta = this.getFormulaMap(formulaMeta, resourceData)
+      }
+    });
+    return formulaMeta
+  }
+
+  getFormulaMap = (formulaMeta: Record<string, IFieldMeta>, meta: IFieldMeta, isProperty?: boolean) => {
+    const key = isProperty ? meta.key :`$${meta.key}`
+    const obj = {
+      [key]: {
+        key: meta.key,
+        name: meta.name,
+        type: meta.type,
+        properties: {},
+      }
+    }
+    if (isObj(meta.properties)) {
+      for (const proKey in meta.properties) {
+        if (meta.properties.hasOwnProperty(proKey)) {
+          const p = meta.properties[proKey]
+          this.getFormulaMap(obj[key].properties, p, true)
+        }
+      }
+    }
+    return Object.assign(formulaMeta, obj)
+  }
+
 
   // 按targets顺序进行flowNodes实例化
   setFlowData = (flowDatas: any[], target?: FlowMetaParamOfType) => {

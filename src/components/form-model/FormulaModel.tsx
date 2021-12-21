@@ -1,17 +1,21 @@
-import React, { FC, useState, CSSProperties } from 'react';
-import { Modal, Input } from 'antd';
+import React, { FC, useState, CSSProperties, useRef } from 'react';
+import { Modal, Input, Button } from 'antd';
 import 'codemirror/lib/codemirror.css';
 // import { FormulaEditor } from '@toy-box/form-formula';
 import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
 import { ExpressionEditor } from '@toy-box/expression-editor';
 import { TextWidget } from '../widgets'
 import { useLocale } from '../../hooks'
+import { AutoFlow } from '../../flow/models/AutoFlow'
+import './index.less'
 
 export interface AssignmentModelPorps {
   metaSchema?: Toybox.MetaSchema.Types.IFieldMeta[] | MetaSchemaObj
   value?: string
   onChange: (value: string) => void
   inputStyle?: CSSProperties
+  valueType: MetaValueType
+  flowGraph: AutoFlow
 }
 
 export interface MetaSchemaObj {
@@ -25,15 +29,19 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
   value,
   onChange,
   inputStyle,
+  valueType,
+  flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formulaValue, setFormulaValue] = useState(value || '')
+  const prefix = 'expression-input'
+  const ref = useRef(null)
   const style = {
     border: '1px solid gray',
   };
   const variableMap: Record<string, IFieldMeta> = {};
   const callback = (res: any) => {
-    setFormulaValue(res.text)
+    setFormulaValue(res)
     console.log('回调结果：', res);
   };
   const customInputStyle = {
@@ -133,9 +141,19 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
 
   return (
     <>
-      <div title={formulaValue} onClick={showModal}>
-        <Input disabled style={customInputStyle} placeholder={useLocale('flow.placeholder.formula')} value={formulaValue}  />
-      </div>
+      <Button className={prefix} title={formulaValue} onClick={showModal}>
+        <div className={prefix + '-icon'}>=</div>
+        {formulaValue.length > 0 ? (
+            <div className={prefix + '-code'}>{formulaValue}</div>
+          ) : (
+            <div className={prefix + '-placeholder'}>
+              {
+                <TextWidget>flow.form.placeholder.formula</TextWidget>
+              }
+            </div>
+          )}
+        {/* <Input disabled style={customInputStyle} placeholder={useLocale('flow.placeholder.formula')} value={formulaValue}  /> */}
+      </Button>
       <Modal width={900} 
         title={<TextWidget>flow.form.formula.editTitle</TextWidget>} 
         visible={isModalVisible} 
@@ -143,8 +161,8 @@ export const FormulaModel:FC<AssignmentModelPorps> = ({
         okText={<TextWidget>flow.form.comm.submit</TextWidget>} onOk={handleOk} onCancel={handleCancel}>
         {isModalVisible && <ExpressionEditor
           value={formulaValue}
-          variableMap={variableMap}
-          valueType={MetaValueType.NUMBER}
+          variableMap={flowGraph.formulaMap}
+          valueType={valueType}
           onChange={callback}
           width={'100%'}
           height={'400px'}

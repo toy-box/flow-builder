@@ -8,7 +8,6 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { fieldMetaStore } from '../../../store'
 import { FlowMetaType, FlowMetaParam, IInputAssignment, ICriteriaCondition } from '../../../flow/types'
 // import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
@@ -111,7 +110,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
   const form = createForm({
     effects: () => {
       onFieldValueChange('registerId', (field) => {
-        const registers = fieldMetaStore.fieldMetaStore.registers
+        const registers = flowGraph.registers
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {

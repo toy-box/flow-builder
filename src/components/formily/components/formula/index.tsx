@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react'
+import React, { FC, useCallback, useMemo } from 'react'
 import { useForm, observer } from '@formily/react'
 import { FormulaModel } from '../../../form-model'
 
@@ -12,9 +12,12 @@ export const FormulaEdit: FC = observer((props: any) => {
     },
     [form],
   )
+  const valueType = useMemo(() => {
+    return form.values.type
+  }, [form.values.type])
   return (
     <div>
-      <FormulaModel value={props.value} onChange={(value: string) => onChange(value)}/>
+      <FormulaModel flowGraph={props.flowGraph} valueType={valueType} value={props.value} onChange={(value: string) => onChange(value)}/>
     </div>
   )
 })

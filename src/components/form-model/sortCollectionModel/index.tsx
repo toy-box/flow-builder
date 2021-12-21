@@ -8,7 +8,6 @@ import { IFieldOption } from '@toy-box/meta-schema';
 import { isArr } from '@toy-box/toybox-shared';
 import { ResourceSelect } from '../../formily/components/index'
 import { IFlowResourceType, FlowMetaType, FlowMetaParam } from '../../../flow/types'
-import { fieldMetaStore } from '../../../store'
 // import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -146,7 +145,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     if (!flowType) return []
     const refObjectId = isRecord(flowType)
     field.display = refObjectId ? 'visible' : 'none'
-    const registers = fieldMetaStore.fieldMetaStore.registers
+    const registers = flowGraph.registers
     let registerOps: IFieldOption[] = []
     if (isArr(registers)) {
       registers?.some((re) => {

@@ -5,7 +5,6 @@ import { AntvCanvas } from './components'
 import { FlowGraphMeta } from '../../flow/types'
 import { FlowContext } from '../../flow/shared'
 import { AutoFlow } from '../../flow/models/AutoFlow'
-import { fieldMetaStore } from '../../store'
 import { CompositePanel } from '../composite-panel'
 import { ResourceWidget } from '../widgets'
 import { usePrefix, useService } from '../../hooks'
@@ -18,13 +17,12 @@ export const FlowEditor: FC<{ flowGraph: AutoFlow }> = ({ flowGraph }) => {
   const prefixCls = usePrefix('-editor')
   const { getMetaObjectData } = useService()
   // const flowGraph = new AutoFlow(flowMeta)
-  const { initRegisters } = fieldMetaStore.fieldMetaStore
 
   useEffect(() => {
     getMetaObjectData().then(({ data }) => {
-      if (isArr(data)) initRegisters(data);
+      if (isArr(data)) flowGraph.initRegisters(data);
     })
-  }, [initRegisters])
+  }, [flowGraph.initRegisters])
 
   return (
     <div className={prefixCls}>

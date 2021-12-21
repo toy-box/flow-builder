@@ -5,14 +5,12 @@ import { MetaValueType } from '@toy-box/meta-schema';
 import { useForm, observer } from '@formily/react'
 import { FieldDate, FieldBoolean, FieldSelect } from '@toy-box/meta-components';
 import { isArr } from '@formily/shared';
-import { fieldMetaStore } from '../../../store'
 import { useLocale } from '../../../hooks'
 
 
 
 export const GatherInput: FC = observer((props: any) => {
   const form = useForm()
-  const { registers } = fieldMetaStore.fieldMetaStore;
   const { TextArea } = antInput
 
   const changeValue = useCallback((e) => {
@@ -34,8 +32,8 @@ export const GatherInput: FC = observer((props: any) => {
   }, [form])
 
   const registerOptions = useMemo(() => {
-    if (isArr(registers)) {
-      const options = registers.map((r) => {
+    if (isArr(props.flowGraph.registers)) {
+      const options = props.flowGraph.registers.map((r: { name: any; id: any; }) => {
         return {
           label: r.name,
           value: r.id,
@@ -44,7 +42,7 @@ export const GatherInput: FC = observer((props: any) => {
       return options
     }
     return []
-  }, [registers])
+  }, [props.flowGraph.registers])
 
   const filterValueInput = useMemo(() => {
     switch (form.values.type) {

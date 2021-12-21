@@ -13,7 +13,6 @@ import {
 import { clone } from '@toy-box/toybox-shared';
 import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { fieldMetaStore } from '../../../store'
 // import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -133,7 +132,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   const form = createForm({
     effects: () => {
       onFieldValueChange('registerId', (field) => {
-        const registers = fieldMetaStore.fieldMetaStore.registers
+        const registers = flowGraph.registers
         const register = registers.find((rg) => rg.id === field.value)
         if (register) {
           form.setFieldState('criteria.conditions', (state) => {
@@ -250,7 +249,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   const reactionField = useCallback((field) => {
     const refObjectId = field.query('registerId').get('value')
     if (!refObjectId) return []
-    const registers = fieldMetaStore.fieldMetaStore.registers
+    const registers = flowGraph.registers
     let registerOps: IFieldOption[] = []
     registers.some((re) => {
       if (re.id === refObjectId) {

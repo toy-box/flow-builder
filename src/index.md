@@ -124,7 +124,7 @@ GlobalRegistry.registerDesignerLocales({
           refObjectId: '请输入值...',
           assignRecordIdToReference: '请选择变量',
           outputReference: '选择记录变量',
-          formula: '请输入公式',
+          formula: '配置表达式',
           resourceSelect: '请选择集合变量',
           formilyInput: {
             input: '请输入值',

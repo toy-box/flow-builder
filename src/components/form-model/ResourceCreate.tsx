@@ -142,9 +142,6 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
         formData.setFieldState('text', (state) => {
           state.display = field.value === IFlowResourceType.TEMPLATE ? 'visible' : 'none'
         })
-        formData.setFieldState('formula', (state) => {
-          state.display = field.value === IFlowResourceType.FORMULA ? 'visible' : 'none'
-        })
       })
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useAsyncDataSource('type', async (field) => {
@@ -174,6 +171,10 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
         })
       })
       onFieldValueChange('type', (field) => {
+        formData.setFieldState('formula', (state) => {
+          const flowType = field.query('flowType').get('value')
+          state.display = flowType === IFlowResourceType.FORMULA && field.value ? 'visible' : 'none'
+        })
         formData.setFieldState('defaultValue', (state) => {
           state.value = null
         })
@@ -307,6 +308,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             'x-component': 'GatherInput',
             'x-component-props': {
               placeholder: <TextWidget>flow.form.placeholder.refObjectId</TextWidget>,
+              flowGraph,
             },
             "x-decorator-props": {
               gridSpan: 1
@@ -326,6 +328,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             'x-decorator': 'FormItem',
             'x-component': 'GatherInput',
             'x-component-props': {
+              flowGraph,
             },
             "x-decorator-props": {
               gridSpan: 2
@@ -361,9 +364,10 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             'x-decorator': 'FormItem',
             'x-component': 'FormulaEdit',
             'x-component-props': {
+              flowGraph
             },
             "x-decorator-props": {
-              gridSpan: 2
+              gridSpan: 1
             },
           },
         },

@@ -3,7 +3,7 @@ import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup, Radio, NumberPicker } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
-import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
+import { ICompareOperation, CompareOP, MetaValueType } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { BranchArrays, ResourceSelect, FormilyFilter } from '../../formily/components/index'
 import { FlowMetaType, FlowMetaParam, IOutParameter } from '../../../flow/types'
@@ -186,6 +186,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     field.display = sourceTime === bool ? 'visible' : 'none';
   }, [form.values])
 
+  const selectValue = useCallback((select) => {
+    debugger
+  }, [])
+
   const descTipHtml = <div className="branch-arrays-tip">
     <p className="tip">
       <TextWidget>flow.form.suspend.tip</TextWidget>
@@ -352,6 +356,8 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                         mataSource: 'flowJson',
                         placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
                         flowGraph,
+                        metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
+                        onChange: selectValue,
                       },
                       'x-reactions': myReaction.bind(this, false),
                     },
@@ -369,6 +375,8 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                         isHiddenResourceBtn: false,
                         mataSource: 'flowJson',
                         placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>,
+                        onChange: selectValue,
+                        metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
                         flowGraph,
                       },
                       'x-reactions': myReaction.bind(this, true),
