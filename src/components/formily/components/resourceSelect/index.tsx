@@ -155,9 +155,16 @@ export const ResourceSelect: FC = observer((props: any) => {
 
   const onChange = useCallback(
     (value) => {
-      console.log(metaTypeOps, props.flowGraph.fieldMetas)
-      debugger
-      props.onChange(value)
+      metaTypeOps.forEach((op: IOptionProp) => {
+        if (op.children) {
+          const cld = op.children.find(child => child.value === value)
+          if (cld) {
+            props.onChange(cld)
+          }
+        } else if (op.value === value) {
+          props.onChange(op)
+        }
+      });
       form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
         formilyField.validate()

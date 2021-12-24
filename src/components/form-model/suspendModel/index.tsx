@@ -29,6 +29,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
+  let selectData: any = null
   const repeatName = useLocale('flow.form.validator.repeatName')
 
   
@@ -56,6 +57,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           },
           recoveryTimeInfo: {
             dateValue: rule.dateValue,
+            dateValueType: selectData?.dateValueType,
             offsetNum: rule.offsetNum,
             offsetUnit: rule.offsetUnit,
           },
@@ -72,6 +74,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           registerId: rule.registerId,
           field: rule.field,
           recordIdValue: rule.recordIdValue,
+          recordIdType: selectData?.dateValueType,
           offsetNum: rule.offsetNum,
           offsetUnit: rule.offsetUnit,
         },
@@ -146,10 +149,12 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           targetReference: rule?.connector?.targetReference || null,
         },
         dateValue: rule.recoveryTimeInfo.dateValue,
+        dateValueType: rule.recoveryTimeInfo?.dateValueType,
         registerId: rule.recoveryTimeInfo.registerId,
         field: rule.recoveryTimeInfo.field,
         sourceTime: rule.recoveryTimeInfo.registerId ? false : true,
         recordIdValue: rule.recoveryTimeInfo.recordIdValue,
+        recordIdType: rule.recoveryTimeInfo?.dateValueType,
         offsetNum: rule.recoveryTimeInfo.offsetNum,
         offsetUnit: rule.recoveryTimeInfo.offsetUnit,
         outputParameters,
@@ -187,7 +192,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   }, [form.values])
 
   const selectValue = useCallback((select) => {
-    debugger
+    selectData = select
   }, [])
 
   const descTipHtml = <div className="branch-arrays-tip">
