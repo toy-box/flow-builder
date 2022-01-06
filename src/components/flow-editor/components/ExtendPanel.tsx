@@ -4,7 +4,7 @@ import { isBool } from '@toy-box/toybox-shared'
 import { AssignmentModel, DecisionModel, SuspendModel, LoopModel,
   SortCollectionModel, RecordCreateModel, RecordUpdateModel,
   RecordRemoveModel, RecordLookUpModel } from '../../form-model'
-import { FlowMetaType, FlowMetaParam } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, FlowType } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { usePrefix } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
@@ -61,6 +61,11 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
   const [showModel, setShowModel] = useState(false)
   const [flowMetaType, setFlowMetaType] = useState<FlowMetaType>()
 
+  const metaDatas = useMemo(() => {
+    return MetaTypes.filter((meta) =>
+      !(meta.value === FlowMetaType.WAIT && flowGraph.flowType === 'RECORD_TRIGGER'))
+  }, [flowGraph.flowType, MetaTypes])
+
   const assignmentCallBack = useCallback(
     (data, type) => {
       if (!isBool(data)) {
@@ -72,6 +77,7 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
   )
   const onSubmit = useCallback(
     (type) => {
+      debugger
       closeExtend && closeExtend()
       setFlowMetaType(type)
       setShowModel(true)
@@ -109,14 +115,14 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
       </div>
       <ul className={`${prefixCls}-list`}>
         {
-          MetaTypes.map(
-            (data) => (
-              <li key={data.value}>
+          metaDatas.map(
+            (data) => (<li key={data.value}>
                 <div onClick={() => onSubmit(data.value)} className={`${prefixCls}-list__item`}>
                   {data.label}
                 </div>
               </li>
-          ))
+            )
+          )
         }
       </ul>
       {models}

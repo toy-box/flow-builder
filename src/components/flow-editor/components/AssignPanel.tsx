@@ -42,6 +42,7 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }
   )
   const onSubmit = useCallback(
     (type) => {
+      debugger
       closeExtend && closeExtend()
       const flowAssignments = flowGraph.flowAssignments
       const nodeId = node.node.id;
@@ -57,27 +58,29 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }
   )
   return (
     <div className={prefixCls}>
-      <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.assign</TextWidget>
-      </div>
-      <ul className={`${prefixCls}-list`}>
-        {
-          MetaTypes.map(
-            (data) => (
-              <li key={data.value}>
-                <div onClick={() => onSubmit(data.value)} className={`${prefixCls}-list__item`}>
-                  {data.label}
-                </div>
-              </li>
-          ))
-        }
-      </ul>
-      {<AssignmentModel 
-        flowGraph={flowGraph}
-        title={<TextWidget>flow.form.assignment.editTitle</TextWidget>} 
-        assignmentData={metaFlowData} 
-        showModel={showModel} 
-        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {flowGraph.isEdit && <div>
+        <div className={`${prefixCls}-title`}>
+          <TextWidget>flow.extend.assign</TextWidget>
+        </div>
+        <ul className={`${prefixCls}-list`}>
+          {
+            MetaTypes.map(
+              (data) => (
+                <li key={data.value}>
+                  <div onClick={() => onSubmit(data.value)} className={`${prefixCls}-list__item`}>
+                    {data.label}
+                  </div>
+                </li>
+            ))
+          }
+        </ul>
+        {<AssignmentModel 
+          flowGraph={flowGraph}
+          title={<TextWidget>flow.form.assignment.editTitle</TextWidget>} 
+          assignmentData={metaFlowData} 
+          showModel={showModel} 
+          callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      </div>}
     </div>
   )
 }

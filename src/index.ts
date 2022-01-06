@@ -1,3 +1,4 @@
+import './config/locale'
 import './index.css';
 export * from './designer';
 export * from './hooks';

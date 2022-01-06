@@ -135,6 +135,19 @@ export interface FlowMetaParam {
   waitEvents?: IwaitEvent[]
 }
 
+export interface IStartFlowMeta {
+  id: string
+  name: string
+  description?: string
+  connector?: TargetReference
+  criteria?: Criteria
+  objectId?: string
+  recordTriggerType?: RecordTriggerTypeEnum
+  schedule?: ISchedule
+  triggerType?: TriggerTypeEnum
+  type: FlowType
+}
+
 export interface IwaitEvent {
   connector: TargetReference
   outputParameters: IOutParameter[]
@@ -219,5 +232,37 @@ export interface IOutputAssignment {
 
 export interface IFieldMetaFlow extends IFieldMeta {
   webType?: string
+}
+
+export type FlowType =
+  | 'AUTO_START_UP'
+  | 'PLAN_TRIGGER'
+  | 'PLATFORM_EVENT'
+  | 'RECORD_TRIGGER'
+  | 'SCREEN'
+
+export interface ISchedule {
+  frequency: string
+  startDate: string
+  startTime: string
+}
+
+export enum TriggerTypeEnum {
+  RECORD_AFTER_SAVE = 'recordAfterSave',
+  RECORD_BEFORE_SAVE = 'recordBeforeSave',
+}
+
+export enum RecordTriggerTypeEnum {
+  CREATE = 'create',
+  UPDATE = 'update',
+  CREATE_OR_UPDATE = 'createOrUpdate',
+  DELETE = 'delete'
+}
+
+export enum FlowTypeCodeEnum {
+  SCREEN = 'SCREEN',
+  PLAN_TRIGGER = 'PLAN_TRIGGER',
+  AUTO_START_UP = 'AUTO_START_UP',
+  RECORD_TRIGGER = 'RECORD_TRIGGER',
 }
 

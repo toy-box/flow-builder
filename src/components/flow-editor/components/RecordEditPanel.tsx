@@ -57,27 +57,29 @@ export const RecordEditPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExte
   )
   return (
     <div className={prefixCls}>
-      <div className={`${prefixCls}-title`}>
-        <TextWidget>flow.extend.recordUpdate</TextWidget>
-      </div>
-      <ul className={`${prefixCls}-list`}>
-        {
-          MetaTypes.map(
-            (data) => (
-              <li key={data.value}>
-                <div onClick={() => onSubmit(data.value)} className={`${prefixCls}-list__item`}>
-                  {data.label}
-                </div>
-              </li>
-          ))
-        }
-      </ul>
-      {<RecordUpdateModel 
-        flowGraph={flowGraph}
-        title={<TextWidget>flow.form.recordUpdate.editTitle</TextWidget>} 
-        metaFlowData={metaFlowData} 
-        showModel={showModel} 
-        callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      {flowGraph.isEdit && <div>
+        <div className={`${prefixCls}-title`}>
+          <TextWidget>flow.extend.recordUpdate</TextWidget>
+        </div>
+        <ul className={`${prefixCls}-list`}>
+          {
+            MetaTypes.map(
+              (data) => (
+                <li key={data.value}>
+                  <div onClick={() => onSubmit(data.value)} className={`${prefixCls}-list__item`}>
+                    {data.label}
+                  </div>
+                </li>
+            ))
+          }
+        </ul>
+        {<RecordUpdateModel 
+          flowGraph={flowGraph}
+          title={<TextWidget>flow.form.recordUpdate.editTitle</TextWidget>} 
+          metaFlowData={metaFlowData} 
+          showModel={showModel} 
+          callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type)} />}
+      </div>}
     </div>
   )
 }

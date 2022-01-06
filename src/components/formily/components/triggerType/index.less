@@ -1,0 +1,27 @@
+@borderColor: #dddbda;
+@borderActiveColor: #1b96ff;
+
+.trigger-type {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  &-item {
+    width: 49%;
+    display: flex;
+    border: solid 1px @borderColor;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 2px 2px rgb(0 0 0 / 5%);
+    padding: 10px 20px;
+    cursor: pointer;
+    &:hover {
+      border-color: @borderActiveColor;
+    }
+    &.active {
+      border-color: @borderActiveColor;
+    }
+    &-content {
+      line-height: 25px;
+    }
+  }
+}

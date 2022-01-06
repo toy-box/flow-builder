@@ -9,7 +9,7 @@ import { IFieldMeta, IFieldGroupMeta, MetaValueType, IFieldOption } from '@toy-b
 import { isArr } from '@formily/shared';
 import { clone, isNum, isObj } from '@toy-box/toybox-shared';
 import update from 'immutability-helper'
-import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, IFieldMetaFlow } from '../types'
+import { FlowGraphMeta, FlowMetaType, FlowMetaParam, IFlowResourceType, IFieldMetaFlow, FlowType } from '../types'
 import { uid } from '../../utils';
 import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   FlowSortCollectionProcessor, FlowSuspend, RecordCreate,
@@ -55,6 +55,13 @@ export enum MetaFieldType {
   INIT = 'INIT',
 } 
 
+export enum FlowModeEnum {
+  EDIT = 'edit',
+  READ = 'read',
+}
+
+export type FlowModeType = FlowModeEnum.EDIT | FlowModeEnum.READ
+
 export interface FlowMetaParamOfType extends FlowMetaParam {
   flowType: FlowMetaType
 }
@@ -84,10 +91,16 @@ export class AutoFlow {
   flowVariables: IFieldMeta[] = []
   history: History
   registers: any[] = []
+  mode: FlowModeType = FlowModeEnum.EDIT
+  flowType: FlowType
+  isEdit: boolean | undefined
 
-  constructor(autoFlowMeta: FlowGraphMeta) {
+  constructor(autoFlowMeta: FlowGraphMeta, flowType: FlowType, mode?: FlowModeType) {
     this.id = autoFlowMeta.id
     this.initialMeta = autoFlowMeta
+    this.flowType = flowType
+    this.mode = mode || FlowModeEnum.EDIT
+    this.isEdit = this.mode === FlowModeEnum.EDIT
     this.mataFlowJson = {
       id: autoFlowMeta.id,
       name: autoFlowMeta.name,
@@ -427,9 +440,15 @@ export class AutoFlow {
       const forkBeginOfForwardNode = this.flowNodes.find((node) => {
         return (node?.targets || []).length > 1 && flowNode?.id && (node?.targets || []).includes(flowNode?.id)
       })
-      const baseNode = this.flowNodes.find((node) => {
+      const base = this.flowNodes.find((node) => {
         return node?.targets?.length === 1 && flowNode?.id && node.targets.includes(flowNode?.id)
       })
+      let baseNode = base
+      if (base?.component === 'LabelNode') {
+        baseNode = this.flowNodes.find((node) => {
+          return (node?.targets || []).length > 1 && base?.id && (node?.targets || []).includes(base?.id)
+        })
+      }
       const cycleBeginOfBackNode = this.flowNodes.find((node) => node.loopBackTarget === flowNode?.id)
       const cycleBeginOfEndNode = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
       if (isObj(flow[meta.flowType]) && baseNode?.type === 'begin') {
@@ -1106,7 +1125,7 @@ export class AutoFlow {
   }
 
   setStarts(flowData: FlowMetaParam) {
-    const id = uid()
+    const id = this.isEdit ? uid() : flowData?.connector?.targetReference || this.flowEndId
     this.flowNodes.push({
       id: flowData.id,
       type: 'begin',
@@ -1114,14 +1133,19 @@ export class AutoFlow {
       height: STAND_SIZE,
       targets: [id],
       component: 'StartNode',
-    }, {
-      id,
-      type: 'forward',
-      width: STAND_SIZE,
-      height: STAND_SIZE,
-      targets: [flowData?.connector?.targetReference || this.flowEndId],
-      component: 'ExtendNode',
     })
+    if (this.isEdit) {
+      this.flowNodes.push(
+        {
+          id,
+          type: 'forward',
+          width: STAND_SIZE,
+          height: STAND_SIZE,
+          targets: [flowData?.connector?.targetReference || this.flowEndId],
+          component: 'ExtendNode',
+        }
+      )
+    }
   }
 
   setDecisions(flowData: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, decisionEndId?: string) {
@@ -1155,21 +1179,34 @@ export class AutoFlow {
     const rules = flowData.rules || flowData.waitEvents
     rules?.forEach((rule) => {
       ids.push(rule.id)
+      const opartId = uid()
       decisions.push({
         id: rule.id,
         type: 'forward',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: [loopBackNode ? loopBackNode.id :
-          (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : (rule?.connector?.targetReference as string || endId))],
-        component: 'ExtendNode',
+        targets: [this.isEdit ? opartId : (loopBackNode ? loopBackNode.id :
+          (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : (rule?.connector?.targetReference as string || endId)))],
+        component: 'LabelNode',
       })
+      if (this.isEdit) {
+        decisions.push({
+          id: opartId,
+          type: 'forward',
+          width: STAND_SIZE,
+          height: STAND_SIZE,
+          targets: [loopBackNode ? loopBackNode.id :
+            (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : (rule?.connector?.targetReference as string || endId))],
+          component: 'ExtendNode',
+        })
+      }
       if (rule?.connector) {
         const metaFlow = this.metaFlowDatas.find((meta) => meta.id === rule?.connector?.targetReference)
         if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId || endId)
       }
     })
     const id = uid()
+    const defaultId = uid()
     ids.push(id)
     decisions.push(
       {
@@ -1177,10 +1214,22 @@ export class AutoFlow {
         type: 'forward',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: decisionEndTarget,
-        component: 'ExtendNode',
+        targets: this.isEdit ? [defaultId] : decisionEndTarget,
+        component: 'LabelNode',
       }
     )
+    if (this.isEdit) {
+      decisions.push(
+        {
+          id: defaultId,
+          type: 'forward',
+          width: STAND_SIZE,
+          height: STAND_SIZE,
+          targets: decisionEndTarget,
+          component: 'ExtendNode',
+        }
+      )
+    }
     if (flowData?.defaultConnector) {
       const metaFlow = this.metaFlowDatas.find((meta) => meta.id === flowData?.defaultConnector?.targetReference)
       if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId || endId)
@@ -1203,6 +1252,8 @@ export class AutoFlow {
   setLoops(flowData: FlowMetaParam, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, decisionEndId?: string) {
     const backId = uid()
     const endId = uid()
+    const backLabelId = uid()
+    const endLabelId = uid()
     const id = uid()
     const loopEndTarget = [loopBackNode?.id ? loopBackNode.id :
       (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : endId)]
@@ -1213,10 +1264,26 @@ export class AutoFlow {
       loopEndTarget: loopEndTarget.join(''),
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [flowData?.nextValueConnector?.targetReference ? id : backId],
+      targets: [backLabelId],
       component: 'LoopNode',
     }]
-    if (flowData?.nextValueConnector?.targetReference) {
+    loops.push({
+      id: backLabelId,
+      type: this.isEdit ? 'forward' : 'loopBack',
+      width: STAND_SIZE,
+      height: STAND_SIZE,
+      targets: [this.isEdit ? (flowData?.nextValueConnector?.targetReference ? id : backId) : endLabelId],
+      component: 'LabelNode',
+    })
+    loops.push({
+      id: endLabelId,
+      type: this.isEdit ? 'forward' : 'loopEnd',
+      width: STAND_SIZE,
+      height: STAND_SIZE,
+      targets: [this.isEdit ? endId : (flowData?.defaultConnector?.targetReference || decisionEndId || this.flowEndId)],
+      component: 'LabelNode',
+    })
+    if (flowData?.nextValueConnector?.targetReference && this.isEdit) {
       const extendNode: NodeProps = {
         id,
         type: 'forward',
@@ -1227,15 +1294,17 @@ export class AutoFlow {
       }
       loops.push(extendNode);
     }
-    loops.push({
-      id: backId,
-      type: 'loopBack',
-      width: STAND_SIZE,
-      height: STAND_SIZE,
-      targets: loopEndTarget,
-      component: 'ExtendNode',
-    })
-    if (!loopBackNode && !loopLastData) {
+    if (this.isEdit) {
+      loops.push({
+        id: backId,
+        type: 'loopBack',
+        width: STAND_SIZE,
+        height: STAND_SIZE,
+        targets: [endLabelId],
+        component: 'ExtendNode',
+      })
+    }
+    if (!loopBackNode && !loopLastData && this.isEdit) {
       loops.push({
         id: endId,
         type: 'loopEnd',
@@ -1277,16 +1346,18 @@ export class AutoFlow {
     default:
         break;
     }
+    const targetId = this.isEdit ? (loopBackNode ? loopBackNode.id :
+      (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : id))
+      : (targetNode?.connector?.targetReference || decisionEndId || this.flowEndId)
     const recordCreates: NodeProps[] = [{
       id: targetNode.id,
       type: 'forward',
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [loopBackNode ? loopBackNode.id :
-        (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : id)],
+      targets: [targetId],
       component: componentName
     }]
-    if (!loopBackNode && !loopLastData) {
+    if (!loopBackNode && !loopLastData && this.isEdit) {
       recordCreates.push({
         id: id,
         type: 'forward',
@@ -1316,21 +1387,23 @@ export class AutoFlow {
         node.targets = targets
         if (node.loopEndTarget === flowNode?.id) {
           type = 'loopEnd'
-          node.loopEndTarget = id
+          node.loopEndTarget = this.isEdit ? id : targetNode.id
         } else if (node.decisionEndTarget === flowNode?.id) {
           type = 'decisionEnd'
-          node.decisionEndTarget = id
+          node.decisionEndTarget = this.isEdit ? id : targetNode.id
         }
       })
-      const extendNode: NodeProps = {
-        id,
-        type,
-        width: STAND_SIZE,
-        height: STAND_SIZE,
-        targets: [targetNode.id],
-        component: 'ExtendNode',
+      if (this.isEdit) {
+        const extendNode: NodeProps = {
+          id,
+          type,
+          width: STAND_SIZE,
+          height: STAND_SIZE,
+          targets: [targetNode.id],
+          component: 'ExtendNode',
+        }
+        this.flowNodes.push(extendNode);
       }
-      this.flowNodes.push(extendNode);
       return flowNode
     }
     if (flowNode) {

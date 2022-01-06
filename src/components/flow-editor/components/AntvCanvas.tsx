@@ -4,7 +4,7 @@ import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
 import { connect, StartNode, ExtendNode, EndNode, DecisionNode, LoopNode,
   ActionNode, AssignNode, RecordCreateNode, RecordSearchNode, RecordEdithNode,
-  RecordDeletehNode, CollectionSortNode } from '@toy-box/flow-nodes';
+  RecordDeletehNode, CollectionSortNode, LabelNode } from '@toy-box/flow-nodes';
 import { useFlowGraph } from '../../../flow/hooks/useFlowGraph'
 import { ExtendPanel } from './ExtendPanel';
 import { DecisionPanel } from './DecisionPanel';
@@ -17,6 +17,9 @@ import { RecordEditPanel } from './RecordEditPanel';
 import { RecordSearchPanel } from './RecordSearchPanel';
 import { SuspendPanel } from './SuspendPanel';
 import { LabelPanel } from './LabelPanel';
+import { LabelNodePanel } from './LabelNodePanel';
+import { StartPanel } from './StartPanel';
+import { StartLabelPanel } from './StartLabelPanel';
 import { FlowMetaType } from '../../../flow/types';
 
 export const AntvCanvas = observer(() => {
@@ -40,10 +43,9 @@ export const AntvCanvas = observer(() => {
         flowGraph: flow.flowGraph,
         canvas: graph,
         components: {
-          StartNode: connect(StartNode, () => {
-            return <div>start</div>;
-          }),
+          StartNode: connect(StartNode, <StartPanel flowGraph={flowGraph} />, <StartLabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
           ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} />),
+          LabelNode: connect(LabelNode, <LabelNodePanel flowGraph={flowGraph} />),
           EndNode: connect(EndNode),
           AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
           DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.DECISION} />),

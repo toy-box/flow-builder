@@ -3,17 +3,29 @@ import {
   observable,
   action
 } from '@formily/reactive'
-import { FlowMetaParam, TargetReference } from '../types'
+import { IStartFlowMeta, TargetReference, Criteria, FlowType, ISchedule } from '../types'
 
 export class FlowStart {
   id: string
   name: string
+  type: FlowType
   connector?: TargetReference
+  criteria?: Criteria
+  objectId?: string
+  recordTriggerType?: string
+  schedule?: ISchedule
+  triggerType?: string
 
-  constructor(flowStart: FlowMetaParam) {
+  constructor(flowStart: IStartFlowMeta) {
     this.id = flowStart.id
     this.name = flowStart.name
     this.connector = flowStart.connector
+    this.criteria = flowStart.criteria
+    this.type = flowStart.type
+    this.objectId = flowStart.objectId
+    this.recordTriggerType = flowStart.recordTriggerType
+    this.schedule = flowStart.schedule
+    this.triggerType = flowStart.triggerType
     this.makeObservable()
   }
 
@@ -21,14 +33,26 @@ export class FlowStart {
     define(this, {
       id: observable.ref,
       name: observable.ref,
+      type: observable.ref,
       connector: observable.deep,
+      criteria: observable.deep,
+      objectId: observable.ref,
+      recordTriggerType: observable.ref,
+      schedule: observable.deep,
+      triggerType: observable.ref,
       onEdit: action
     })
   }
 
-  onEdit = (flowStart: FlowMetaParam) => {
+  onEdit = (flowStart: IStartFlowMeta) => {
     this.id = flowStart.id
     this.name = flowStart.name
     this.connector = flowStart.connector
+    this.criteria = flowStart.criteria
+    this.type = flowStart.type
+    this.objectId = flowStart.objectId
+    this.recordTriggerType = flowStart.recordTriggerType
+    this.schedule = flowStart.schedule
+    this.triggerType = flowStart.triggerType
   }
 }
