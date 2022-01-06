@@ -111,7 +111,11 @@ export const StartModel:FC<StartModelPorps> = ({
         target: data.value
       }
     })
-    if (flowData?.criteria?.conditions) flowData.criteria.conditions = conditions
+    if (flowData?.criteria?.conditions) {
+      flowData.criteria.conditions = conditions
+    } else {
+      flowData['criteria.conditions'] = []
+    }
     form.setValues(flowData)
   }
 
