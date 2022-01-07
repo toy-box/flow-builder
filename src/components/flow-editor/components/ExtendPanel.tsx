@@ -77,7 +77,6 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
   )
   const onSubmit = useCallback(
     (type) => {
-      debugger
       closeExtend && closeExtend()
       setFlowMetaType(type)
       setShowModel(true)

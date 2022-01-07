@@ -42,7 +42,6 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }
   )
   const onSubmit = useCallback(
     (type) => {
-      debugger
       closeExtend && closeExtend()
       const flowAssignments = flowGraph.flowAssignments
       const nodeId = node.node.id;
