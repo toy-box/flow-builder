@@ -31,6 +31,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   let selectData: any = null
   const repeatName = useLocale('flow.form.validator.repeatName')
+  const [defaultConnectorName, setDefaultConnectorName] = useState(useLocale('flow.form.decision.defaultConnectorName'))
 
   
   useEffect(() => {
@@ -90,6 +91,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       defaultConnector: {
         targetReference: metaFlowData?.defaultConnector?.targetReference || null,
       },
+      defaultConnectorName: metaFlowData?.defaultConnectorName || defaultConnectorName,
       description: value.description,
       waitEvents: quiredRules,
     }

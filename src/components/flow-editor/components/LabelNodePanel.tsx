@@ -34,9 +34,9 @@ export const LabelNodePanel: FC<LabelNodePanelProps> = ({ flowGraph, flowNodeTyp
         if (rule) return rule?.name
         return flowDecision.defaultConnectorName
       } else if (flowWait) {
-        const rule = flowDecision.waitEvents.find((meta: FlowMetaParam) => meta.id === node.node.id)
+        const rule = flowWait?.waitEvents.find((meta: FlowMetaParam) => meta.id === node.node.id)
         if (rule) return rule?.name
-        return flowDecision.defaultConnectorName
+        return flowWait.defaultConnectorName
       }
     } else if (flowNode?.type === 'loopBegin') {
       return 'For Each'
