@@ -23,10 +23,10 @@ export const FormilyFilter: FC = observer((props: any) => {
   )
   const specialOptions = useMemo(() => {
     const arr = [
-      {
-        label: useLocale('flow.form.comm.reference'),
-        value: 'REFERENCE',
-      },
+      // {
+      //   label: useLocale('flow.form.comm.reference'),
+      //   value: 'REFERENCE',
+      // },
       {
         label: useLocale('flow.form.comm.input'),
         value: 'INPUT',
