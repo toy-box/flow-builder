@@ -72,7 +72,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           } : null,
           recoveryTimeInfo: {
             dateValue: rule.dateValue,
-            dateValueType: selectData?.type || rule.dateValueType,
+            dateValueType: 'INPUT' || selectData?.type || rule.dateValueType,
             offsetNum: rule.offsetNum,
             offsetUnit: rule.offsetUnit,
           },
@@ -94,7 +94,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           registerId: rule.registerId,
           field: rule.field,
           recordIdValue: rule.recordIdValue,
-          recordIdType: selectData?.type || rule.dateValueType,
+          recordIdType: selectData?.type || rule.recordIdType,
           offsetNum: rule.offsetNum,
           offsetUnit: rule.offsetUnit,
         },

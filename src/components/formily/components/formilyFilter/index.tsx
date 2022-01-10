@@ -112,24 +112,10 @@ export const FormilyFilter: FC = observer((props: any) => {
     return metas
   }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, form.values, props.flowGraph.registers])
 
-  const customValueElement = useMemo(() => {
-    if (idx >= 0) {
-      const value = formilyField.value?.[idx]?.target
-      const source = formilyField.value?.[idx]?.source
-      let resourceFieldMeta = undefined as any
-      resourceFieldMetas.some((meta) => {
-        if (meta.children) {
-          resourceFieldMeta = meta.children.find((child: { key: any; }) => child.key === source)
-          if (resourceFieldMeta) return resourceFieldMeta
-        }
-      })
-      return <CustomValueElement flowGraph={props.flowGraph} value={value} valueType={resourceFieldMeta?.type} onChange={(value: string) => changeFormaluValue(value)} />
-    }
-  }, [props.flowGraph, formilyField.value, resourceFieldMetas, idx])
-
   const changeFormaluValue = useCallback(
-    (value) => {
-      formilyField.value[idx].target = value
+    (value, index) => {
+      debugger
+      formilyField.value[index].target = value
     },
     [formilyField.value],
   )
@@ -150,7 +136,7 @@ export const FormilyFilter: FC = observer((props: any) => {
           flowGraph: props.flowGraph,
           value: formilyField.value,
           resourceFieldMetas: resourceFieldMetas,
-          onChange: (value: string) => changeFormaluValue(value)
+          onChange: (value: string, index: number) => changeFormaluValue(value, index)
         }}
         onChange={(filterItem: Partial<ICompareOperation>[], index?: number) =>
           handleFilter(filterItem, index)

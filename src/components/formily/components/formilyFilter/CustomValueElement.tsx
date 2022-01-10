@@ -7,7 +7,7 @@ export interface ICustomValueElementProps {
   flowGraph: AutoFlow
   value?: any
   resourceFieldMetas: any[]
-  onChange: (value: string) => void
+  onChange: (value: string, index: number) => void
 }
 
 export const CustomValueElement: FC<any> = ({
@@ -29,7 +29,7 @@ export const CustomValueElement: FC<any> = ({
           if (resourceFieldMeta) return resourceFieldMeta
         }
       })
-      return <FormulaModel flowGraph={flowGraph} value={sourceValue} valueType={resourceFieldMeta?.type} onChange={(value: string) => onChange(value)} />
+      return <FormulaModel flowGraph={flowGraph} value={sourceValue} valueType={resourceFieldMeta?.type} onChange={(value: string) => onChange(value, index)} />
     }
   }, [props.flowGraph, value, resourceFieldMetas, props.index])
   return (
