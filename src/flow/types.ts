@@ -268,3 +268,7 @@ export enum FlowTypeCodeEnum {
   RECORD_TRIGGER = 'RECORD_TRIGGER',
 }
 
+export enum opTypeEnum {
+  INPUT = 'INPUT',
+}
+

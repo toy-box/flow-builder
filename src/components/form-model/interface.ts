@@ -1,6 +1,7 @@
 import {
   CompareOP,
 } from '@toy-box/meta-schema'
+import { type } from 'os'
 
 export interface IRuleItem {
   name: string

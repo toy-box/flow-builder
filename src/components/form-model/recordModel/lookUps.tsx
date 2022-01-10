@@ -11,7 +11,7 @@ import {
   ArrowRightOutlined,
 } from '@ant-design/icons'
 import { clone } from '@toy-box/toybox-shared';
-import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition, opTypeEnum } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 // import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
@@ -58,7 +58,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       return {
         fieldPattern: data.source,
         operation: data.op,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         value: data.target
       }
     })
@@ -203,7 +203,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       return {
         source: data.fieldPattern,
         op: data.operation,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         target: data.value
       }
     })

@@ -128,8 +128,8 @@ export const FormilyFilter: FC = observer((props: any) => {
       <FilterBuilder
         fieldMetas={resourceFieldMetas as any[]}
         value={formilyField.value as any[]}
-        specialOptions={specialOptions}
-        specialMode={props.specialMode}
+        // specialOptions={specialOptions}
+        // specialMode={props.specialMode}
         operatType={props.operatType}
         customValueElement={CustomValueElement}
         customValueProps={{

@@ -8,7 +8,7 @@ import { clone, isObj } from '@formily/shared';
 import { ICompareOperation } from '@toy-box/meta-schema';
 import { BranchArrays, FormilyFilter } from '../../formily/components/index'
 import { uid } from '../../../utils';
-import { FlowMetaType, FlowMetaParam, ICriteriaCondition } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, ICriteriaCondition, opTypeEnum } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
@@ -51,7 +51,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
           return {
             fieldPattern: data.source,
             operation: data.op,
-            type: data.type,
+            type: data.type || opTypeEnum.INPUT,
             value: data.target
           }
         })
@@ -106,7 +106,7 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         return {
           source: data.fieldPattern,
           op: data.operation,
-          type: data.type,
+          type: data.type || opTypeEnum.INPUT,
           target: data.value
         }
       })

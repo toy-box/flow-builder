@@ -17,6 +17,7 @@ import { FlowMetaType,
   RecordTriggerTypeEnum, 
   TriggerTypeEnum, 
   ICriteriaCondition,
+  opTypeEnum,
   FlowTypeCodeEnum, } from '../../flow/types'
 
 export interface StartModelPorps {
@@ -48,7 +49,7 @@ export const StartModel:FC<StartModelPorps> = ({
       return {
         fieldPattern: data.source,
         operation: data.op,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         value: data.target
       }
     })
@@ -107,7 +108,7 @@ export const StartModel:FC<StartModelPorps> = ({
       return {
         source: data.fieldPattern,
         op: data.operation,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         target: data.value
       }
     })

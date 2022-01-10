@@ -8,7 +8,7 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { FlowMetaType, FlowMetaParam, IInputAssignment, ICriteriaCondition } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, IInputAssignment, ICriteriaCondition, opTypeEnum } from '../../../flow/types'
 // import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -56,7 +56,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       return {
         fieldPattern: data.source,
         operation: data.op,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         value: data.target
       }
     })
@@ -140,7 +140,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       return {
         source: data.fieldPattern,
         op: data.operation,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         target: data.value
       }
     })
