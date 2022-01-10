@@ -101,6 +101,7 @@ GlobalRegistry.registerDesignerLocales({
           startDate: '开始日期是必填项',
           startTime: '开始时间是必填项',
           frequency: '频率是必填项',
+          waitFilter: '暂停条件是必填项'
         },
         placeholder: {
           recordIdValue: '请选择记录',

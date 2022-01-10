@@ -22,33 +22,6 @@ export interface SuspendModelPorps {
   flowGraph: AutoFlow,
 }
 
-const WaitDesc = () => {
-  return <div className="wait-desc">
-    <TextWidget>flow.form.suspend.recoveryDate</TextWidget>
-  </div>
-}
-
-const SchemaField = createSchemaField({
-  components: {
-    Input,
-    FormItem,
-    Select,
-    FormLayout,
-    FormGrid,
-    PreviewText,
-    FormButtonGroup,
-    BranchArrays,
-    Radio,
-    ResourceSelect,
-    NumberPicker,
-    FormilyFilter,
-    WaitDesc,
-    FormTab
-  },
-})
-
-const form = createForm()
-
 export const SuspendModel: FC<SuspendModelPorps> = ({
   showModel = false,
   callbackFunc,
@@ -93,13 +66,13 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
             targetReference: rule?.connector?.targetReference || null,
           },
           eventType: rule.eventType,
-          criteria: conditions ? {
+          criteria: conditions && conditions.length > 0 ? {
             conditions,
             logic: '$and'
           } : null,
           recoveryTimeInfo: {
             dateValue: rule.dateValue,
-            dateValueType: selectData?.dateValueType,
+            dateValueType: selectData?.type || rule.dateValueType,
             offsetNum: rule.offsetNum,
             offsetUnit: rule.offsetUnit,
           },
@@ -121,7 +94,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           registerId: rule.registerId,
           field: rule.field,
           recordIdValue: rule.recordIdValue,
-          recordIdType: selectData?.dateValueType,
+          recordIdType: selectData?.type || rule.dateValueType,
           offsetNum: rule.offsetNum,
           offsetUnit: rule.offsetUnit,
         },
@@ -153,6 +126,33 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     callbackFunc(false, FlowMetaType.WAIT)
   };
 
+  const WaitDesc = () => {
+    return <div className="wait-desc">
+      <TextWidget>flow.form.suspend.recoveryDate</TextWidget>
+    </div>
+  }
+  
+  const SchemaField = createSchemaField({
+    components: {
+      Input,
+      FormItem,
+      Select,
+      FormLayout,
+      FormGrid,
+      PreviewText,
+      FormButtonGroup,
+      BranchArrays,
+      Radio,
+      ResourceSelect,
+      NumberPicker,
+      FormilyFilter,
+      WaitDesc,
+      FormTab
+    },
+  })
+  
+  const form = createForm()
+
   if (metaFlowData) {
     const val = clone(metaFlowData)
     const quiredRules = val?.waitEvents?.map((rule: any) => {
@@ -175,7 +175,9 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       if (rule?.criteria?.conditions) {
         rule.criteria.conditions = conditions
       } else if (!rule?.criteria) {
-        rule.criteria = {}
+        rule.criteria = {
+          conditions: []
+        }
       }
       return {
         id: rule.id,
@@ -344,6 +346,11 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                             'criteria.conditions': {
                               type: 'object',
                               title: <TextWidget>flow.form.suspend.filterWait</TextWidget>,
+                              required: true,
+                              'x-validator': {
+                                required: true,
+                                message: <TextWidget>flow.form.validator.waitFilter</TextWidget>
+                              },
                               'x-decorator': 'FormItem',
                               'x-component': 'FormilyFilter',
                               "x-decorator-props": {

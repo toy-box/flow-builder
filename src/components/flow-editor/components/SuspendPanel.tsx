@@ -59,7 +59,7 @@ export const SuspendPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend 
     <div className={prefixCls}>
       {flowGraph.isEdit && <div>
         <div className={`${prefixCls}-title`}>
-          <TextWidget>flow.extend.decision</TextWidget>
+          <TextWidget>flow.extend.suppend</TextWidget>
         </div>
         <ul className={`${prefixCls}-list`}>
           {
