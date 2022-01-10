@@ -185,6 +185,12 @@ GlobalRegistry.registerDesignerLocales({
           title: '新建暂停配置',
           sortTitle: '暂停配置',
           removeBtn: '删除暂停配置',
+          tab1: '暂停条件',
+          tab2: '恢复事件',
+          filterWait: '何时暂停',
+          eventType: '暂停直到...',
+          recoveryDate: '定义恢复时间',
+          appointDate: '指定时间',
           option: {
             time: '恢复特定时间',
             recordTime: '恢复记录时间'

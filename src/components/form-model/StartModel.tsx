@@ -59,10 +59,10 @@ export const StartModel:FC<StartModelPorps> = ({
         targetReference: startData?.connector?.targetReference || null,
       },
       description: value.description,
-      criteria: {
+      criteria: conditions && conditions.length > 0 ? {
         conditions,
         logic: '$and'
-      },
+      } : null,
       type: value.type,
       objectId: value.objectId,
       recordTriggerType: value.recordTriggerType,

@@ -1,12 +1,13 @@
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal } from 'antd';
-import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText, FormButtonGroup, Radio, NumberPicker } from '@formily/antd'
+import { Input, FormItem, Select, FormLayout, FormGrid,
+  PreviewText, FormButtonGroup, Radio, NumberPicker, FormTab } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, CompareOP, MetaValueType } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { BranchArrays, ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { FlowMetaType, FlowMetaParam, IOutParameter } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, IOutParameter, ICriteriaCondition } from '../../../flow/types'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -20,6 +21,33 @@ export interface SuspendModelPorps {
   metaFlowData?: FlowMetaParam
   flowGraph: AutoFlow,
 }
+
+const WaitDesc = () => {
+  return <div className="wait-desc">
+    <TextWidget>flow.form.suspend.recoveryDate</TextWidget>
+  </div>
+}
+
+const SchemaField = createSchemaField({
+  components: {
+    Input,
+    FormItem,
+    Select,
+    FormLayout,
+    FormGrid,
+    PreviewText,
+    FormButtonGroup,
+    BranchArrays,
+    Radio,
+    ResourceSelect,
+    NumberPicker,
+    FormilyFilter,
+    WaitDesc,
+    FormTab
+  },
+})
+
+const form = createForm()
 
 export const SuspendModel: FC<SuspendModelPorps> = ({
   showModel = false,
@@ -49,6 +77,14 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           value: data.target
         }
       })
+      const conditions = rule?.criteria?.conditions?.map((data: ICompareOperation) => {
+        return {
+          fieldPattern: data.source,
+          operation: data.op,
+          type: data.type,
+          value: data.target
+        }
+      })
       if (rule.sourceTime) {
         return {
           id: rule.id || uid(),
@@ -56,6 +92,11 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           connector: {
             targetReference: rule?.connector?.targetReference || null,
           },
+          eventType: rule.eventType,
+          criteria: conditions ? {
+            conditions,
+            logic: '$and'
+          } : null,
           recoveryTimeInfo: {
             dateValue: rule.dateValue,
             dateValueType: selectData?.dateValueType,
@@ -71,6 +112,11 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         connector: {
           targetReference: rule?.connector?.targetReference || null,
         },
+        eventType: rule.eventType,
+        criteria: conditions && conditions.length > 0 ? {
+          conditions,
+          logic: '$and'
+        } : null,
         recoveryTimeInfo: {
           registerId: rule.registerId,
           field: rule.field,
@@ -102,36 +148,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     })
   };
 
-  const WaitDesc = () => {
-    return <div className="wait-desc">
-      定义恢复时间
-    </div>
-  }
-
   const handleCancel = () => {
     setIsModalVisible(false);
     callbackFunc(false, FlowMetaType.WAIT)
   };
-
-  const SchemaField = createSchemaField({
-    components: {
-      Input,
-      FormItem,
-      Select,
-      FormLayout,
-      FormGrid,
-      PreviewText,
-      FormButtonGroup,
-      BranchArrays,
-      Radio,
-      ResourceSelect,
-      NumberPicker,
-      FormilyFilter,
-      WaitDesc
-    },
-  })
-  
-  const form = createForm()
 
   if (metaFlowData) {
     const val = clone(metaFlowData)
@@ -144,12 +164,27 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           target: data.value
         }
       })
+      const conditions = rule?.criteria?.conditions?.map((data: ICriteriaCondition) => {
+        return {
+          source: data.fieldPattern,
+          op: data.operation,
+          type: data.type,
+          target: data.value
+        }
+      })
+      if (rule?.criteria?.conditions) {
+        rule.criteria.conditions = conditions
+      } else if (!rule?.criteria) {
+        rule.criteria = {}
+      }
       return {
         id: rule.id,
         name: rule.name,
         connector: {
           targetReference: rule?.connector?.targetReference || null,
         },
+        eventType: rule.eventType,
+        criteria: rule.criteria,
         dateValue: rule.recoveryTimeInfo.dateValue,
         dateValueType: rule.recoveryTimeInfo?.dateValueType,
         registerId: rule.recoveryTimeInfo.registerId,
@@ -168,6 +203,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       connector: {
         targetReference: val?.connector?.targetReference || null,
       },
+      criteria: val.criteria,
       defaultConnector: {
         targetReference: val?.defaultConnector?.targetReference || null,
       },
@@ -181,7 +217,10 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           name: '',
           id: uid(),
           description: '',
-        }]
+          criteria: {
+            conditions: []
+          }
+        }],
       }
     )
   }
@@ -289,139 +328,196 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                       'x-decorator': 'FormItem',
                       'x-component': 'Input',
                     },
-                    sourceTime: {
-                      type: 'boolean',
-                      title: <TextWidget>flow.form.suspend.rule.sourceTime</TextWidget>,
-                      default: true,
-                      required: true,
-                      enum: [
-                        {
-                          label: <TextWidget>flow.form.suspend.option.time</TextWidget>,
-                          value: true,
+                    collapse: {
+                      type: 'void',
+                      'x-component': 'FormTab',
+                      'x-component-props': {
+                      },
+                      properties: {
+                        tab1: {
+                          type: 'void',
+                          'x-component': 'FormTab.TabPane',
+                          'x-component-props': {
+                            tab: <TextWidget>flow.form.suspend.tab1</TextWidget>,
+                          },
+                          properties: {
+                            'criteria.conditions': {
+                              type: 'object',
+                              title: <TextWidget>flow.form.suspend.filterWait</TextWidget>,
+                              'x-decorator': 'FormItem',
+                              'x-component': 'FormilyFilter',
+                              "x-decorator-props": {
+                                gridSpan: 2
+                              },
+                              'x-component-props': {
+                                mataSource: 'flowJson',
+                                isShowResourceBtn: true,
+                                flowGraph,
+                              },
+                            },
+                          },
                         },
-                        {
-                          label: <TextWidget>flow.form.suspend.option.recordTime</TextWidget>,
-                          value: false,
+                        tab2: {
+                          type: 'void',
+                          'x-component': 'FormTab.TabPane',
+                          'x-component-props': {
+                            tab: <TextWidget>flow.form.suspend.tab2</TextWidget>,
+                          },
+                          properties: {
+                            eventType: {
+                              type: 'string',
+                              title: <TextWidget>flow.form.suspend.eventType</TextWidget>,
+                              default: 'dateRefAlarmEvent',
+                              required: true,
+                              enum: [
+                                {
+                                  label: <TextWidget>flow.form.suspend.appointDate</TextWidget>,
+                                  value: 'dateRefAlarmEvent',
+                                },
+                              ],
+                              'x-decorator': 'FormItem',
+                              'x-component': 'Radio.Group',
+                              "x-decorator-props": {
+                                gridSpan: 2
+                              },
+                            },
+                            sourceTime: {
+                              type: 'boolean',
+                              title: <TextWidget>flow.form.suspend.rule.sourceTime</TextWidget>,
+                              default: true,
+                              required: true,
+                              enum: [
+                                {
+                                  label: <TextWidget>flow.form.suspend.option.time</TextWidget>,
+                                  value: true,
+                                },
+                                {
+                                  label: <TextWidget>flow.form.suspend.option.recordTime</TextWidget>,
+                                  value: false,
+                                },
+                              ],
+                              'x-decorator': 'FormItem',
+                              'x-component': 'Radio.Group',
+                              "x-decorator-props": {
+                                gridSpan: 2
+                              },
+                            },
+                            desc: {
+                              type: 'string',
+                              title: '',
+                              // 'x-decorator': 'FormItem',
+                              'x-component': 'WaitDesc',
+                              "x-decorator-props": {
+                                gridSpan: 2
+                              },
+                            },
+                            registerId: {
+                              type: 'string',
+                              title: <TextWidget>flow.form.suspend.rule.registerId</TextWidget>,
+                              required: true,
+                              'x-validator': {
+                                required: true,
+                                message: <TextWidget>flow.form.validator.registerId</TextWidget>
+                              },
+                              'x-decorator': 'FormItem',
+                              'x-component': 'ResourceSelect',
+                              'x-component-props': {
+                                isHiddenResourceBtn: true,
+                                mataSource: 'metaData',
+                                flowGraph,
+                              },
+                              'x-reactions': myReaction.bind(this, false),
+                            },
+                            field: {
+                              type: 'string',
+                              title: <TextWidget>flow.form.suspend.rule.field</TextWidget>,
+                              required: true,
+                              'x-validator': {
+                                required: true,
+                                message: <TextWidget>flow.form.validator.field</TextWidget>
+                              },
+                              'x-decorator': 'FormItem',
+                              'x-component': 'Input',
+                              'x-reactions': myReaction.bind(this, false),
+                            },
+                            recordIdValue: {
+                              type: 'string',
+                              title: <TextWidget>flow.form.suspend.rule.recordIdValue</TextWidget>,
+                              required: true,
+                              'x-validator': {
+                                required: true,
+                                message: <TextWidget>flow.form.validator.recordIdValue</TextWidget>
+                              },
+                              'x-decorator': 'FormItem',
+                              'x-component': 'ResourceSelect',
+                              'x-component-props': {
+                                isHiddenResourceBtn: false,
+                                mataSource: 'flowJson',
+                                placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
+                                flowGraph,
+                                metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
+                                onChange: selectValue,
+                              },
+                              'x-reactions': myReaction.bind(this, false),
+                            },
+                            dateValue: {
+                              type: 'string',
+                              title: <TextWidget>flow.form.suspend.rule.dateValue</TextWidget>,
+                              required: true,
+                              'x-validator': {
+                                required: true,
+                                message: <TextWidget>flow.form.validator.dateValue</TextWidget>
+                              },
+                              'x-decorator': 'FormItem',
+                              'x-component': 'ResourceSelect',
+                              'x-component-props': {
+                                isHiddenResourceBtn: false,
+                                mataSource: 'flowJson',
+                                placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>,
+                                onChange: selectValue,
+                                metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
+                                flowGraph,
+                              },
+                              'x-reactions': myReaction.bind(this, true),
+                            },
+                            offsetNum: {
+                              type: 'number',
+                              title: <TextWidget>flow.form.suspend.rule.offsetNum</TextWidget>,
+                              'x-decorator': 'FormItem',
+                              'x-component': 'NumberPicker',
+                            },
+                            offsetUnit: {
+                              type: 'string',
+                              title: <TextWidget>flow.form.suspend.rule.offsetUnit</TextWidget>,
+                              'x-decorator': 'FormItem',
+                              'x-component': 'Input',
+                              'x-validator': [{
+                                triggerType: 'onBlur',
+                                validator: (value: string) => {
+                                  if (!value || value === 'Hours' || value === 'Days') return null
+                                  return <TextWidget>flow.form.validator.offsetUnit</TextWidget>
+                                }
+                              }],
+                            },
+                            outputParameters: {
+                              type: 'array',
+                              title: <TextWidget>flow.form.suspend.outputParameters</TextWidget>,
+                              // required: true,
+                              'x-decorator': 'FormItem',
+                              'x-component': 'FormilyFilter',
+                              "x-decorator-props": {
+                                gridSpan: 2
+                              },
+                              'x-component-props': {
+                                // simple: true,
+                                specialMode: true,
+                                isShowResourceBtn: true,
+                                mataSource: 'flowJson',
+                                flowGraph,
+                              },
+                            },
+                          },
                         },
-                      ],
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Radio.Group',
-                      "x-decorator-props": {
-                        gridSpan: 2
-                      },
-                    },
-                    desc: {
-                      type: 'string',
-                      title: '',
-                      // 'x-decorator': 'FormItem',
-                      'x-component': 'WaitDesc',
-                      "x-decorator-props": {
-                        gridSpan: 2
-                      },
-                    },
-                    registerId: {
-                      type: 'string',
-                      title: <TextWidget>flow.form.suspend.rule.registerId</TextWidget>,
-                      required: true,
-                      'x-validator': {
-                        required: true,
-                        message: <TextWidget>flow.form.validator.registerId</TextWidget>
-                      },
-                      'x-decorator': 'FormItem',
-                      'x-component': 'ResourceSelect',
-                      'x-component-props': {
-                        isHiddenResourceBtn: true,
-                        mataSource: 'metaData',
-                        flowGraph,
-                      },
-                      'x-reactions': myReaction.bind(this, false),
-                    },
-                    field: {
-                      type: 'string',
-                      title: <TextWidget>flow.form.suspend.rule.field</TextWidget>,
-                      required: true,
-                      'x-validator': {
-                        required: true,
-                        message: <TextWidget>flow.form.validator.field</TextWidget>
-                      },
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Input',
-                      'x-reactions': myReaction.bind(this, false),
-                    },
-                    recordIdValue: {
-                      type: 'string',
-                      title: <TextWidget>flow.form.suspend.rule.recordIdValue</TextWidget>,
-                      required: true,
-                      'x-validator': {
-                        required: true,
-                        message: <TextWidget>flow.form.validator.recordIdValue</TextWidget>
-                      },
-                      'x-decorator': 'FormItem',
-                      'x-component': 'ResourceSelect',
-                      'x-component-props': {
-                        isHiddenResourceBtn: false,
-                        mataSource: 'flowJson',
-                        placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
-                        flowGraph,
-                        metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
-                        onChange: selectValue,
-                      },
-                      'x-reactions': myReaction.bind(this, false),
-                    },
-                    dateValue: {
-                      type: 'string',
-                      title: <TextWidget>flow.form.suspend.rule.dateValue</TextWidget>,
-                      required: true,
-                      'x-validator': {
-                        required: true,
-                        message: <TextWidget>flow.form.validator.dateValue</TextWidget>
-                      },
-                      'x-decorator': 'FormItem',
-                      'x-component': 'ResourceSelect',
-                      'x-component-props': {
-                        isHiddenResourceBtn: false,
-                        mataSource: 'flowJson',
-                        placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>,
-                        onChange: selectValue,
-                        metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
-                        flowGraph,
-                      },
-                      'x-reactions': myReaction.bind(this, true),
-                    },
-                    offsetNum: {
-                      type: 'number',
-                      title: <TextWidget>flow.form.suspend.rule.offsetNum</TextWidget>,
-                      'x-decorator': 'FormItem',
-                      'x-component': 'NumberPicker',
-                    },
-                    offsetUnit: {
-                      type: 'string',
-                      title: <TextWidget>flow.form.suspend.rule.offsetUnit</TextWidget>,
-                      'x-decorator': 'FormItem',
-                      'x-component': 'Input',
-                      'x-validator': [{
-                        triggerType: 'onBlur',
-                        validator: (value: string) => {
-                          if (!value || value === 'Hours' || value === 'Days') return null
-                          return <TextWidget>flow.form.validator.offsetUnit</TextWidget>
-                        }
-                      }],
-                    },
-                    outputParameters: {
-                      type: 'array',
-                      title: <TextWidget>flow.form.suspend.outputParameters</TextWidget>,
-                      required: true,
-                      'x-decorator': 'FormItem',
-                      'x-component': 'FormilyFilter',
-                      "x-decorator-props": {
-                        gridSpan: 2
-                      },
-                      'x-component-props': {
-                        // simple: true,
-                        specialMode: true,
-                        isShowResourceBtn: true,
-                        mataSource: 'flowJson',
-                        flowGraph,
                       },
                     },
                   },

@@ -10,7 +10,7 @@ export class FlowStart {
   name: string
   type: FlowType
   connector?: TargetReference
-  criteria?: Criteria
+  criteria?: Criteria | null
   objectId?: string
   recordTriggerType?: string
   schedule?: ISchedule

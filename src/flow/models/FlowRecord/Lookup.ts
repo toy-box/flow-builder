@@ -11,7 +11,7 @@ export class RecordLookup {
   description?: string
   connector?: TargetReference
   faultConnector?: TargetReference
-  criteria?: Criteria
+  criteria?: Criteria | null
   registerId?: string
   outputAssignments?: IOutputAssignment[]
   outputReference?: null | string

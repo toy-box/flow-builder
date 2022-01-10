@@ -125,7 +125,7 @@ export interface FlowMetaParam {
   inputAssignments?: IInputAssignment[]
   storeOutputAutomatically?: boolean
   assignRecordIdToReference?: string
-  criteria?: Criteria
+  criteria?: Criteria | null
   outputAssignments?: IOutputAssignment[]
   outputReference?: null | string
   queriedFields?: string[]
@@ -140,7 +140,7 @@ export interface IStartFlowMeta {
   name: string
   description?: string
   connector?: TargetReference
-  criteria?: Criteria
+  criteria?: Criteria | null
   objectId?: string
   recordTriggerType?: RecordTriggerTypeEnum
   schedule?: ISchedule
@@ -150,9 +150,11 @@ export interface IStartFlowMeta {
 
 export interface IwaitEvent {
   connector: TargetReference
-  outputParameters: IOutParameter[]
+  outputParameters?: IOutParameter[]
   id: string
   name: string
+  criteria?: Criteria | null
+  eventType: string
   recoveryTimeInfo: IRecoveryTimeInfo
 }
 

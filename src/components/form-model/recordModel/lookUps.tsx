@@ -78,10 +78,10 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         targetReference: metaFlowData?.faultConnector?.targetReference || null,
       },
       registerId: value.registerId,
-      criteria: {
+      criteria: conditions && conditions.length > 0 ? {
         conditions,
         logic: '$and'
-      },
+      } : null,
       outputAssignments: value?.outputAssignments,
       outputReference: value.address ? value.outputReference: undefined,
       queriedFields,
@@ -215,7 +215,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     //     target: data.field
     //   }
     // })
-    flowData.criteria.conditions = conditions
+    if (flowData?.criteria?.conditions) {
+      flowData.criteria.conditions = conditions
+    } else if (!flowData?.criteria) {
+      flowData.criteria = {}
+    }
     if (flowData.queriedFields && !flowData.outputReference) {
       flowData.automaticallyType = true
     } else {

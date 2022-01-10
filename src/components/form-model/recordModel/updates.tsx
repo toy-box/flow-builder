@@ -70,10 +70,10 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
         targetReference: metaFlowData?.faultConnector?.targetReference || null,
       },
       registerId: value.registerId,
-      criteria: {
+      criteria: conditions && conditions.length > 0 ? {
         conditions: conditions,
         logic: '$and'
-      },
+      } : null,
       inputAssignments: inputAssignments,
     }
     console.log(paramData);
@@ -145,7 +145,11 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       }
     })
     flowData.inputAssignments = inputAssignments
-    flowData.criteria.conditions = conditions
+    if (flowData?.criteria?.conditions) {
+      flowData.criteria.conditions = conditions
+    } else if (!flowData?.criteria) {
+      flowData.criteria = {}
+    }
     form.initialValues = flowData
   }
 

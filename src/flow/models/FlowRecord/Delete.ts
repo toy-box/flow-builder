@@ -11,7 +11,7 @@ export class RecordDelete {
   description?: string
   connector?: TargetReference
   faultConnector?: TargetReference
-  criteria?: Criteria
+  criteria?: Criteria | null
   registerId?: string
 
   constructor(recordDelete: FlowMetaParam) {
