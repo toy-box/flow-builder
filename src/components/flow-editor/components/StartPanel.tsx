@@ -63,7 +63,11 @@ export const StartPanel: FC<IStartPanelProps> = ({ flowGraph, closeExtend }) => 
     (type) => {
       closeExtend && closeExtend()
       const flowStart = flowGraph.flowStart
-      if (type === 'objectId') setIsObject(true)
+      if (type === 'objectId') {
+        setIsObject(true)
+      } else {
+        setIsObject(false)
+      }
       // const nodeId = node.node.id;
       setMetaFlowData(flowStart as any)
       setShowModel(true)

@@ -193,8 +193,8 @@ GlobalRegistry.registerDesignerLocales({
           recoveryDate: '定义恢复时间',
           appointDate: '指定时间',
           option: {
-            time: '恢复特定时间',
-            recordTime: '恢复记录时间'
+            time: '特定时间',
+            recordTime: '记录字段'
           },
           rule: {
             name: '暂停配置标题',

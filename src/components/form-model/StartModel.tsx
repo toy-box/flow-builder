@@ -63,12 +63,12 @@ export const StartModel:FC<StartModelPorps> = ({
       criteria: conditions && conditions.length > 0 ? {
         conditions,
         logic: '$and'
-      } : null,
-      type: value.type,
-      objectId: value.objectId,
-      recordTriggerType: value.recordTriggerType,
-      schedule: value.schedule,
-      triggerType: value.triggerType,
+      } : startData?.criteria,
+      type: value.type || startData?.type,
+      objectId: value.objectId || startData?.objectId,
+      recordTriggerType: value.recordTriggerType || startData?.recordTriggerType,
+      schedule: value.schedule || startData?.schedule,
+      triggerType: value.triggerType || startData?.triggerType,
     }
     console.log(paramData, 'paramData')
     form.submit((resolve) => {
@@ -115,8 +115,11 @@ export const StartModel:FC<StartModelPorps> = ({
     if (flowData?.criteria?.conditions) {
       flowData.criteria.conditions = conditions
     } else if (!flowData?.criteria) {
-      flowData.criteria = {}
+      flowData.criteria = {
+        conditions: []
+      }
     }
+    debugger
     form.setValues(flowData)
   }
 

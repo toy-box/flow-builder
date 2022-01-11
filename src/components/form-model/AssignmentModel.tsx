@@ -14,7 +14,7 @@ import { RepeatErrorMessage } from './RepeatErrorMessage'
 import { useLocale } from '../../hooks'
 import { AssignmentOpEnum } from './interface'
 
-import { FlowMetaType, FlowMetaParam, IAssignmentData, IFlowResourceType } from '../../flow/types'
+import { FlowMetaType, FlowMetaParam, IAssignmentData, IFlowResourceType, opTypeEnum } from '../../flow/types'
 export interface AssignmentModelPorps {
   showModel: boolean
   callbackFunc: (data: FlowMetaParam | boolean, type: FlowMetaType) => void
@@ -94,7 +94,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = ({
       return {
         assignToReference: data.source,
         operation: data.op,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         value: data.target
       }
     })
@@ -159,7 +159,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = ({
       return {
         source: data.assignToReference,
         op: data.operation,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         target: data.value
       }
     })

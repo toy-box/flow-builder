@@ -8,7 +8,7 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, CompareOP } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { IFlowResourceType, FlowMetaType, FlowMetaParam, IInputAssignment } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaType, FlowMetaParam, IInputAssignment, opTypeEnum } from '../../../flow/types'
 // import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
@@ -47,7 +47,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
     const inputAssignments = value.inputAssignments.map((data: ICompareOperation) => {
       return {
         field: data.source,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         value: data.target
       }
     })

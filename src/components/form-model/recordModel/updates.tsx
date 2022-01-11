@@ -48,7 +48,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
     const inputAssignments = value.inputAssignments.map((data: ICompareOperation) => {
       return {
         field: data.source,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         value: data.target
       }
     })
@@ -132,7 +132,7 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
       return {
         source: data.field,
         op: CompareOP.EQ,
-        type: data.type,
+        type: data.type || opTypeEnum.INPUT,
         target: data.value
       }
     })

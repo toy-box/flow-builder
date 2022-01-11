@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid,
-  PreviewText, FormButtonGroup, Radio, NumberPicker, FormTab } from '@formily/antd'
+  PreviewText, FormButtonGroup, Radio, NumberPicker, FormTab, DatePicker } from '@formily/antd'
 import { createForm } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, CompareOP, MetaValueType } from '@toy-box/meta-schema';
@@ -33,6 +33,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
   let selectData: any = null
   const repeatName = useLocale('flow.form.validator.repeatName')
   const [defaultConnectorName, setDefaultConnectorName] = useState(useLocale('flow.form.decision.defaultConnectorName'))
+  const placeholderName = useLocale('flow.form.placeholder.flowType')
 
   
   useEffect(() => {
@@ -147,7 +148,8 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
       NumberPicker,
       FormilyFilter,
       WaitDesc,
-      FormTab
+      FormTab,
+      DatePicker
     },
   })
   
@@ -456,15 +458,20 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                                 message: <TextWidget>flow.form.validator.recordIdValue</TextWidget>
                               },
                               'x-decorator': 'FormItem',
-                              'x-component': 'ResourceSelect',
+                              'x-component': 'DatePicker',
                               'x-component-props': {
-                                isHiddenResourceBtn: false,
-                                mataSource: 'flowJson',
-                                placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
-                                flowGraph,
-                                metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
-                                onChange: selectValue,
+                                showTime: true,
+                                placeholder: placeholderName,
                               },
+                              // 'x-component': 'ResourceSelect',
+                              // 'x-component-props': {
+                              //   isHiddenResourceBtn: false,
+                              //   mataSource: 'flowJson',
+                              //   placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
+                              //   flowGraph,
+                              //   metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
+                              //   onChange: selectValue,
+                              // },
                               'x-reactions': myReaction.bind(this, false),
                             },
                             dateValue: {
@@ -476,15 +483,20 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                                 message: <TextWidget>flow.form.validator.dateValue</TextWidget>
                               },
                               'x-decorator': 'FormItem',
-                              'x-component': 'ResourceSelect',
+                              'x-component': 'DatePicker',
                               'x-component-props': {
-                                isHiddenResourceBtn: false,
-                                mataSource: 'flowJson',
-                                placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>,
-                                onChange: selectValue,
-                                metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
-                                flowGraph,
+                                showTime: true,
+                                placeholder: placeholderName,
                               },
+                              // 'x-component': 'ResourceSelect',
+                              // 'x-component-props': {
+                              //   isHiddenResourceBtn: false,
+                              //   mataSource: 'flowJson',
+                              //   placeholder: <TextWidget>flow.form.placeholder.dateValue</TextWidget>,
+                              //   onChange: selectValue,
+                              //   metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
+                              //   flowGraph,
+                              // },
                               'x-reactions': myReaction.bind(this, true),
                             },
                             offsetNum: {
