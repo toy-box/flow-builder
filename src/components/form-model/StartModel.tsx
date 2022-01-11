@@ -119,7 +119,6 @@ export const StartModel:FC<StartModelPorps> = ({
         conditions: []
       }
     }
-    debugger
     form.setValues(flowData)
   }
 

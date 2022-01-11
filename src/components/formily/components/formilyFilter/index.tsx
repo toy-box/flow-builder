@@ -114,7 +114,6 @@ export const FormilyFilter: FC = observer((props: any) => {
 
   const changeFormaluValue = useCallback(
     (value, index) => {
-      debugger
       formilyField.value[index].target = value
     },
     [formilyField.value],

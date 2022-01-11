@@ -1149,7 +1149,7 @@ export class AutoFlow {
   }
 
   setDecisions(flowData: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, decisionEndId?: string) {
-    const endId = uid()
+    const endId = this.isEdit ? uid() : flowData?.connector?.targetReference || decisionEndId || this.flowEndId
     let componentName = undefined
     switch (metaType) {
       case FlowMetaType.DECISION:
@@ -1234,7 +1234,7 @@ export class AutoFlow {
       const metaFlow = this.metaFlowDatas.find((meta) => meta.id === flowData?.defaultConnector?.targetReference)
       if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId || endId)
     }
-    if (!loopBackNode && !loopLastData) {
+    if (!loopBackNode && !loopLastData && this.isEdit) {
       decisions.push({
         id: endId,
         type: 'decisionEnd',
