@@ -26,6 +26,7 @@ export const LabelNodePanel: FC<LabelNodePanelProps> = ({ flowGraph, flowNodeTyp
     const flowNode = flowNodes.find((flowNode) => {
       return (flowNode?.targets || []).includes(node.node.id)
     })
+    const node1 = flowNodes.find((flowNode) => flowNode.id === node.node.id)
     if (flowNode?.type === 'decisionBegin') {
       const flowDecision = (flow[FlowMetaType.DECISION] || []).find((meta: FlowMetaParam) => meta.id === flowNode?.id)
       const flowWait = (flow[FlowMetaType.WAIT] || []).find((meta: FlowMetaParam) => meta.id === flowNode?.id)
@@ -38,9 +39,9 @@ export const LabelNodePanel: FC<LabelNodePanelProps> = ({ flowGraph, flowNodeTyp
         if (rule) return rule?.name
         return flowWait.defaultConnectorName
       }
-    } else if (flowNode?.type === 'loopBegin') {
+    } else if ((flowGraph.isEdit && flowNode?.type === 'loopBegin') || (!flowGraph.isEdit && node1?.type === 'loopBack')) {
       return 'For Each'
-    } else if (flowNode?.type === 'loopBack') {
+    } else if ((flowGraph.isEdit && flowNode?.type === 'loopBack') || (!flowGraph.isEdit && node1?.type === 'loopEnd')) {
       return 'After Last'
     }
   }, [flowGraph.mataFlowJson])

@@ -437,19 +437,19 @@ export class AutoFlow {
     }
     this.metaFlowDatas.some((meta) => {
       const forkBeginOfEndNode = this.flowNodes.find((node) => node.decisionEndTarget === flowNode?.id)
-      const baseNode = this.flowNodes.find((node) => {
+      const base = this.flowNodes.find((node) => {
         return node?.targets?.length === 1 && flowNode?.id && node.targets.includes(flowNode?.id)
       })
       const forkBeginOfForwardNode = this.flowNodes.find((node) => {
-        return baseNode?.component === 'LabelNode' &&
-          (node?.targets || []).length > 1 && baseNode?.id && (node?.targets || []).includes(baseNode?.id)
+        return base?.component === 'LabelNode' &&
+          (node?.targets || []).length > 1 && base?.id && (node?.targets || []).includes(base?.id)
       })
-      // let baseNode = base
-      // if (base?.component === 'LabelNode' && !this.isEdit) {
-      //   baseNode = this.flowNodes.find((node) => {
-      //     return (node?.targets || []).length > 1 && base?.id && (node?.targets || []).includes(base?.id)
-      //   })
-      // }
+      let baseNode = base
+      if (base?.component === 'LabelNode' && !forkBeginOfForwardNode) {
+        baseNode = this.flowNodes.find((node) => {
+          return node?.targets?.length === 1 && base?.id && node.targets.includes(base?.id)
+        })
+      }
       const cycleBeginOfBackNode = this.flowNodes.find((node) => node.loopBackTarget === flowNode?.id)
       const cycleBeginOfEndNode = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
       if (isObj(flow[meta.flowType]) && baseNode?.type === 'begin') {
@@ -546,14 +546,14 @@ export class AutoFlow {
             const node = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
             const mTData = this.metaFlowDatas.find((mt) => mt.id === node?.id)
             const mtIdx = mTData?.flowType && flow[mTData?.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === mTData?.id)
-            if (mTData && mtIdx && mTData.flowType === FlowMetaType.LOOP) {
+            if (mTData && mtIdx > -1 && mTData.flowType === FlowMetaType.LOOP) {
               const currentFlow = {
                 ...flow[mTData.flowType][mtIdx]
               }
               currentFlow.defaultConnector.targetReference = data.id
               this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
               // flow[mTData.flowType][mtIdx].defaultConnector.targetReference = data.id
-            } else if (mTData && mtIdx) {
+            } else if (mTData && mtIdx > -1) {
               const currentFlow = {
                 ...flow[mTData.flowType][mtIdx]
               }
@@ -1162,8 +1162,13 @@ export class AutoFlow {
     default:
         break;
     }
+    let targetId = flowData?.defaultConnector?.targetReference || endId
+    if (!this.isEdit) {
+      const node = this.flowNodes.find(node => node.id === flowData.connector?.targetReference)
+      if (node) targetId = node.loopEndTarget as any
+    }
     const decisionEndTarget = [loopBackNode?.id ? loopBackNode.id :
-      (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : (flowData?.defaultConnector?.targetReference || endId))]
+      (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : targetId)]
     const decisions: NodeProps[] = [{
       id: flowData.id,
       type: 'decisionBegin',
@@ -1250,19 +1255,41 @@ export class AutoFlow {
     console.log(this.flowNodes, '111111111222222')
   }
 
+  getLoopBackId(flowData: FlowMetaParam, targetReference: any): string {
+    const meta = this.metaFlowDatas.find(meta => meta.id === targetReference)
+    switch (meta?.flowType) {
+      case FlowMetaType.LOOP:
+      case FlowMetaType.DECISION:
+      case FlowMetaType.WAIT:
+        if (meta?.defaultConnector?.targetReference === flowData.id) return meta.id
+        return this.getLoopBackId(flowData, meta?.defaultConnector?.targetReference)
+      default:
+        if (meta?.connector?.targetReference === flowData.id) return meta.id
+        return this.getLoopBackId(flowData, meta?.connector?.targetReference)
+    }
+  }
+
   setLoops(flowData: FlowMetaParam, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, decisionEndId?: string) {
     const backId = uid()
     const endId = uid()
     const backLabelId = uid()
     const endLabelId = uid()
     const id = uid()
+    let loopBackTarget = ''
+    let targetId = flowData?.defaultConnector?.targetReference || decisionEndId || this.flowEndId
+    if (!this.isEdit) {
+      const targetReference = flowData.nextValueConnector?.targetReference
+      loopBackTarget = this.getLoopBackId(flowData, targetReference)
+      const node = this.flowNodes.find(node => node.id === flowData.defaultConnector?.targetReference)
+      if (node) targetId = node.loopEndTarget as any
+    }
     const loopEndTarget = [loopBackNode?.id ? loopBackNode.id :
       (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : endId)]
     const loops: NodeProps[] = [{
       id: flowData.id,
       type: 'loopBegin',
-      loopBackTarget: backId,
-      loopEndTarget: loopEndTarget.join(''),
+      loopBackTarget: this.isEdit ? backId: loopBackTarget || backLabelId,
+      loopEndTarget: this.isEdit ? loopEndTarget.join('') : endLabelId,
       width: STAND_SIZE,
       height: STAND_SIZE,
       targets: [backLabelId],
@@ -1273,7 +1300,9 @@ export class AutoFlow {
       type: this.isEdit ? 'forward' : 'loopBack',
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [this.isEdit ? (flowData?.nextValueConnector?.targetReference ? id : backId) : endLabelId],
+      targets: [this.isEdit ?
+        (flowData?.nextValueConnector?.targetReference ? id : backId)
+        : flowData?.nextValueConnector?.targetReference || endLabelId],
       component: 'LabelNode',
     })
     loops.push({
@@ -1281,7 +1310,7 @@ export class AutoFlow {
       type: this.isEdit ? 'forward' : 'loopEnd',
       width: STAND_SIZE,
       height: STAND_SIZE,
-      targets: [this.isEdit ? endId : (flowData?.defaultConnector?.targetReference || decisionEndId || this.flowEndId)],
+      targets: [this.isEdit ? endId : targetId],
       component: 'LabelNode',
     })
     if (flowData?.nextValueConnector?.targetReference && this.isEdit) {
@@ -1305,15 +1334,17 @@ export class AutoFlow {
         component: 'ExtendNode',
       })
     }
-    if (!loopBackNode && !loopLastData && this.isEdit) {
-      loops.push({
-        id: endId,
-        type: 'loopEnd',
-        width: STAND_SIZE,
-        height: STAND_SIZE,
-        targets: [flowData?.defaultConnector?.targetReference || decisionEndId || this.flowEndId],
-        component: 'ExtendNode',
-      })
+    if (!loopBackNode && !loopLastData) {
+      if (this.isEdit) {
+        loops.push({
+          id: endId,
+          type: 'loopEnd',
+          width: STAND_SIZE,
+          height: STAND_SIZE,
+          targets: [targetId],
+          component: 'ExtendNode',
+        })
+      }
       if (flowData?.defaultConnector && decisionEndId) {
         const metaFlow = this.metaFlowDatas.find((meta) => meta.id === flowData?.defaultConnector?.targetReference)
         if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId)
@@ -1347,9 +1378,13 @@ export class AutoFlow {
     default:
         break;
     }
-    const targetId = this.isEdit ? (loopBackNode ? loopBackNode.id :
+    let targetId = this.isEdit ? (loopBackNode ? loopBackNode.id :
       (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : id))
       : (targetNode?.connector?.targetReference || decisionEndId || this.flowEndId)
+    if (!this.isEdit) {
+      const node = this.flowNodes.find(node => node.id === targetNode.connector?.targetReference)
+      if (node) targetId = node.loopEndTarget as any
+    }
     const recordCreates: NodeProps[] = [{
       id: targetNode.id,
       type: 'forward',
@@ -1358,15 +1393,17 @@ export class AutoFlow {
       targets: [targetId],
       component: componentName
     }]
-    if (!loopBackNode && !loopLastData && this.isEdit) {
-      recordCreates.push({
-        id: id,
-        type: 'forward',
-        width: STAND_SIZE,
-        height: STAND_SIZE,
-        targets: [targetNode?.connector?.targetReference || decisionEndId || this.flowEndId],
-        component: 'ExtendNode',
-      })
+    if (!loopBackNode && !loopLastData) {
+      if (this.isEdit) {
+        recordCreates.push({
+          id: id,
+          type: 'forward',
+          width: STAND_SIZE,
+          height: STAND_SIZE,
+          targets: [targetNode?.connector?.targetReference || decisionEndId || this.flowEndId],
+          component: 'ExtendNode',
+        })
+      }
       if (targetNode?.connector && decisionEndId) {
         const metaFlow = this.metaFlowDatas.find((meta) => meta.id === targetNode?.connector?.targetReference)
         if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId)
