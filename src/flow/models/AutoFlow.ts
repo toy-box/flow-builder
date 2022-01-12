@@ -437,18 +437,19 @@ export class AutoFlow {
     }
     this.metaFlowDatas.some((meta) => {
       const forkBeginOfEndNode = this.flowNodes.find((node) => node.decisionEndTarget === flowNode?.id)
-      const forkBeginOfForwardNode = this.flowNodes.find((node) => {
-        return (node?.targets || []).length > 1 && flowNode?.id && (node?.targets || []).includes(flowNode?.id)
-      })
-      const base = this.flowNodes.find((node) => {
+      const baseNode = this.flowNodes.find((node) => {
         return node?.targets?.length === 1 && flowNode?.id && node.targets.includes(flowNode?.id)
       })
-      let baseNode = base
-      if (base?.component === 'LabelNode') {
-        baseNode = this.flowNodes.find((node) => {
-          return (node?.targets || []).length > 1 && base?.id && (node?.targets || []).includes(base?.id)
-        })
-      }
+      const forkBeginOfForwardNode = this.flowNodes.find((node) => {
+        return baseNode?.component === 'LabelNode' &&
+          (node?.targets || []).length > 1 && baseNode?.id && (node?.targets || []).includes(baseNode?.id)
+      })
+      // let baseNode = base
+      // if (base?.component === 'LabelNode' && !this.isEdit) {
+      //   baseNode = this.flowNodes.find((node) => {
+      //     return (node?.targets || []).length > 1 && base?.id && (node?.targets || []).includes(base?.id)
+      //   })
+      // }
       const cycleBeginOfBackNode = this.flowNodes.find((node) => node.loopBackTarget === flowNode?.id)
       const cycleBeginOfEndNode = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
       if (isObj(flow[meta.flowType]) && baseNode?.type === 'begin') {
@@ -471,7 +472,7 @@ export class AutoFlow {
             this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
           }
           return meta
-        } else if ((baseNode?.id === meta.id && !cycleBeginOfBackNode)) {
+        } else if ((baseNode?.id === meta.id && !cycleBeginOfBackNode && baseNode?.component !== 'LabelNode')) {
           if (meta.flowType === FlowMetaType.LOOP) {
             if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
               data.defaultConnector.targetReference = meta?.id || (meta?.connector?.targetReference || null)
@@ -504,7 +505,7 @@ export class AutoFlow {
           return meta
         } else if (forkBeginOfForwardNode?.id === meta.id) {
           const rules = meta?.rules || meta?.waitEvents
-          const idx = rules?.findIndex((rule) => rule.id === flowNode?.id)
+          const idx = rules?.findIndex((rule) => rule.id === baseNode?.id)
           if (isNum(idx) && idx > -1 && flowIdx > -1) {
             if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
               data.defaultConnector.targetReference = rules?.[idx]?.connector?.targetReference || null
