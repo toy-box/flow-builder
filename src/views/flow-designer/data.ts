@@ -46,7 +46,7 @@ export const flow: FlowMeta = {
   //     "id": "1111",
   //     "name": "1111",
   //     "connector": {
-  //       "targetReference": null
+  //       "targetReference": 'loop2'
   //     },
   //     "defaultConnector": {
   //       "targetReference": 'end'
@@ -56,7 +56,7 @@ export const flow: FlowMeta = {
   //     "id": "2222",
   //     "name": "2222",
   //     "connector": {
-  //       "targetReference": "loop1"
+  //       "targetReference": null
   //     },
   //     "defaultConnector": {
   //       "targetReference": "end"
@@ -67,7 +67,7 @@ export const flow: FlowMeta = {
   //     "id": "3333",
   //     "name": "3333",
   //     "connector": {
-  //       "targetReference": "loop1"
+  //       "targetReference": null,
   //     },
   //     "defaultConnector": {
   //       "targetReference": "end"
@@ -79,10 +79,10 @@ export const flow: FlowMeta = {
   //     "id": "decision1",
   //     "name": "decision1",
   //     "connector": {
-  //       "targetReference": null
+  //       "targetReference": '3333'
   //     },
   //     "defaultConnector": {
-  //       "targetReference": "2222"
+  //       "targetReference": null
   //     },
   //     "defaultConnectorName": "默认分支",
   //     "rules": [
@@ -91,17 +91,8 @@ export const flow: FlowMeta = {
   //         "name": "分支1",
   //         "description": "分支1",
   //         "connector": {
-  //           "targetReference": null
+  //           "targetReference": 'loop1'
   //         },
-  //         "criteria": {
-  //           "conditions": [
-  //             {
-  //               target: '',
-  //               op: '$eq' as any,
-  //               source: ''
-  //             }
-  //           ]
-  //         }
   //       },
   //     ],
   //   },
@@ -111,10 +102,10 @@ export const flow: FlowMeta = {
   //     "id": "loop1",
   //     "name": "循环1",
   //     "nextValueConnector": {
-  //       "targetReference": "loop2"
+  //       "targetReference": 'loop2'
   //     },
   //     "defaultConnector": {
-  //       "targetReference": "1111"
+  //       "targetReference": '2222'
   //     },
   //     "collectionReference": "list1",
   //     "iterationOrder": "desc"
@@ -123,10 +114,10 @@ export const flow: FlowMeta = {
   //     "id": "loop2",
   //     "name": "循环2",
   //     "nextValueConnector": {
-  //       "targetReference": null
+  //       "targetReference": '1111'
   //     },
   //     "defaultConnector": {
-  //       "targetReference": "3333"
+  //       "targetReference": "loop1"
   //     },
   //     "collectionReference": "list1",
   //     "iterationOrder": "desc"

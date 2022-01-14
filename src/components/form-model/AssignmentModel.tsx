@@ -76,6 +76,7 @@ export const AssignmentModel:FC<AssignmentModelPorps> = ({
       { type: MetaValueType.BOOLEAN, children: varArrayOps },
       { type: MetaValueType.DATE, children: varArrayOps },
       { type: MetaValueType.DATETIME, children: varArrayOps },
+      { type: MetaValueType.ARRAY, children: varArrayOps },
     ]
   }, {
     type: IFlowResourceType.VARIABLE_ARRAY_RECORD,

@@ -56,7 +56,7 @@ export const FormilyFilter: FC = observer((props: any) => {
                   if (child.type === obj.type) obj.options = child.options
                 })
               })
-              registerOps.push(obj)
+              if (!obj.isSystem) registerOps.push(obj)
             }
           }
           return true

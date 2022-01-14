@@ -7,7 +7,7 @@ import { action } from '@formily/reactive'
 import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
 import { clone } from '@formily/shared';
 // import update from 'immutability-helper'
-import { IFlowResourceType, IFieldMetaFlow } from '../../flow/types'
+import { IFlowResourceType, IFieldMetaFlow} from '../../flow/types'
 import { GatherInput } from '../formily/index'
 import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 // import { uid } from '../../utils'
@@ -298,7 +298,6 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
           refObjectId: {
             type: 'string',
             title: <TextWidget>flow.form.resourceCreate.refObjectId</TextWidget>,
-            'x-disabled': !!value,
             required: true,
             'x-validator': {
               required: true,
@@ -309,6 +308,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
             'x-component-props': {
               placeholder: <TextWidget>flow.form.placeholder.refObjectId</TextWidget>,
               flowGraph,
+              disabled: !!value,
             },
             "x-decorator-props": {
               gridSpan: 1
@@ -380,7 +380,20 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
 
   if (value) {
     const flowDataVal = clone(value)
-    flowDataVal.flowType = fieldType
+    switch (fieldType) {
+      case IFlowResourceType.VARIABLE_ARRAY:
+      case IFlowResourceType.VARIABLE_ARRAY_RECORD:
+        flowDataVal.flowType = IFlowResourceType.VARIABLE
+        flowDataVal.valueType = 'array'
+        flowDataVal.type = value?.items?.type
+        break;
+      case IFlowResourceType.VARIABLE_RECORD:
+        flowDataVal.flowType = IFlowResourceType.VARIABLE
+        break;
+      default:
+        flowDataVal.flowType = fieldType
+        break;
+    }
     form.setValues(flowDataVal)
   }
 
@@ -409,7 +422,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       exclusiveMaximum: null,
       exclusiveMinimum: null,
       format: null,
-      key: value ? value.key : obj.key,
+      key: obj.key,
       maxLength: null,
       maximum: null,
       minLength: null,

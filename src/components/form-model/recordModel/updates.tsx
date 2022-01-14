@@ -226,11 +226,11 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
           'criteria.conditions': {
             type: 'number',
             title: <TextWidget>flow.form.recordUpdate.conditions</TextWidget>,
-            // required: true,
-            // 'x-validator': {
-            //   required: true,
-            //   message: <TextWidget>flow.form.validator.filter</TextWidget>
-            // },
+            required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.filter</TextWidget>
+            },
             'x-decorator': 'FormItem',
             'x-component': 'FormilyFilter',
             "x-decorator-props": {

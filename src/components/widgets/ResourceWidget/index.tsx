@@ -6,7 +6,7 @@ import { isBool } from '@toy-box/toybox-shared';
 import { usePrefix } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { ResourceCreate } from '../../form-model/ResourceCreate'
-import { IFlowResourceType, FlowMetaParam, FlowMetaType } from '../../../flow/types'
+import { IFlowResourceType, FlowMetaParam, FlowMetaType, IFieldMetaFlow } from '../../../flow/types'
 import { RecordLookUpModel } from '../../form-model'
 import { TextWidget } from '../TextWidget'
 import './index.less'
@@ -55,9 +55,8 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
         fieldMetas.map(meta => <Panel header={meta.label} key={meta.value}>
           {meta.children && <ul className={`${prefixCls}-list`}>
             {
-              meta.children.map((child) => <li key={child.key}>
-                {meta.value !== IFlowResourceType.VARIABLE_ARRAY_RECORD &&
-                meta.value !== IFlowResourceType.VARIABLE_RECORD ? <ResourceCreate 
+              meta.children.map((child: IFieldMetaFlow) => <li key={child.key}>
+                {child?.flowMetaType !== FlowMetaType.RECORD_LOOKUP ? <ResourceCreate 
                   fieldMetas={flowGraph.fieldMetas as any[]}
                   flowGraph={flowGraph}
                   isOpBtn={false}

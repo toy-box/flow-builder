@@ -234,6 +234,7 @@ export interface IOutputAssignment {
 
 export interface IFieldMetaFlow extends IFieldMeta {
   webType?: string
+  flowMetaType?: FlowMetaType
 }
 
 export type FlowType =

@@ -67,6 +67,7 @@ export const GatherInput: FC = observer((props: any) => {
                     name: useLocale('flow.form.placeholder.formilyInput.record'),
                   }
                 }
+                disabled={props.disabled}
                 value={props.value}
                 onChange={handleSelectOptions}
               />
