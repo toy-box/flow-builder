@@ -516,10 +516,6 @@ export class AutoFlow {
             }
             // flow[metaType].push(data)
             this.initMetaFields(metaType, data, MetaFieldType.ADD)
-            this.metaFlowDatas.push({
-              ...data,
-              flowType: metaType
-            });
           } else {
             this.updataCurrentFlowData(meta, data, metaType)
             if (flowIdx > -1) {
@@ -609,10 +605,6 @@ export class AutoFlow {
             data.connector.targetReference = meta?.defaultConnector?.targetReference || null
           }
           this.initMetaFields(metaType, data, MetaFieldType.ADD)
-          this.metaFlowDatas.push({
-            ...data,
-            flowType: metaType
-          });
           const currentFlow = {
             ...flow[meta.flowType][flowIdx]
           }
@@ -642,11 +634,6 @@ export class AutoFlow {
     }
     console.log(metaType, meta, 'meta')
     this.initMetaFields(metaType, data, MetaFieldType.ADD)
-    // flow[metaType].push(data)
-    this.metaFlowDatas.push({
-      ...data,
-      flowType: metaType
-    });
   }
 
   onInit = () => {
@@ -703,6 +690,7 @@ export class AutoFlow {
         flowType: metaType,
       })
     }
+    debugger
     switch (metaType) {
       case FlowMetaType.START:
         if (metaFieldType === MetaFieldType.EDIT) {
@@ -1152,9 +1140,6 @@ export class AutoFlow {
           const flowData = flowDatas.find(data => data.id === targetReference)
           if (flowData) {
             this.filterFlowData(targetReference, flowDatas, flowData, forkData)
-          } else {
-            const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
-            if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
           }
         }
       }
@@ -1182,29 +1167,21 @@ export class AutoFlow {
         const flowData = flowDatas.find(data => data.id === faultConnector)
         if (flowData) {
           this.filterFlowData(faultConnector, flowDatas, flowData, forkData)
-        } else {
-          if (targetReference) this.returnUpper(targetReference, flowDatas, forkData)
         }
       } else if (defaultConnector) {
         const flowData = flowDatas.find(data => data.id === defaultConnector)
         if (flowData) {
           this.filterFlowData(defaultConnector, flowDatas, flowData, forkData)
-        } else {
-          if (targetReference) this.returnUpper(targetReference, flowDatas, forkData)
         }
-      } else if (targetReference) {
-        this.returnUpper(targetReference, flowDatas, forkData)
-      } else {
-        if (flowDatas.length > 0 && !forkData) this.initFlowNodes(target?.flowType, target, undefined)
       }
     }
   }
 
   // 返回上一层
-  returnUpper = (targetReference: string, flowDatas: any[], forkData?: FlowMetaParamOfType) => {
-    const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
-    if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
-  }
+  // returnUpper = (targetReference: string, flowDatas: any[], forkData?: FlowMetaParamOfType) => {
+  //   const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
+  //   if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+  // }
 
   getFlowData = (flowDatas: any[], target?: FlowMetaParamOfType, forkData?: FlowMetaParamOfType) => {
     const flowData = this.metaFlowDatas.find(data => data.id === target?.defaultConnector?.targetReference)
