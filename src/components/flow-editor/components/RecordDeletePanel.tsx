@@ -73,7 +73,7 @@ export const RecordDeletePanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeEx
             ))
           }
         </ul>
-        {<RecordRemoveModel 
+        {showModel && <RecordRemoveModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.recordRemove.editTitle</TextWidget>} 
           metaFlowData={metaFlowData} 

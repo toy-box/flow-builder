@@ -73,7 +73,7 @@ export const RecordEditPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExte
             ))
           }
         </ul>
-        {<RecordUpdateModel 
+        {showModel && <RecordUpdateModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.recordUpdate.editTitle</TextWidget>} 
           metaFlowData={metaFlowData} 

@@ -73,7 +73,7 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }
             ))
           }
         </ul>
-        {<AssignmentModel 
+        {showModel && <AssignmentModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.assignment.editTitle</TextWidget>} 
           assignmentData={metaFlowData} 

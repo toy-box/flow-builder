@@ -73,7 +73,7 @@ export const CollectionSortPanel: FC<ExtendEditPanelProps> = ({ flowGraph, close
             ))
           }
         </ul>
-        {<SortCollectionModel 
+        {showModel && <SortCollectionModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.sortCollection.editTitle</TextWidget>} 
           metaFlowData={metaFlowData} 

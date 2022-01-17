@@ -73,7 +73,7 @@ export const RecordSearchPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeEx
             ))
           }
         </ul>
-        {<RecordLookUpModel 
+        {showModel && <RecordLookUpModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
           metaFlowData={metaFlowData} 

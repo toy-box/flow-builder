@@ -73,7 +73,7 @@ export const DecisionPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend
             ))
           }
         </ul>
-        {<DecisionModel 
+        {showModel && <DecisionModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.decision.editTitle</TextWidget>} 
           decisionData={metaFlowData} 

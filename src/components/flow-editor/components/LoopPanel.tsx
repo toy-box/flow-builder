@@ -73,7 +73,7 @@ export const LoopPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }) 
             ))
           }
         </ul>
-        {<LoopModel 
+        {showModel && <LoopModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.loop.editTitle</TextWidget>} 
           loopData={metaFlowData} 

@@ -73,7 +73,7 @@ export const SuspendPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend 
             ))
           }
         </ul>
-        {<SuspendModel 
+        {showModel && <SuspendModel 
           flowGraph={flowGraph}
           title={<TextWidget>flow.form.suspend.editTitle</TextWidget>} 
           metaFlowData={metaFlowData} 

@@ -49,13 +49,15 @@ const metaDataOps = [{
 }, {
   value: MetaValueType.DATETIME,
   label: <TextWidget>flow.metaType.dateTime</TextWidget>,
-}, {
-  value: MetaValueType.SINGLE_OPTION,
-  label: <TextWidget>flow.metaType.singleOption</TextWidget>,
-}, {
-  value: MetaValueType.MULTI_OPTION,
-  label: <TextWidget>flow.metaType.multiOption</TextWidget>,
 }]
+
+// , {
+//   value: MetaValueType.SINGLE_OPTION,
+//   label: <TextWidget>flow.metaType.singleOption</TextWidget>,
+// }, {
+//   value: MetaValueType.MULTI_OPTION,
+//   label: <TextWidget>flow.metaType.multiOption</TextWidget>,
+// }
 
 const constMetaOps = [
   MetaValueType.TEXT,
@@ -440,10 +442,17 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       calcType: obj.formula ? 'formula' : undefined,
       formula: obj.formula,
     }
+    if (obj.refObjectId && obj.type === MetaValueType.OBJECT_ID) {
+      const register = flowGraph.registers.find((reg) => reg.id === obj.refObjectId)
+      resourceData.refRegisterId = register?.id
+      resourceData.items = {
+        type: MetaValueType.OBJECT,
+        properties: register?.properties,
+      }
+    }
     const valueTypeLen = obj.valueType ? obj.valueType.length : undefined
     if (valueTypeLen) {
       resourceData.type = MetaValueType.ARRAY
-      resourceData.items = { type: obj.type }
     }
     const flowDataType = obj.flowType
     form.submit((resolve) => {

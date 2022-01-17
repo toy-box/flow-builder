@@ -106,7 +106,7 @@ export const StartPanel: FC<IStartPanelProps> = ({ flowGraph, closeExtend }) => 
             ))
           }
         </ul>
-        {<StartModel 
+        {showModel && <StartModel 
           flowGraph={flowGraph}
           title={!isObject ? <TextWidget>flow.extend.start</TextWidget> : <TextWidget>flow.extend.objectId</TextWidget>} 
           startData={metaFlowData} 

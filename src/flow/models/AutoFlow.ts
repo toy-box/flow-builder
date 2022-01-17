@@ -159,28 +159,28 @@ export class AutoFlow {
   }
 
   editFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
-    const flow = this.mataFlowJson.flow as any
-    this.metaFlowDatas = []
-    for (const key in flow) {
-      if (flow.hasOwnProperty(key)) {
-        const metaType = showMetaTypes.find(type => type === key)
-        if (metaType) {
-          if (isArr(flow[key])) {
-            flow[key].forEach((data: FlowMetaParam) => {
-              this.metaFlowDatas.push({
-                ...data,
-                flowType: metaType
-              })
-            })
-          } else {
-            this.metaFlowDatas.push({
-              ...flow[key],
-              flowType: metaType
-            })
-          }
-        }
-      }
-    }
+    // const flow = this.mataFlowJson.flow as any
+    // this.metaFlowDatas = []
+    // for (const key in flow) {
+    //   if (flow.hasOwnProperty(key)) {
+    //     const metaType = showMetaTypes.find(type => type === key)
+    //     if (metaType) {
+    //       if (isArr(flow[key])) {
+    //         flow[key].forEach((data: FlowMetaParam) => {
+    //           this.metaFlowDatas.push({
+    //             ...data,
+    //             flowType: metaType
+    //           })
+    //         })
+    //       } else {
+    //         this.metaFlowDatas.push({
+    //           ...flow[key],
+    //           flowType: metaType
+    //         })
+    //       }
+    //     }
+    //   }
+    // }
     if (flowData.id !== nodeId) {
       this.metaFlowDatas = this.metaFlowDatas.map((meta) => {
         if (meta.id === nodeId) return {
@@ -350,28 +350,28 @@ export class AutoFlow {
     const flowNode: NodeProps | undefined = this.flowNodes.find((node) => node.id === nodeId)
     this.updataFlowMetaData(flowNode, metaType, flowData)
     // console.log(this.mataFlowJson, 'mataFlowJson')
-    const flow = this.mataFlowJson.flow as any
-    this.metaFlowDatas = []
-    for (const key in flow) {
-      if (flow.hasOwnProperty(key)) {
-        const metaType = showMetaTypes.find(type => type === key)
-        if (metaType) {
-          if (isArr(flow[key])) {
-            flow[key].forEach((data: FlowMetaParam) => {
-              this.metaFlowDatas.push({
-                ...data,
-                flowType: metaType
-              })
-            })
-          } else {
-            this.metaFlowDatas.push({
-              ...flow[key],
-              flowType: metaType
-            })
-          }
-        }
-      }
-    }
+    // const flow = this.mataFlowJson.flow as any
+    // this.metaFlowDatas = []
+    // for (const key in flow) {
+    //   if (flow.hasOwnProperty(key)) {
+    //     const metaType = showMetaTypes.find(type => type === key)
+    //     if (metaType) {
+    //       if (isArr(flow[key])) {
+    //         flow[key].forEach((data: FlowMetaParam) => {
+    //           this.metaFlowDatas.push({
+    //             ...data,
+    //             flowType: metaType
+    //           })
+    //         })
+    //       } else {
+    //         this.metaFlowDatas.push({
+    //           ...flow[key],
+    //           flowType: metaType
+    //         })
+    //       }
+    //     }
+    //   }
+    // }
     this.flowNodes = []
     this.setFlowData(this.metaFlowDatas)
     this.flowNodes.push({
@@ -435,27 +435,27 @@ export class AutoFlow {
     // data.defaultConnector = {
     //   targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
     // }
-    this.metaFlowDatas = []
-    for (const key in flow) {
-      if (flow.hasOwnProperty(key)) {
-        const metaType = showMetaTypes.find(type => type === key)
-        if (metaType) {
-          if (isArr(flow[key])) {
-            flow[key].forEach((data: FlowMetaParam) => {
-              this.metaFlowDatas.push({
-                ...data,
-                flowType: metaType
-              })
-            })
-          } else {
-            this.metaFlowDatas.push({
-              ...flow[key],
-              flowType: metaType
-            })
-          }
-        }
-      }
-    }
+    // this.metaFlowDatas = []
+    // for (const key in flow) {
+    //   if (flow.hasOwnProperty(key)) {
+    //     const metaType = showMetaTypes.find(type => type === key)
+    //     if (metaType) {
+    //       if (isArr(flow[key])) {
+    //         flow[key].forEach((data: FlowMetaParam) => {
+    //           this.metaFlowDatas.push({
+    //             ...data,
+    //             flowType: metaType
+    //           })
+    //         })
+    //       } else {
+    //         this.metaFlowDatas.push({
+    //           ...flow[key],
+    //           flowType: metaType
+    //         })
+    //       }
+    //     }
+    //   }
+    // }
     this.metaFlowDatas.some((meta) => {
       const forkBeginOfEndNode = this.flowNodes.find((node) => node.decisionEndTarget === flowNode?.id)
       const base = this.flowNodes.find((node) => {
@@ -563,15 +563,25 @@ export class AutoFlow {
           return meta
         } else if (cycleBeginOfBackNode?.id === meta.id) {
           if (meta?.nextValueConnector?.targetReference === null && flowIdx > -1) {
-            this.updataCurrentFlowData(meta, data, metaType)
+            this.updataCurrentFlowData(meta, data, metaType, true)
             const currentFlow = {
               ...flow[meta.flowType][flowIdx]
             }
             currentFlow.nextValueConnector.targetReference = data.id
             this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
           } else {
-            this.updataCurrentFlowData(meta, data, metaType)
-            const node = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
+            this.updataCurrentFlowData(meta, data, metaType, true)
+            const labelNode = this.flowNodes.find((nd) => nd?.targets?.[0] === flowNode?.id)
+            let node = labelNode
+            if (labelNode?.component === 'LabelNode') {
+              node = this.flowNodes.find((node) => node?.loopEndTarget === flowNode?.id)
+              if (!node) {
+                node = this.flowNodes.find((node) => node?.loopBackTarget === flowNode?.id)
+              }
+            } else {
+              const forkNode = this.flowNodes.find((node) => node?.decisionEndTarget === flowNode?.id)
+              if (forkNode) node = forkNode
+            }
             const mTData = this.metaFlowDatas.find((mt) => mt.id === node?.id)
             const mtIdx = mTData?.flowType && flow[mTData?.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === mTData?.id)
             if (mTData && mtIdx > -1 && mTData.flowType === FlowMetaType.LOOP) {
@@ -592,7 +602,17 @@ export class AutoFlow {
           }
           return meta
         } else if (cycleBeginOfEndNode?.id === meta.id) {
-          this.updataCurrentFlowData(meta, data, metaType)
+          // this.updataCurrentFlowData(meta, data, metaType)
+          if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
+            data.defaultConnector.targetReference = meta?.defaultConnector?.targetReference || null
+          } else if (data.connector) {
+            data.connector.targetReference = meta?.defaultConnector?.targetReference || null
+          }
+          this.initMetaFields(metaType, data, MetaFieldType.ADD)
+          this.metaFlowDatas.push({
+            ...data,
+            flowType: metaType
+          });
           const currentFlow = {
             ...flow[meta.flowType][flowIdx]
           }
@@ -605,7 +625,7 @@ export class AutoFlow {
     })
   }
 
-  updataCurrentFlowData = (meta: FlowMetaParamOfType, data: FlowMetaParam, metaType: FlowMetaType, ) => {
+  updataCurrentFlowData = (meta: FlowMetaParamOfType, data: FlowMetaParam, metaType: FlowMetaType, loopBack?: boolean) => {
     // const flow = this.initialMeta.flow as any
     if (meta.flowType !== FlowMetaType.LOOP) {
       if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
@@ -615,9 +635,9 @@ export class AutoFlow {
       }
     } else {
       if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
-        data.defaultConnector.targetReference = meta?.id || (meta?.connector?.targetReference || null)
+        data.defaultConnector.targetReference = loopBack ? meta.id : meta?.connector?.targetReference || null
       } else if (data.connector) {
-        data.connector.targetReference = meta?.id || (meta?.connector?.targetReference || null)
+        data.connector.targetReference = loopBack ? meta.id : meta?.connector?.targetReference || null
       }
     }
     console.log(metaType, meta, 'meta')
@@ -647,7 +667,7 @@ export class AutoFlow {
                 flowType: metaType
               })
             })
-          } else {
+          } else if (flowData[key]) {
             this.metaFlowDatas.push({
               ...flowData[key],
               flowType: metaType
@@ -669,6 +689,20 @@ export class AutoFlow {
 
   initMetaFields = (metaType: string, flowData: FlowMetaParam | any, metaFieldType?: MetaFieldType, nodeId?: string) => {
     const data = { ...flowData }
+    if (metaFieldType === MetaFieldType.EDIT) {
+      this.metaFlowDatas = this.metaFlowDatas.map((meta) => {
+        if (meta.id === nodeId) return {
+          ...data,
+          flowType: metaType,
+        }
+        return meta
+      })
+    } else if (metaFieldType === MetaFieldType.ADD) {
+      this.metaFlowDatas.push({
+        ...data,
+        flowType: metaType,
+      })
+    }
     switch (metaType) {
       case FlowMetaType.START:
         if (metaFieldType === MetaFieldType.EDIT) {
@@ -1048,7 +1082,11 @@ export class AutoFlow {
           webType: record.getFirstRecordOnly ? IFlowResourceType.VARIABLE_RECORD : IFlowResourceType.VARIABLE_ARRAY_RECORD,
           type: record.getFirstRecordOnly ? MetaValueType.OBJECT_ID : MetaValueType.ARRAY,
           key: record.id,
-          properties: register?.properties
+          refRegisterId: register?.id,
+          items: {
+            type: MetaValueType.OBJECT,
+            properties: register?.properties
+          },
         }
         formulaMeta = this.getFormulaMap(formulaMeta, resourceData)
       }
@@ -1057,7 +1095,8 @@ export class AutoFlow {
   }
 
   getFormulaMap = (formulaMeta: Record<string, IFieldMeta>, meta: IFieldMeta, isProperty?: boolean) => {
-    const key = isProperty ? meta.key :`$${meta.key}`
+    // const key = isProperty ? meta.key :`$${meta.key}`
+    const key = meta.key
     const obj = {
       [key]: {
         key: meta.key,
@@ -1073,13 +1112,20 @@ export class AutoFlow {
           this.getFormulaMap(obj[key].properties, p, true)
         }
       }
+    } else if (isObj(meta?.items?.properties)) {
+      for (const proKey in meta?.items?.properties) {
+        if (meta?.items?.properties.hasOwnProperty(proKey)) {
+          const p = meta?.items?.properties[proKey]
+          this.getFormulaMap(obj[key].properties, p, true)
+        }
+      }
     }
     return Object.assign(formulaMeta, obj)
   }
 
 
   // 按targets顺序进行flowNodes实例化
-  setFlowData = (flowDatas: any[], target?: FlowMetaParamOfType, forkData?: FlowMetaParamOfType) => {
+  setFlowData = (flowDatas: any[], target?: FlowMetaParamOfType, forkData?: FlowMetaParamOfType) => { 
     if (!target) {
       flowDatas.forEach((flowData, index) => {
         if (flowData.flowType === FlowMetaType.START) {
@@ -1104,12 +1150,29 @@ export class AutoFlow {
         }
         if (targetReference) {
           const flowData = flowDatas.find(data => data.id === targetReference)
-          if (flowData)  this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+          if (flowData) {
+            this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+          } else {
+            const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
+            if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+          }
         }
       }
+    } else if (target?.flowType === FlowMetaType.LOOP) {
+      const targetReference = target?.nextValueConnector?.targetReference
+      const defaultConnector = target?.defaultConnector?.targetReference
+      if (targetReference) {
+        const flowData = flowDatas.find(data => data.id === targetReference)
+        if (flowData) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+      }
+      if (defaultConnector) {
+        const flowData = flowDatas.find(data => data.id === defaultConnector)
+        if (flowData) this.filterFlowData(defaultConnector, flowDatas, flowData, forkData)
+      }
     } else {
-      const targetReference = target?.flowType === FlowMetaType.LOOP ?
-        target?.nextValueConnector?.targetReference : target?.connector?.targetReference
+      // const targetReference = target?.flowType === FlowMetaType.LOOP ?
+      //   target?.nextValueConnector?.targetReference : target?.connector?.targetReference
+      const targetReference = target?.connector?.targetReference
       const defaultConnector = target?.defaultConnector?.targetReference
       const faultConnector = target?.faultConnector?.targetReference
       const flowData = flowDatas.find(data => data.id === targetReference)
@@ -1120,26 +1183,34 @@ export class AutoFlow {
         if (flowData) {
           this.filterFlowData(faultConnector, flowDatas, flowData, forkData)
         } else {
-          const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
-          if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+          if (targetReference) this.returnUpper(targetReference, flowDatas, forkData)
         }
       } else if (defaultConnector) {
         const flowData = flowDatas.find(data => data.id === defaultConnector)
         if (flowData) {
           this.filterFlowData(defaultConnector, flowDatas, flowData, forkData)
         } else {
-          const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
-          if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+          if (targetReference) this.returnUpper(targetReference, flowDatas, forkData)
         }
+      } else if (targetReference) {
+        this.returnUpper(targetReference, flowDatas, forkData)
+      } else {
+        if (flowDatas.length > 0 && !forkData) this.initFlowNodes(target?.flowType, target, undefined)
       }
     }
   }
 
+  // 返回上一层
+  returnUpper = (targetReference: string, flowDatas: any[], forkData?: FlowMetaParamOfType) => {
+    const flowData = this.metaFlowDatas.find(data => data.id === targetReference)
+    if (flowData && targetReference) this.filterFlowData(targetReference, flowDatas, flowData, forkData)
+  }
+
   getFlowData = (flowDatas: any[], target?: FlowMetaParamOfType, forkData?: FlowMetaParamOfType) => {
     const flowData = this.metaFlowDatas.find(data => data.id === target?.defaultConnector?.targetReference)
-    const flowMeta = flowDatas.find(data => data.id === flowData?.defaultConnector?.targetReference)
+    const flowMeta = flowDatas.find(data => data.id === flowData?.id)
     if (flowMeta) {
-      this.setFlowData(flowDatas, flowData, forkData)
+      this.setFlowData(flowDatas, target, forkData)
     } else {
       this.getFlowData(flowDatas, flowData, forkData)
     }
@@ -1148,21 +1219,20 @@ export class AutoFlow {
   filterFlowData = (targetReference: string, flowDatas: any[], flowData: any, forkData?: FlowMetaParamOfType) => {
     const filterFlowDatas = flowDatas.filter(data => data.id !== targetReference)
     const flowNode = this.flowNodes.find(node => node.id === targetReference)
-    // else if (flowData?.flowType === FlowMetaType.LOOP && flowData?.nextValueConnector?.targetReference) {
-    //   this.initFlowNodes(flowData.flowType, flowData)
-    //   this.setFlowData(flowDatas, flowData);
-    // }
-    if (flowNode) {
-      if (filterFlowDatas.length > 0) this.getFlowData(filterFlowDatas, flowData, forkData);
-    } else {
+    if (!flowNode) {
       this.initFlowNodes(flowData.flowType, flowData, undefined, forkData?.id)
       if (filterFlowDatas.length > 0) this.setFlowData(filterFlowDatas, flowData, forkData);
     }
+    // if (flowNode) {
+    //   if (filterFlowDatas.length > 0) this.getFlowData(filterFlowDatas, flowData, forkData);
+    // } else {
+    //   this.initFlowNodes(flowData.flowType, flowData, undefined, forkData?.id)
+    //   if (filterFlowDatas.length > 0) this.setFlowData(filterFlowDatas, flowData, forkData);
+    // }
   }
 
   initFlowNodes(metaType: FlowMetaType, flowData: FlowMetaParam, flowNode?: NodeProps, decisionEndId?: string) {
     const loopBack = this.loopBackNode(flowData, flowNode);
-    console.log(loopBack)
     let loopLastData = undefined
     if (!flowNode) {
       loopLastData = this.flowNodes.find((data: any) => {
@@ -1174,7 +1244,6 @@ export class AutoFlow {
         return false
       })
     }
-    console.log(loopLastData, flowData, 'loopLastData')
     switch (metaType) {
       case FlowMetaType.START:
         this.setStarts(flowData)
@@ -1286,10 +1355,6 @@ export class AutoFlow {
           component: 'ExtendNode',
         })
       }
-      // if (rule?.connector) {
-      //   const metaFlow = this.metaFlowDatas.find((meta) => meta.id === rule?.connector?.targetReference)
-      //   if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, endId)
-      // }
     })
     const id = uid()
     const defaultId = uid()
@@ -1316,10 +1381,6 @@ export class AutoFlow {
         }
       )
     }
-    // if (flowData?.defaultConnector) {
-    //   const metaFlow = this.metaFlowDatas.find((meta) => meta.id === flowData?.defaultConnector?.targetReference)
-    //   if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, endId)
-    // }
     if (!loopBackNode && !loopLastData && this.isEdit) {
       decisions.push({
         id: endId,
@@ -1432,16 +1493,8 @@ export class AutoFlow {
           component: 'ExtendNode',
         })
       }
-      // if (flowData?.defaultConnector?.targetReference && decisionEndId) {
-      //   const metaFlow = this.metaFlowDatas.find((meta) => meta.id === flowData?.defaultConnector?.targetReference)
-      //   if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId)
-      // }
     }
     this.flowNodes.push(...loops)
-    // if (flowData?.nextValueConnector?.targetReference && decisionEndId) {
-    //   const metaFlow = this.metaFlowDatas.find((meta) => meta.id === flowData?.nextValueConnector?.targetReference)
-    //   if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, loops[0], loops[0].loopBackTarget)
-    // }
   }
 
   setBaseInfos(targetNode: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, forkId?: string) {
@@ -1497,10 +1550,6 @@ export class AutoFlow {
           component: 'ExtendNode',
         })
       }
-      // if (targetNode?.connector && decisionEndId) {
-      //   const metaFlow = this.metaFlowDatas.find((meta) => meta.id === targetNode?.connector?.targetReference)
-      //   if (metaFlow) this.initFlowNodes(metaFlow.flowType, metaFlow, undefined, decisionEndId)
-      // }
     }
     this.flowNodes.push(...recordCreates)
     console.log(this.flowNodes);
