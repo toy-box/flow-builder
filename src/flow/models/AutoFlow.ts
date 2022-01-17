@@ -1105,7 +1105,7 @@ export class AutoFlow {
         properties: {},
       }
     }
-    if (isObj(meta.properties)) {
+    if (meta.properties && isObj(meta.properties)) {
       for (const proKey in meta.properties) {
         if (meta.properties.hasOwnProperty(proKey)) {
           const p = meta.properties[proKey]
