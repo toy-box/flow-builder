@@ -10,6 +10,6 @@ export const getToken = () => {
 const appId = 'ceshi'
 
 export const http = Axios.create({
-  baseURL: `toolbox/studio/web/admin/v1/apps/${appId}`,
+  baseURL: `toybox/studio/web/admin/v1/apps/${appId}`,
   headers: { 'Authorization': getToken() }
 })

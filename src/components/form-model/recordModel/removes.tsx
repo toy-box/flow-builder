@@ -13,6 +13,7 @@ import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from '../RepeatErrorMessage'
+import { apiReg } from '../interface'
 
 export interface RecordRemoveModelPorps {
   showModel: boolean
@@ -29,8 +30,7 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
   metaFlowData,
   flowGraph
 }) => {
-  const [isModalVisible, setIsModalVisible] = useState(showModel);
-  const repeatName = useLocale('flow.form.validator.repeatName')
+  const [isModalVisible, setIsModalVisible] = useState(showModel)
 
   
   useEffect(() => {
@@ -151,8 +151,8 @@ export const RecordRemoveModel: FC<RecordRemoveModelPorps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
-                return message.errorMessage
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',

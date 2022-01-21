@@ -14,6 +14,7 @@ import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from '../RepeatErrorMessage'
+import { apiReg } from '../interface'
 
 export interface RecordUpdateModelPorps {
   showModel: boolean
@@ -35,7 +36,6 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
   const record = useLocale('flow.form.recordUpdate.record')
   const setName = useLocale('flow.form.recordUpdate.setting')
   const setField = useLocale('flow.form.recordUpdate.setField')
-  const repeatName = useLocale('flow.form.validator.repeatName')
 
   
   useEffect(() => {
@@ -186,8 +186,8 @@ export const RecordUpdateModel: FC<RecordUpdateModelPorps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
-                return message.errorMessage
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',

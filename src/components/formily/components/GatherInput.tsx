@@ -56,7 +56,7 @@ export const GatherInput: FC = observer((props: any) => {
       case MetaValueType.STRING:
       case MetaValueType.NUMBER:
         return <Input placeholder={useLocale('flow.form.placeholder.formilyInput.input')} type={form.values.type} onChange={changeValue} value={props.value} />
-      case MetaValueType.OBJECT_ID:
+      case MetaValueType.OBJECT:
         return <FieldSelect
                 placeholder={useLocale('flow.form.placeholder.formilyInput.select')}
                 options={registerOptions}

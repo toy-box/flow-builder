@@ -97,11 +97,13 @@ GlobalRegistry.registerDesignerLocales({
           sortOrderIsEmpty: '排序标准是必填项',
           outputReference: '记录变量是必填项',
           resourceRegRuleMessage: 'API名称仅可以包含下划线和字母数字字符',
+          apiLength: 'API名称长度不能超过32位',
           queriedFields: '指定字段不能为空',
           startDate: '开始日期是必填项',
           startTime: '开始时间是必填项',
           frequency: '频率是必填项',
-          waitFilter: '暂停条件是必填项'
+          waitFilter: '暂停条件是必填项',
+          outputAssignments: '设置字段不能为空'
         },
         placeholder: {
           recordIdValue: '请选择记录',
@@ -113,6 +115,7 @@ GlobalRegistry.registerDesignerLocales({
           refObjectId: '请输入值...',
           assignRecordIdToReference: '请选择变量',
           outputReference: '选择记录变量',
+          outputReferenceArray: '选择记录集合变量',
           formula: '配置表达式',
           resourceSelect: '请选择集合变量',
           formilyInput: {
@@ -306,12 +309,14 @@ GlobalRegistry.registerDesignerLocales({
             comm: '共同在记录变量中',
             one: '在单独变量中'
           },
-          outputReference: '选择记录变量',
+          outputReference: '记录变量',
+          outputReferenceArray: '记录集合变量',
           outputReferenceLabel: '记录（单个）变量',
           queriedFields: '选择指定id字段',
           addField: '添加字段',
           outputAssignments: '设置字段',
-          textTemplate: '如果您仅存储第一个记录，按唯一字段筛选，例如 ID。'
+          textTemplate: '如果您仅存储第一个记录，按唯一字段筛选，例如 ID。',
+          assignNullValuesIfNoRecordsFound: '在未返回记录时，将指定变量设置为空'
         },
         formula: {
           editTitle: '编辑公式',

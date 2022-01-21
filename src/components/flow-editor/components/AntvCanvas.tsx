@@ -59,7 +59,7 @@ export const AntvCanvas = observer(() => {
         }
       })
     );
-  }, [flow, flowGraph]);
+  }, [flow]);
 
   useEffect(() => {
     flow.setFlowNode(flowGraph.flowNodes as any[])

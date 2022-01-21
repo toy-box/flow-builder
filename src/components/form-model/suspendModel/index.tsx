@@ -7,12 +7,13 @@ import { FormProvider, createSchemaField } from '@formily/react'
 import { ICompareOperation, CompareOP, MetaValueType } from '@toy-box/meta-schema';
 import { clone } from '@toy-box/toybox-shared';
 import { BranchArrays, ResourceSelect, FormilyFilter } from '../../formily/components/index'
-import { FlowMetaType, FlowMetaParam, IOutParameter, ICriteriaCondition, opTypeEnum } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, IOutParameter, ICriteriaCondition, opTypeEnum, IFlowResourceType } from '../../../flow/types'
 import { uid } from '../../../utils';
 import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from '../RepeatErrorMessage'
+import { apiReg } from '../interface'
 
 export interface SuspendModelPorps {
   showModel: boolean
@@ -31,7 +32,6 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   let selectData: any = null
-  const repeatName = useLocale('flow.form.validator.repeatName')
   const [defaultConnectorName, setDefaultConnectorName] = useState(useLocale('flow.form.decision.defaultConnectorName'))
   const placeholderName = useLocale('flow.form.placeholder.flowType')
 
@@ -64,7 +64,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
           id: rule.id || uid(),
           name: rule.name,
           connector: {
-            targetReference: rule?.connector?.targetReference || null,
+            targetReference: rule?.connector?.targetReference || metaFlowData?.connector?.targetReference || null,
           },
           eventType: rule.eventType,
           criteria: conditions && conditions.length > 0 ? {
@@ -84,7 +84,7 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
         id: rule.id || uid(),
         name: rule.name,
         connector: {
-          targetReference: rule?.connector?.targetReference || null,
+          targetReference: rule?.connector?.targetReference || metaFlowData?.connector?.targetReference || null,
         },
         eventType: rule.eventType,
         criteria: conditions && conditions.length > 0 ? {
@@ -279,8 +279,8 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
-                return message.errorMessage
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',
@@ -429,12 +429,12 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                                 message: <TextWidget>flow.form.validator.registerId</TextWidget>
                               },
                               'x-decorator': 'FormItem',
-                              'x-component': 'ResourceSelect',
-                              'x-component-props': {
-                                isHiddenResourceBtn: true,
-                                mataSource: 'metaData',
-                                flowGraph,
-                              },
+                              'x-component': 'Input',
+                              // 'x-component-props': {
+                              //   isHiddenResourceBtn: true,
+                              //   mataSource: 'metaData',
+                              //   flowGraph,
+                              // },
                               'x-reactions': myReaction.bind(this, false),
                             },
                             field: {
@@ -458,20 +458,29 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
                                 message: <TextWidget>flow.form.validator.recordIdValue</TextWidget>
                               },
                               'x-decorator': 'FormItem',
-                              'x-component': 'DatePicker',
-                              'x-component-props': {
-                                showTime: true,
-                                placeholder: placeholderName,
-                              },
-                              // 'x-component': 'ResourceSelect',
+                              // 'x-component': 'DatePicker',
                               // 'x-component-props': {
-                              //   isHiddenResourceBtn: false,
-                              //   mataSource: 'flowJson',
-                              //   placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
-                              //   flowGraph,
-                              //   metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
-                              //   onChange: selectValue,
+                              //   showTime: true,
+                              //   placeholder: placeholderName,
                               // },
+                              'x-component': 'ResourceSelect',
+                              'x-component-props': {
+                                isHiddenResourceBtn: false,
+                                mataSource: 'flowJson',
+                                placeholder: <TextWidget>flow.form.placeholder.recordIdValue</TextWidget>,
+                                flowGraph,
+                                // metaTypes: [MetaValueType.DATE, MetaValueType.DATETIME],
+                                flowJsonTypes: [{
+                                  value: IFlowResourceType.VARIABLE
+                                }, {
+                                  value: IFlowResourceType.CONSTANT
+                                }, {
+                                  value: IFlowResourceType.FORMULA
+                                }, {
+                                  value: IFlowResourceType.TEMPLATE
+                                }]
+                                // onChange: selectValue,
+                              },
                               'x-reactions': myReaction.bind(this, false),
                             },
                             dateValue: {

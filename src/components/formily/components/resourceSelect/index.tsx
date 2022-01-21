@@ -5,6 +5,7 @@ import { isArr } from '@formily/shared'
 import { IFieldOption, MetaValueType } from '@toy-box/meta-schema'
 import { ResourceCreate } from '../../../form-model/ResourceCreate'
 import { useLocale } from '../../../../hooks'
+import { debug } from 'console'
 
 
 const { OptGroup, Option } = Select
@@ -22,6 +23,31 @@ export const ResourceSelect: FC = observer((props: any) => {
 
   const form = useForm()
   const formilyField = useField() as any
+
+  const index = useMemo(() => {
+    if (props.reactionObj) {
+      const entire = formilyField?.path?.entire.split('.')
+      return entire?.[1]
+    }
+    return -1
+  }, 
+  [props.reactionObj, formilyField?.path?.entire])
+
+  const reactionData = useMemo(() => {
+    const val = form.values?.[props.reactionObj]?.[index]?.[props.reactionKey]
+    let obj: any = null
+    if (val) {
+      form.setFieldState(`${props.reactionObj}.${index}.${props.reactionKey}`, (state) => {
+        state.dataSource?.some(data => {
+          if (data.value === val) {
+            obj = data
+            return data
+          }
+        })
+      })
+    }
+    return obj
+  }, [props.reactionObj, index, props.reactionKey, form.values?.[props.reactionObj]?.[index]?.[props.reactionKey]])
 
   const metaOptions = useMemo(() => {
     if (props.mataSource === 'metaData') {
@@ -62,7 +88,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         if (isArr(op.children)) {
           const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
           const children = meta?.children.filter((child: any) => {
-            const opIdx = op?.children.findIndex((type: string) => child.webType === type)
+            const opIdx = op?.children.findIndex((type: string) => child.webType === type && child.refRegisterId === props.refRegisterId)
             return opIdx > -1 ? child : undefined
           })
           if (children) {
@@ -74,7 +100,21 @@ export const ResourceSelect: FC = observer((props: any) => {
           }
         } else {
           const meta = resourceFieldMetas.find((meta: any) => op.value === meta.value)
-          if (meta) metas.push(meta)
+          const children = meta?.children.filter((child: any) => {
+            if (props.refRegisterId) {
+              if (child.refRegisterId === props.refRegisterId) return child
+              return false
+            } else if (reactionData) {
+              if (child.type === reactionData?.type) return child
+              return false
+            }
+            return child
+          })
+          if (meta && children?.length > 0) metas.push({
+            label: meta.label,
+            value: meta.value,
+            children,
+          })
         }
       })
     }
@@ -98,7 +138,16 @@ export const ResourceSelect: FC = observer((props: any) => {
         }
       }
     })
-  }, [props.flowGraph.fieldMetas, form.values, props.mataSource, props.reactionKey, props.flowJsonTypes, props.flowGraph.registers, form.values[props.reactionKey]])
+  },[
+    props.flowGraph.fieldMetas,
+    form.values, props.mataSource, 
+    props.reactionKey, 
+    props.flowJsonTypes, 
+    props.flowGraph.registers, 
+    form.values[props.reactionKey],
+    props.refRegisterId,
+    reactionData
+  ])
 
   const metaTypeOps = useMemo(() => {
     const ops: IOptionProp[] = []
@@ -173,6 +222,18 @@ export const ResourceSelect: FC = observer((props: any) => {
     [form, formilyField, metaTypeOps],
   )
 
+  const disabled = useMemo(() => {
+    if (props.reactionObj) {
+      if (index > -1) {
+        const val = form.values?.[props.reactionObj]?.[index]?.[props.reactionKey]
+        if (val) return false
+        return true
+      }
+      return false
+    }
+    return false
+  }, [props.reactionObj, props.reactionKey, form.values?.[props.reactionObj]?.[index]?.[props.reactionKey]])
+
   return (
     <div>
       {!props.isHiddenResourceBtn && <ResourceCreate 
@@ -184,6 +245,7 @@ export const ResourceSelect: FC = observer((props: any) => {
         value={formilyField.value}
         style={props.style}
         onChange={onChange}
+        disabled={disabled}
         filterOption={(input, option: any) =>
           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }

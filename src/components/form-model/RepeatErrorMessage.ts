@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { isArr, isObj } from '@toy-box/toybox-shared';
+import { type } from 'os';
 import { AutoFlow, FlowMetaParamOfType } from '../../flow/models/AutoFlow'
-import { FlowMetaParam } from '../../flow/types'
+import { FlowMetaParam, IFieldMetaFlow } from '../../flow/types'
+import { TextWidget } from '../widgets'
 
 export interface RepeatErrorMessagePorps {
   flowGraph?: AutoFlow,
@@ -12,14 +14,15 @@ export class RepeatErrorMessage {
   metaFlowDatas: FlowMetaParamOfType[] = []
   flowGraph: AutoFlow
   apiId: string
-  errorMessage: string | null
-  metaFlowData: FlowMetaParam | undefined
+  errorMessage: string | null = null
+  metaFlowData: FlowMetaParam | IFieldMetaFlow | undefined
+  apiReg: RegExp | undefined
 
-  constructor(flowGraph: AutoFlow, apiId: string, metaFlowData: FlowMetaParam | undefined, repeatName: string) {
+  constructor(flowGraph: AutoFlow, apiId: string, metaFlowData: FlowMetaParam | IFieldMetaFlow | undefined, apiReg?: RegExp) {
     this.flowGraph = flowGraph
     this.apiId = apiId
-    this.errorMessage = repeatName
     this.metaFlowData = metaFlowData
+    this.apiReg = apiReg
     this.init(flowGraph, apiId)
   }
 
@@ -29,10 +32,10 @@ export class RepeatErrorMessage {
       if (flowData.hasOwnProperty(key)) {
         if (isArr(flowData[key])) {
           flowData[key].forEach((data: FlowMetaParam) => {
-            this.metaFlowDatas.push({
+            return this.metaFlowDatas.push({
               ...data,
               flowType: key as any
-            })
+            });
           })
         } else if (isObj(flowData[key])) {
           this.metaFlowDatas.push({
@@ -46,8 +49,18 @@ export class RepeatErrorMessage {
   }
 
   errorMessageFunc = () => {
-    const idx = this.metaFlowDatas.findIndex((meta) => meta.id === this.apiId)
-    if (this.metaFlowData && this.metaFlowData.id === this.apiId) return this.errorMessage = null
-    if (idx <= -1) this.errorMessage = null
+    if (this.apiReg?.test(this.apiId)) {
+      if (this.apiId.length <= 32) {
+        this.errorMessage = 'flow.form.validator.repeatName'
+        const idx = this.metaFlowDatas.findIndex((meta: any) => meta.id === this.apiId || meta?.key === this.apiId)
+        const metaFlowData: any = this.metaFlowData
+        if (metaFlowData?.id === this.apiId || metaFlowData?.key === this.apiId) return this.errorMessage = null
+        if (idx <= -1) this.errorMessage = null
+      } else {
+        this.errorMessage = 'flow.form.validator.apiLength'
+      }
+    } else {
+      this.errorMessage = 'flow.form.validator.resourceRegRuleMessage'
+    }
   }
 }

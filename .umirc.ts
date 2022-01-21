@@ -11,7 +11,7 @@ export default defineConfig({
   publicPath: '/',
   mode: 'site',
   proxy: {
-    '/toolbox': {
+    '/toybox': {
       target: devConfig.apiRoot,
       secure: devConfig.secure,
       changeOrigin: devConfig.changeOrigin,

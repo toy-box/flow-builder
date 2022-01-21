@@ -6,6 +6,7 @@ import { Button, Modal } from 'antd'
 import { action } from '@formily/reactive'
 import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
 import { clone } from '@formily/shared';
+import { RepeatErrorMessage } from './RepeatErrorMessage'
 // import update from 'immutability-helper'
 import { IFlowResourceType, IFieldMetaFlow} from '../../flow/types'
 import { GatherInput } from '../formily/index'
@@ -14,6 +15,7 @@ import { FormulaEdit, BraftEditorTemplate } from '../formily/components'
 import { TextWidget } from '../widgets'
 import { useLocale } from '../../hooks'
 import { AutoFlow } from '../../flow/models/AutoFlow'
+import { apiReg } from './interface'
 
 const SchemaField = createSchemaField({
   components: {
@@ -35,7 +37,7 @@ const metaDataOps = [{
   value: MetaValueType.NUMBER,
   label: <TextWidget>flow.metaType.num</TextWidget>,
 }, {
-  value: MetaValueType.OBJECT_ID,
+  value: MetaValueType.OBJECT,
   label: <TextWidget>flow.metaType.objectId</TextWidget>,
 }, {
   value: MetaValueType.TEXT,
@@ -121,7 +123,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       const valueType = valueTypeArray ? valueTypeArray.length : undefined
       formData.setFieldState('defaultValue', (state) => {
         const valFlag = !valueType && fieldObj.value && fieldObj.value !== MetaValueType.MULTI_OPTION
-          && fieldObj.value !== MetaValueType.SINGLE_OPTION && fieldObj.value !== MetaValueType.OBJECT_ID;
+          && fieldObj.value !== MetaValueType.SINGLE_OPTION && fieldObj.value !== MetaValueType.OBJECT;
         state.display = isShowDefault && valFlag ? 'visible' : 'none'
         console.log(isShowDefault, valFlag, state.display)
       })
@@ -229,15 +231,10 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               message: <TextWidget>flow.form.validator.value</TextWidget>,
             }, {
               triggerType: 'onBlur',
-              validator: (value: string) => {
-                if (!value) return null
-                if (!/^\w+$/.test(value)) return <TextWidget>flow.form.validator.resourceRegRuleMessage</TextWidget>
-                let idx = 0
-                fieldMetas.forEach((meta: any) => {
-                  const ch = meta.children.find((child: any) => child.key === value)
-                  if (ch) idx += 1
-                })
-                if(idx > 0) return <TextWidget>flow.form.validator.repeatName</TextWidget>
+              validator: (val: string) => {
+                if (!val) return null
+                const message = new RepeatErrorMessage(flowGraph, val, value, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',
@@ -319,7 +316,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
               dependencies: ['type'],
               fulfill: {
                 schema: {
-                  'x-display': "{{$deps == 'refId' ? 'visible' : 'none'}}",
+                  'x-display': "{{$deps == 'object' ? 'visible' : 'none'}}",
                 },
               },
             },
@@ -442,17 +439,19 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
       calcType: obj.formula ? 'formula' : undefined,
       formula: obj.formula,
     }
-    if (obj.refObjectId && obj.type === MetaValueType.OBJECT_ID) {
-      const register = flowGraph.registers.find((reg) => reg.id === obj.refObjectId)
+    const register = flowGraph.registers.find((reg) => reg.id === obj.refObjectId)
+    if (obj.refObjectId && obj.type === MetaValueType.OBJECT) {
       resourceData.refRegisterId = register?.id
-      resourceData.items = {
-        type: MetaValueType.OBJECT,
-        properties: register?.properties,
-      }
     }
     const valueTypeLen = obj.valueType ? obj.valueType.length : undefined
     if (valueTypeLen) {
       resourceData.type = MetaValueType.ARRAY
+      resourceData.items = {
+        type: obj.type,
+        properties: register?.properties,
+      }
+    } else if (obj.refObjectId && obj.type === MetaValueType.OBJECT) {
+      resourceData.properties = register?.properties
     }
     const flowDataType = obj.flowType
     form.submit((resolve) => {

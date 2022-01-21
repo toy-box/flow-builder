@@ -13,6 +13,7 @@ import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from '../RepeatErrorMessage'
+import { apiReg } from '../interface'
 
 export interface DecisionModelPorps {
   showModel: boolean
@@ -31,7 +32,6 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const [defaultConnectorName, setDefaultConnectorName] = useState(useLocale('flow.form.decision.defaultConnectorName'))
-  const repeatName = useLocale('flow.form.validator.repeatName')
   
   useEffect(() => {
     setIsModalVisible(showModel);
@@ -45,6 +45,10 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
         if (!isObj(rule.connector) && !decisionData) {
           rule.connector = {
             targetReference: null
+          }
+        } else if (isObj(rule.connector)) {
+          rule.connector = {
+            targetReference: rule.connector.targetReference || decisionData?.connector?.targetReference || null
           }
         }
         const conditions = rule?.criteria?.conditions.map((data: ICompareOperation) => {
@@ -186,8 +190,8 @@ export const DecisionModel: FC<DecisionModelPorps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const message = new RepeatErrorMessage(flowGraph, value, decisionData, repeatName)
-                return message.errorMessage
+                const message = new RepeatErrorMessage(flowGraph, value, decisionData, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',

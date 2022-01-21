@@ -12,7 +12,7 @@ import { TextWidget } from '../widgets'
 import { AutoFlow } from '../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from './RepeatErrorMessage'
 import { useLocale } from '../../hooks'
-import { AssignmentOpEnum } from './interface'
+import { AssignmentOpEnum, apiReg } from './interface'
 
 import { FlowMetaType, FlowMetaParam, IAssignmentData, IFlowResourceType, opTypeEnum } from '../../flow/types'
 export interface AssignmentModelPorps {
@@ -31,7 +31,6 @@ export const AssignmentModel:FC<AssignmentModelPorps> = ({
   flowGraph
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(showModel);
-  const repeatName = useLocale('flow.form.validator.repeatName')
   const textOps = [
     { label: useLocale('flow.metaValueType.assign'), value: AssignmentOpEnum.ASSIGN },
     { label: useLocale('flow.metaValueType.add'), value: AssignmentOpEnum.ADD }
@@ -206,8 +205,8 @@ export const AssignmentModel:FC<AssignmentModelPorps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const message = new RepeatErrorMessage(flowGraph, value, assignmentData, repeatName)
-                return message.errorMessage
+                const message = new RepeatErrorMessage(flowGraph, value, assignmentData, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',

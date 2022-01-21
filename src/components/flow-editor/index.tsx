@@ -28,14 +28,14 @@ export const FlowEditor: FC<{ flowGraph: AutoFlow }> = ({ flowGraph }) => {
     <div className={prefixCls}>
       <div className={`${prefixCls}-content`}>
         <FlowContext.Provider value={flowGraph}>
-          {/* <CompositePanel>
+          <CompositePanel>
             <CompositePanel.Item title="panels.Flow" icon={<FlowChart />}>
               <NodeWidget />
             </CompositePanel.Item>
             <CompositePanel.Item title="panels.Data" icon={<ListUnordered />}>
               <ResourceWidget flowGraph={flowGraph}/>
             </CompositePanel.Item>
-          </CompositePanel> */}
+          </CompositePanel>
           <AntvCanvas />
         </FlowContext.Provider>
       </div>

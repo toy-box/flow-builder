@@ -159,28 +159,6 @@ export class AutoFlow {
   }
 
   editFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
-    // const flow = this.mataFlowJson.flow as any
-    // this.metaFlowDatas = []
-    // for (const key in flow) {
-    //   if (flow.hasOwnProperty(key)) {
-    //     const metaType = showMetaTypes.find(type => type === key)
-    //     if (metaType) {
-    //       if (isArr(flow[key])) {
-    //         flow[key].forEach((data: FlowMetaParam) => {
-    //           this.metaFlowDatas.push({
-    //             ...data,
-    //             flowType: metaType
-    //           })
-    //         })
-    //       } else {
-    //         this.metaFlowDatas.push({
-    //           ...flow[key],
-    //           flowType: metaType
-    //         })
-    //       }
-    //     }
-    //   }
-    // }
     if (flowData.id !== nodeId) {
       this.metaFlowDatas = this.metaFlowDatas.map((meta) => {
         if (meta.id === nodeId) return {
@@ -235,7 +213,8 @@ export class AutoFlow {
   }
 
   removeFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
-    this.removeFlowDataFunc(nodeId, metaType, flowData)
+    const fork = (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) ? flowData : undefined
+    this.removeFlowDataFunc(nodeId, metaType, flowData, false, fork)
     let targetId: string | null = null
     switch (metaType) {
       case FlowMetaType.LOOP:
@@ -295,7 +274,7 @@ export class AutoFlow {
     this.history.push(this.mataFlowJson.flow)
   }
 
-  removeFlowDataFunc = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam, flag?: boolean) => {
+  removeFlowDataFunc = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam, flag?: boolean, fork?: FlowMetaParam) => {
     switch (metaType) {
       case FlowMetaType.DECISION:
       case FlowMetaType.WAIT:
@@ -306,24 +285,24 @@ export class AutoFlow {
         const rules = flowData?.rules || flowData.waitEvents
         rules?.forEach((rule) => {
           const currnetRuleMeta = this.metaFlowDatas.find((meta) => meta.id === rule.connector?.targetReference)
-          if (currnetRuleMeta) this.removeFlowDataFunc(currnetRuleMeta?.id, currnetRuleMeta.flowType, currnetRuleMeta, true)
+          if (currnetRuleMeta && fork?.connector?.targetReference !== rule.connector?.targetReference) this.removeFlowDataFunc(currnetRuleMeta?.id, currnetRuleMeta.flowType, currnetRuleMeta, true, fork)
         })
-        if (currnetMeta) this.removeFlowDataFunc(currnetMeta?.id, currnetMeta.flowType, currnetMeta, true)
+        if (currnetMeta && fork?.connector?.targetReference !== targetReferenceId) this.removeFlowDataFunc(currnetMeta?.id, currnetMeta.flowType, currnetMeta, true, fork)
         break;
       case FlowMetaType.LOOP:
         this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
         const nextTargetId = flowData.nextValueConnector?.targetReference
         this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
         const nextMeta = this.metaFlowDatas.find((meta) => meta.id === nextTargetId)
-        if (flowData.defaultConnector?.targetReference && flag) {
+        if (flowData.defaultConnector?.targetReference !== fork?.connector?.targetReference && flag) {
           const currentDefault = this.metaFlowDatas.find((meta) => meta.id === flowData.defaultConnector?.targetReference)
-          if (currentDefault) this.removeFlowDataFunc(currentDefault?.id, currentDefault.flowType, currentDefault, true)
+          if (currentDefault) this.removeFlowDataFunc(currentDefault?.id, currentDefault.flowType, currentDefault, true, fork)
         }
         if (nextMeta) {
           this.removeFlowDataFunc(nextMeta?.id, nextMeta.flowType, nextMeta, true)
           const defaultTargetId = nextMeta.defaultConnector?.targetReference
           const defaultMeta = this.metaFlowDatas.find((meta) => meta.id === defaultTargetId)
-          if (defaultMeta) this.removeFlowDataFunc(defaultMeta?.id, defaultMeta.flowType, defaultMeta, true)
+          if (defaultMeta) this.removeFlowDataFunc(defaultMeta?.id, defaultMeta.flowType, defaultMeta, true, fork)
         }
         break;
       case FlowMetaType.ASSIGNMENT:
@@ -334,9 +313,9 @@ export class AutoFlow {
       case FlowMetaType.RECORD_UPDATE:
         this.initMetaFields(metaType, flowData, MetaFieldType.REMOVE, nodeId)
         this.metaFlowDatas = this.metaFlowDatas.filter((meta) => meta.id !== nodeId)
-        if (flowData.connector?.targetReference && flag) {
+        if (flowData.connector?.targetReference !== fork?.connector?.targetReference && flag) {
           const baseMeta = this.metaFlowDatas.find((meta) => meta.id === flowData.connector?.targetReference)
-          if (baseMeta) this.removeFlowDataFunc(baseMeta?.id, baseMeta.flowType, baseMeta, true)
+          if (baseMeta) this.removeFlowDataFunc(baseMeta?.id, baseMeta.flowType, baseMeta, true, fork)
         }
         break;
       default:
@@ -346,75 +325,55 @@ export class AutoFlow {
 
   updateInitialMeta = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
     // console.log('111112323232', nodeId, metaType)
-    // const data = flowData
+    const data = flowData
     const flowNode: NodeProps | undefined = this.flowNodes.find((node) => node.id === nodeId)
+    const time = new Date().getTime()
     this.updataFlowMetaData(flowNode, metaType, flowData)
-    // console.log(this.mataFlowJson, 'mataFlowJson')
-    // const flow = this.mataFlowJson.flow as any
-    // this.metaFlowDatas = []
-    // for (const key in flow) {
-    //   if (flow.hasOwnProperty(key)) {
-    //     const metaType = showMetaTypes.find(type => type === key)
-    //     if (metaType) {
-    //       if (isArr(flow[key])) {
-    //         flow[key].forEach((data: FlowMetaParam) => {
-    //           this.metaFlowDatas.push({
-    //             ...data,
-    //             flowType: metaType
-    //           })
-    //         })
-    //       } else {
-    //         this.metaFlowDatas.push({
-    //           ...flow[key],
-    //           flowType: metaType
-    //         })
-    //       }
-    //     }
-    //   }
-    // }
-    this.flowNodes = []
-    this.setFlowData(this.metaFlowDatas)
-    this.flowNodes.push({
-      id: this.flowEndId,
-      type: 'end',
-      width: STAND_SIZE,
-      height: STAND_SIZE,
-      component: 'EndNode',
+    // this.flowNodes = []
+    // const time1 = new Date().getTime()
+    // this.setFlowData(this.metaFlowDatas)
+    // const time2 = new Date().getTime()
+    // console.log(time1 - time, 112323323232332323)
+    // this.flowNodes.push({
+    //   id: this.flowEndId,
+    //   type: 'end',
+    //   width: STAND_SIZE,
+    //   height: STAND_SIZE,
+    //   component: 'EndNode',
+    // })
+    let flowMeta: any = undefined
+    const flowMetas = this.metaFlowDatas.filter(mta => {
+      if (mta.id === data.id) {
+        flowMeta = mta
+        return false
+      }
+      return true
     })
-    // let cycleBeginNode = null
-    // if (flowNode?.type === 'loopBack') {
-    //   cycleBeginNode = this.flowNodes.find((node) => node.loopBackTarget === nodeId)
-    // }
-    // data.connector = {
-    //   targetReference: cycleBeginNode ? cycleBeginNode.id : (flowNode?.targets?.[0] || null)
-    // }
-    // // data.defaultConnector = {
-    // //   targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
-    // // }
-    // if (metaType === FlowMetaType.START) {
-    //   this.initMetaFields(metaType, data, MetaFieldType.EDIT)
-    //   // flow[metaType] = data
-    // } else {
-    //   if (metaType === FlowMetaType.LOOP) {
-    //     data.connector = undefined
-    //     data.nextValueConnector = {
-    //       targetReference: null,
-    //     }
-    //     data.defaultConnector = {
-    //       targetReference: cycleBeginNode ? cycleBeginNode.id : (flowNode?.targets?.[0] || null),
-    //     }
-    //   } else if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
-    //     data.defaultConnector = {
-    //       targetReference: null,
-    //     }
-    //   } else if (metaType === FlowMetaType.RECORD_CREATE || metaType === FlowMetaType.RECORD_DELETE
-    //     || metaType === FlowMetaType.RECORD_LOOKUP || metaType === FlowMetaType.RECORD_UPDATE) {
-    //     data.faultConnector = {
-    //       targetReference: data?.faultConnector?.targetReference || this.flowEndId,
-    //     }
-    //   }
-    // }
-    // this.initFlowNodes(metaType, data, flowNode)
+    let fork = undefined
+    flowMetas.some(ft => {
+      if (flowMeta.flowType === FlowMetaType.LOOP) {
+        if (ft.flowType === FlowMetaType.LOOP) {
+          if (ft.defaultConnector?.targetReference === flowMeta?.defaultConnector?.targetReference) {
+            fork = ft
+            return ft
+          }
+        } else if (ft.connector?.targetReference === flowMeta?.defaultConnector?.targetReference) {
+          fork = ft
+          return ft
+        }
+      } else {
+        if (ft.flowType === FlowMetaType.LOOP) {
+          if (ft.defaultConnector?.targetReference === flowMeta?.connector?.targetReference) {
+            fork = ft
+            return ft
+          }
+        } else if (ft.connector?.targetReference === flowMeta?.connector?.targetReference) {
+          fork = ft
+          return ft
+        }
+      }
+    })
+    if (flowMeta) this.initFlowNodes(metaType, flowMeta, flowNode, fork)
     this.flowGraph = new Flow()
     // this.history.push(this.mataFlowJson.flow)
     console.log(this.mataFlowJson.flow, 'this.mataFlowJson.flow')
@@ -432,30 +391,6 @@ export class AutoFlow {
         targetReference: null
       }
     }
-    // data.defaultConnector = {
-    //   targetReference: data?.defaultConnector?.targetReference || this.flowEndId,
-    // }
-    // this.metaFlowDatas = []
-    // for (const key in flow) {
-    //   if (flow.hasOwnProperty(key)) {
-    //     const metaType = showMetaTypes.find(type => type === key)
-    //     if (metaType) {
-    //       if (isArr(flow[key])) {
-    //         flow[key].forEach((data: FlowMetaParam) => {
-    //           this.metaFlowDatas.push({
-    //             ...data,
-    //             flowType: metaType
-    //           })
-    //         })
-    //       } else {
-    //         this.metaFlowDatas.push({
-    //           ...flow[key],
-    //           flowType: metaType
-    //         })
-    //       }
-    //     }
-    //   }
-    // }
     this.metaFlowDatas.some((meta) => {
       const forkBeginOfEndNode = this.flowNodes.find((node) => node.decisionEndTarget === flowNode?.id)
       const base = this.flowNodes.find((node) => {
@@ -485,8 +420,14 @@ export class AutoFlow {
         const currentFlow = {
           ...flow[meta.flowType]
         }
-        currentFlow.connector.targetReference = data.id
-        this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+        if (meta.flowType === FlowMetaType.DECISION || meta.flowType === FlowMetaType.WAIT) {
+          this.nextTargetFork(currentFlow, data.id, meta.flowType)
+        } else {
+          currentFlow.connector.targetReference = data.id
+          this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+        }
+        // currentFlow.connector.targetReference = data.id
+        // this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
         return meta
       } else if (isArr(flow[meta.flowType])) {
         const flowIdx = flow[meta.flowType]?.findIndex((flowMeta: FlowMetaParam) => flowMeta.id === meta.id)
@@ -496,16 +437,25 @@ export class AutoFlow {
             const currentFlow = {
               ...flow[meta.flowType][flowIdx]
             }
-            currentFlow.connector.targetReference = data.id
-            this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+            this.nextTargetFork(currentFlow, data.id, meta.flowType, currentFlow?.connector?.targetReference)
+            // currentFlow.connector.targetReference = data.id
+            // this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
           }
           return meta
         } else if ((baseNode?.id === meta.id && !cycleBeginOfBackNode && baseNode?.component !== 'LabelNode')) {
           if (meta.flowType === FlowMetaType.LOOP) {
             if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
-              data.defaultConnector.targetReference = meta?.id || (meta?.connector?.targetReference || null)
+              data.defaultConnector.targetReference = meta?.nextValueConnector?.targetReference || meta?.id || null
             } else if (data.connector) {
-              data.connector.targetReference = meta?.nextValueConnector?.targetReference || (meta?.connector?.targetReference || null)
+              const refValue = meta?.nextValueConnector?.targetReference || meta?.id || null
+              if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
+                if (data.defaultConnector) data.defaultConnector.targetReference = refValue
+                const waitEvents = data?.rules || data?.waitEvents || []
+                waitEvents.forEach((rule: FlowMetaParam) => {
+                  if (rule.connector) rule.connector.targetReference = refValue
+                })
+              }
+              data.connector.targetReference = refValue
             }
             if (flowIdx > -1) {
               const currentFlow = {
@@ -522,8 +472,14 @@ export class AutoFlow {
               const currentFlow = {
                 ...flow[meta.flowType][flowIdx]
               }
-              currentFlow.connector.targetReference = data.id
-              this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+              if (meta.flowType === FlowMetaType.DECISION || meta.flowType === FlowMetaType.WAIT) {
+                this.nextTargetFork(currentFlow, data.id, meta.flowType, currentFlow?.connector?.targetReference)
+              } else {
+                currentFlow.connector.targetReference = data.id
+                this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+              }
+              // currentFlow.connector.targetReference = data.id
+              // this.initMetaFields(meta.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
             }
           }
           return meta
@@ -534,6 +490,13 @@ export class AutoFlow {
             if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
               data.defaultConnector.targetReference = rules?.[idx]?.connector?.targetReference || null
             } else if (data.connector) {
+              if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
+                if (data.defaultConnector) data.defaultConnector.targetReference = rules?.[idx]?.connector?.targetReference || null
+                const waitEvents = data?.rules || data?.waitEvents || []
+                waitEvents.forEach((rule: FlowMetaParam) => {
+                  if (rule.connector) rule.connector.targetReference = rules?.[idx]?.connector?.targetReference || null
+                })
+              }
               data.connector.targetReference = rules?.[idx]?.connector?.targetReference || null
             }
             this.initMetaFields(metaType, data, MetaFieldType.ADD)
@@ -547,6 +510,13 @@ export class AutoFlow {
             if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
               data.defaultConnector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
             } else if (data.connector) {
+              if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
+                if (data.defaultConnector) data.defaultConnector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
+                const waitEvents = data?.rules || data?.waitEvents || []
+                waitEvents.forEach((rule: FlowMetaParam) => {
+                  if (rule.connector) rule.connector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
+                })
+              }
               data.connector.targetReference = flow[meta.flowType][flowIdx]?.defaultConnector?.targetReference || null
             }
             this.initMetaFields(metaType, data, MetaFieldType.ADD)
@@ -591,8 +561,12 @@ export class AutoFlow {
               const currentFlow = {
                 ...flow[mTData.flowType][mtIdx]
               }
-              currentFlow.connector.targetReference = data.id
-              this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+              if (mTData.flowType === FlowMetaType.DECISION || mTData.flowType === FlowMetaType.WAIT) {
+                this.nextTargetFork(currentFlow, data.id, meta.flowType, currentFlow?.connector?.targetReference)
+              } else {
+                currentFlow.connector.targetReference = data.id
+                this.initMetaFields(mTData.flowType, currentFlow, MetaFieldType.EDIT, currentFlow.id)
+              }
               // flow[mTData.flowType][mtIdx].connector.targetReference = data.id
             }
           }
@@ -602,6 +576,13 @@ export class AutoFlow {
           if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
             data.defaultConnector.targetReference = meta?.defaultConnector?.targetReference || null
           } else if (data.connector) {
+            if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
+              if (data.defaultConnector) data.defaultConnector.targetReference = meta?.connector?.targetReference || null
+              const rules = data?.rules || data?.waitEvents || []
+              rules.forEach((rule: FlowMetaParam) => {
+                if (rule.connector) rule.connector.targetReference = meta?.connector?.targetReference || null
+              })
+            }
             data.connector.targetReference = meta?.defaultConnector?.targetReference || null
           }
           this.initMetaFields(metaType, data, MetaFieldType.ADD)
@@ -617,18 +598,83 @@ export class AutoFlow {
     })
   }
 
+  nextTargetFork = (flowData: any, nodeId: string, flowType: FlowMetaType, connectorId?: string) => {
+    if (flowData?.defaultConnector?.targetReference === null || flowData?.defaultConnector?.targetReference === connectorId) {
+      flowData.defaultConnector.targetReference = nodeId
+    } else {
+      this.nextFork(flowData.defaultConnector.targetReference, flowData.connector.targetReference, nodeId, flowType)
+    }
+    const rules = flowData?.rules || flowData?.waitEvents
+    rules.forEach((rule: FlowMetaParam) => {
+      const targetReference = rule.connector?.targetReference
+      if (rule.connector?.targetReference === null || rule.connector && targetReference === connectorId) {
+        rule.connector.targetReference = nodeId
+      } else if (targetReference && flowData?.connector?.targetReference) {
+        this.nextFork(targetReference, flowData.connector.targetReference, nodeId, flowType)
+      }
+    })
+    flowData.connector.targetReference = nodeId
+    this.initMetaFields(flowType, flowData, MetaFieldType.EDIT, flowData.id)
+  }
+
+  nextFork = (targetReference: string, connectorId: string, nodeId: string, flowType: FlowMetaType) => {
+    const node = this.metaFlowDatas.find(meta => meta.id === targetReference)
+    if (node?.flowType === FlowMetaType.LOOP && node.defaultConnector?.targetReference === connectorId) {
+      node.defaultConnector.targetReference = nodeId
+      this.initMetaFields(node.flowType, node, MetaFieldType.EDIT, node.id)
+    } else if(node?.connector?.targetReference === connectorId) {
+      if (node.flowType === FlowMetaType.DECISION || node.flowType === FlowMetaType.WAIT) {
+        this.nextTargetFork(node, nodeId, flowType, connectorId)
+      } else {
+        node.connector.targetReference = nodeId
+        this.initMetaFields(node.flowType, node, MetaFieldType.EDIT, node.id)
+      }
+    } else {
+      if (node?.flowType === FlowMetaType.LOOP && node.defaultConnector?.targetReference) {
+        this.nextFork(node.defaultConnector?.targetReference, connectorId, nodeId, flowType)
+      } else if (node?.connector?.targetReference) {
+        if (node?.flowType === FlowMetaType.DECISION || node.flowType === FlowMetaType.WAIT) {
+          this.nextTargetFork(node, nodeId, flowType, connectorId)
+        } else {
+          this.nextFork(node.connector?.targetReference, connectorId, nodeId, flowType)
+        }
+      } else if (node) {
+        if (node?.flowType === FlowMetaType.DECISION || node.flowType === FlowMetaType.WAIT) {
+          this.nextTargetFork(node, nodeId, flowType, connectorId)
+        } else if (node.connector) {
+          node.connector.targetReference = nodeId
+          this.initMetaFields(node.flowType, node, MetaFieldType.EDIT, node.id)
+        }
+      }
+    }
+  }
+
   updataCurrentFlowData = (meta: FlowMetaParamOfType, data: FlowMetaParam, metaType: FlowMetaType, loopBack?: boolean) => {
     // const flow = this.initialMeta.flow as any
     if (meta.flowType !== FlowMetaType.LOOP) {
       if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
         data.defaultConnector.targetReference = meta?.connector?.targetReference || null
       } else if (data.connector) {
+        if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
+          if (data.defaultConnector) data.defaultConnector.targetReference = meta?.connector?.targetReference || null
+          const rules = data?.rules || data?.waitEvents || []
+          rules.forEach((rule: FlowMetaParam) => {
+            if (rule.connector) rule.connector.targetReference = meta?.connector?.targetReference || null
+          })
+        }
         data.connector.targetReference = meta?.connector?.targetReference || null
       }
     } else {
       if (metaType === FlowMetaType.LOOP && data?.defaultConnector) {
         data.defaultConnector.targetReference = loopBack ? meta.id : meta?.connector?.targetReference || null
       } else if (data.connector) {
+        if (metaType === FlowMetaType.DECISION || metaType === FlowMetaType.WAIT) {
+          if (data.defaultConnector) data.defaultConnector.targetReference = loopBack ? meta.id : meta?.connector?.targetReference || null
+          const rules = data?.rules || data?.waitEvents || []
+          rules.forEach((rule: FlowMetaParam) => {
+            if (rule.connector) rule.connector.targetReference = loopBack ? meta.id : meta?.connector?.targetReference || null
+          })
+        }
         data.connector.targetReference = loopBack ? meta.id : meta?.connector?.targetReference || null
       }
     }
@@ -690,7 +736,6 @@ export class AutoFlow {
         flowType: metaType,
       })
     }
-    debugger
     switch (metaType) {
       case FlowMetaType.START:
         if (metaFieldType === MetaFieldType.EDIT) {
@@ -956,20 +1001,34 @@ export class AutoFlow {
     this.flowTemplates?.forEach((meta: IFieldMeta) => {
       metas = this.setFieldMeta(metas, meta, IFlowResourceType.TEMPLATE, fieldMetaType)
     });
+    this.recordCreates?.forEach((record: RecordCreate) => {
+      const register = this.registers.find((reg) => reg.id === record.registerId)
+      let resourceData: IFieldMetaFlow = {
+        name: `来自${record.id}的 ${register?.name}Id`,
+        webType: IFlowResourceType.VARIABLE,
+        type: MetaValueType.STRING,
+        key: record.id,
+        flowMetaType: FlowMetaType.RECORD_CREATE,
+        refRegisterId: register?.id,
+      }
+      metas = this.setFieldMeta(metas, resourceData, IFlowResourceType.VARIABLE, fieldMetaType)
+    })
     this.recordLookups?.forEach((record: RecordLookup) => {
-      if (record.storeOutputAutomatically || (record.queriedFields && !record.outputReference)) {
+      if (!record.outputAssignments && (record.storeOutputAutomatically || (record.queriedFields && !record.outputReference))) {
+        const register = this.registers.find((reg) => reg.id === record.registerId)
         let resourceData: IFieldMetaFlow = {
-          name: `来自${record.id}的 应用程序`,
+          name: `来自${record.id}的 ${register?.name}`,
           webType: record.getFirstRecordOnly ? IFlowResourceType.VARIABLE_RECORD : IFlowResourceType.VARIABLE_ARRAY_RECORD,
           type: record.getFirstRecordOnly ? MetaValueType.OBJECT_ID : MetaValueType.ARRAY,
           key: record.id,
           flowMetaType: FlowMetaType.RECORD_LOOKUP,
+          refRegisterId: register?.id,
         }
         if (resourceData.type === MetaValueType.ARRAY) {
           resourceData = {
             ...resourceData,
             items: {
-              type: MetaValueType.OBJECT_ID
+              type: MetaValueType.OBJECT
             }
           }
         }
@@ -1062,19 +1121,34 @@ export class AutoFlow {
     this.flowTemplates?.forEach((meta: IFieldMeta) => {
       formulaMeta = this.getFormulaMap(formulaMeta, meta)
     });
+    this.recordCreates?.forEach((record: RecordCreate) => {
+      const register = this.registers.find((reg) => reg.id === record.registerId)
+      let resourceData: IFieldMetaFlow = {
+        name: `来自${record.id}的 ${register?.name}Id`,
+        webType: IFlowResourceType.VARIABLE,
+        type: MetaValueType.STRING,
+        key: record.id,
+        flowMetaType: FlowMetaType.RECORD_CREATE,
+      }
+      formulaMeta = this.getFormulaMap(formulaMeta, resourceData)
+    })
     this.recordLookups?.forEach((record: RecordLookup) => {
-      if (record.storeOutputAutomatically || (record.queriedFields && !record.outputReference)) {
+      if (!record.outputAssignments && (record.storeOutputAutomatically || (record.queriedFields && !record.outputReference))) {
         const register = this.registers.find((reg) => reg.id === record.registerId)
         let resourceData: IFieldMetaFlow = {
-          name: `来自${record.id}的 应用程序`,
+          name: `来自${record.id}的 ${register.name}`,
           webType: record.getFirstRecordOnly ? IFlowResourceType.VARIABLE_RECORD : IFlowResourceType.VARIABLE_ARRAY_RECORD,
           type: record.getFirstRecordOnly ? MetaValueType.OBJECT_ID : MetaValueType.ARRAY,
           key: record.id,
           refRegisterId: register?.id,
-          items: {
+        }
+        if (resourceData.type === MetaValueType.ARRAY) {
+          resourceData.items = {
             type: MetaValueType.OBJECT,
             properties: register?.properties
-          },
+          }
+        } else {
+          resourceData.properties = register?.properties
         }
         formulaMeta = this.getFormulaMap(formulaMeta, resourceData)
       }
@@ -1119,7 +1193,7 @@ export class AutoFlow {
         if (flowData.flowType === FlowMetaType.START) {
           this.initFlowNodes(flowData.flowType, flowData)
           const filterFlowDatas = flowDatas.filter(data => data.id !== flowData.id)
-          this.setFlowData(filterFlowDatas, flowData);
+          if (filterFlowDatas.length > 0) this.setFlowData(filterFlowDatas, flowData);
         } 
       })
     } else if (target?.flowType === FlowMetaType.DECISION || target?.flowType === FlowMetaType.WAIT) {
@@ -1196,9 +1270,14 @@ export class AutoFlow {
   filterFlowData = (targetReference: string, flowDatas: any[], flowData: any, forkData?: FlowMetaParamOfType) => {
     const filterFlowDatas = flowDatas.filter(data => data.id !== targetReference)
     const flowNode = this.flowNodes.find(node => node.id === targetReference)
-    if (!flowNode) {
-      this.initFlowNodes(flowData.flowType, flowData, undefined, forkData?.id)
+    if (!flowNode && targetReference !== forkData?.connector?.targetReference) {
+      const time = new Date().getTime()
+      this.initFlowNodes(flowData.flowType, flowData, undefined, forkData)
+      const time1 = new Date().getTime()
+      console.log(time1 - time, 112323323232332323)
       if (filterFlowDatas.length > 0) this.setFlowData(filterFlowDatas, flowData, forkData);
+    } else {
+      return
     }
     // if (flowNode) {
     //   if (filterFlowDatas.length > 0) this.getFlowData(filterFlowDatas, flowData, forkData);
@@ -1208,15 +1287,17 @@ export class AutoFlow {
     // }
   }
 
-  initFlowNodes(metaType: FlowMetaType, flowData: FlowMetaParam, flowNode?: NodeProps, decisionEndId?: string) {
+  initFlowNodes(metaType: FlowMetaType, flowData: FlowMetaParam, flowNode?: NodeProps, fork?: FlowMetaParam) {
     const loopBack = this.loopBackNode(flowData, flowNode);
     let loopLastData = undefined
     if (!flowNode) {
       loopLastData = this.flowNodes.find((data: any) => {
         if (flowData?.connector) {
           return flowData?.connector?.targetReference === data.id
+            && flowData?.connector?.targetReference !== fork?.connector?.targetReference
         } else if (flowData?.nextValueConnector) {
           return flowData?.defaultConnector?.targetReference === data.id
+            && flowData?.defaultConnector?.targetReference !== fork?.connector?.targetReference
         }
         return false
       })
@@ -1226,23 +1307,23 @@ export class AutoFlow {
         this.setStarts(flowData)
         break;
       case FlowMetaType.ASSIGNMENT:
-        this.setBaseInfos(flowData, metaType, loopBack, loopLastData, decisionEndId)
+        this.setBaseInfos(flowData, metaType, loopBack, loopLastData, fork)
         break;
       case FlowMetaType.DECISION:
       case FlowMetaType.WAIT:
-        this.setDecisions(flowData, metaType, loopBack, loopLastData, decisionEndId)
+        this.setDecisions(flowData, metaType, loopBack, loopLastData, fork)
         break;
       case FlowMetaType.LOOP:
-        this.setLoops(flowData, loopBack, loopLastData, decisionEndId)
+        this.setLoops(flowData, loopBack, loopLastData, fork)
         break;
       case FlowMetaType.SORT_COLLECTION_PROCESSOR:
-        this.setBaseInfos(flowData, metaType, loopBack, loopLastData, decisionEndId)
+        this.setBaseInfos(flowData, metaType, loopBack, loopLastData, fork)
         break;
       case FlowMetaType.RECORD_CREATE:
       case FlowMetaType.RECORD_DELETE:
       case FlowMetaType.RECORD_LOOKUP:
       case FlowMetaType.RECORD_UPDATE:
-        this.setBaseInfos(flowData, metaType, loopBack, loopLastData, decisionEndId)
+        this.setBaseInfos(flowData, metaType, loopBack, loopLastData, fork)
         break;
       default:
         break;
@@ -1273,8 +1354,8 @@ export class AutoFlow {
     }
   }
 
-  setDecisions(flowData: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, forkId?: string) {
-    const forkNode = this.flowNodes.find(node => node.id === forkId)
+  setDecisions(flowData: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, fork?: FlowMetaParam) {
+    const forkNode = this.flowNodes.find(node => node.id === fork?.id)
     const decisionEndId = forkNode?.decisionEndTarget
     const endId = this.isEdit ? uid() : flowData?.connector?.targetReference || decisionEndId || this.flowEndId
     let componentName = undefined
@@ -1288,7 +1369,9 @@ export class AutoFlow {
     default:
         break;
     }
-    let targetId = flowData?.defaultConnector?.targetReference || endId
+    const connectorId = flowData?.defaultConnector?.targetReference !== fork?.connector?.targetReference
+      && flowData?.defaultConnector?.targetReference !== flowData.connector?.targetReference && flowData?.defaultConnector?.targetReference
+    let targetId = connectorId || endId
     if (!this.isEdit) {
       const node = this.flowNodes.find(node => node.id === flowData.connector?.targetReference)
       if (node) targetId = node.loopEndTarget as any
@@ -1312,12 +1395,14 @@ export class AutoFlow {
     rules?.forEach((rule) => {
       ids.push(rule.id)
       const opartId = uid()
+      const connectorId = rule?.connector?.targetReference !== fork?.connector?.targetReference
+        && rule?.connector?.targetReference !== flowData.connector?.targetReference && rule?.connector?.targetReference
       decisions.push({
         id: rule.id,
         type: 'forward',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: [this.isEdit ? opartId : rule?.connector?.targetReference || (loopBackNode ? loopBackNode.id :
+        targets: [this.isEdit ? opartId : connectorId || (loopBackNode ? loopBackNode.id :
           (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : endId))],
         component: 'LabelNode',
       })
@@ -1327,7 +1412,7 @@ export class AutoFlow {
           type: 'forward',
           width: STAND_SIZE,
           height: STAND_SIZE,
-          targets: [rule?.connector?.targetReference || (loopBackNode ? loopBackNode.id :
+          targets: [connectorId || (loopBackNode ? loopBackNode.id :
             (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : endId))],
           component: 'ExtendNode',
         })
@@ -1342,7 +1427,7 @@ export class AutoFlow {
         type: 'forward',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: this.isEdit ? [defaultId] : flowData?.defaultConnector?.targetReference ? [flowData?.defaultConnector?.targetReference] : decisionEndTarget,
+        targets: this.isEdit ? [defaultId] : connectorId ? [connectorId] : decisionEndTarget,
         component: 'LabelNode',
       }
     )
@@ -1353,18 +1438,20 @@ export class AutoFlow {
           type: 'forward',
           width: STAND_SIZE,
           height: STAND_SIZE,
-          targets: flowData?.defaultConnector?.targetReference ? [flowData?.defaultConnector?.targetReference] : decisionEndTarget,
+          targets: connectorId ? [connectorId] : decisionEndTarget,
           component: 'ExtendNode',
         }
       )
     }
     if (!loopBackNode && !loopLastData && this.isEdit) {
+      const connectorId = flowData?.connector?.targetReference !== fork?.connector?.targetReference
+        && flowData?.connector?.targetReference
       decisions.push({
         id: endId,
         type: 'decisionEnd',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: [flowData?.connector?.targetReference || decisionEndId || this.flowEndId],
+        targets: [connectorId || decisionEndId || this.flowEndId],
         component: 'ExtendNode',
       })
     }
@@ -1390,8 +1477,8 @@ export class AutoFlow {
     return null
   }
 
-  setLoops(flowData: FlowMetaParam, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, forkId?: string) {
-    const forkNode = this.flowNodes.find(node => node.id === forkId)
+  setLoops(flowData: FlowMetaParam, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, fork?: FlowMetaParam) {
+    const forkNode = this.flowNodes.find(node => node.id === fork?.id)
     const decisionEndId = forkNode?.decisionEndTarget
     const backId = uid()
     const endId = uid()
@@ -1399,7 +1486,9 @@ export class AutoFlow {
     const endLabelId = uid()
     const id = uid()
     let loopBackTarget = null
-    let targetId = flowData?.defaultConnector?.targetReference || decisionEndId || this.flowEndId
+    const connectorId = flowData?.defaultConnector?.targetReference !== fork?.connector?.targetReference
+      && flowData?.defaultConnector?.targetReference
+    let targetId = connectorId || decisionEndId || this.flowEndId
     if (!this.isEdit) {
       const targetReference = flowData.nextValueConnector?.targetReference
       loopBackTarget = this.getLoopBackId(flowData, targetReference)
@@ -1434,7 +1523,7 @@ export class AutoFlow {
         type: this.isEdit ? 'forward' : 'loopEnd',
         width: STAND_SIZE,
         height: STAND_SIZE,
-        targets: [this.isEdit ? (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : endId) : loopLastData?.loopBackTarget || targetId],
+        targets: [this.isEdit ? loopEndTarget.join('') : loopLastData?.loopBackTarget || targetId],
         component: 'LabelNode',
       })
     }
@@ -1474,7 +1563,7 @@ export class AutoFlow {
     this.flowNodes.push(...loops)
   }
 
-  setBaseInfos(targetNode: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, forkId?: string) {
+  setBaseInfos(targetNode: FlowMetaParam, metaType: FlowMetaType, loopBackNode: NodeProps | undefined, loopLastData?: NodeProps, fork?: FlowMetaParam) {
     const id = uid()
     let componentName = undefined
     switch (metaType) {
@@ -1499,7 +1588,7 @@ export class AutoFlow {
     default:
         break;
     }
-    const forkNode = this.flowNodes.find(node => node.id === forkId)
+    const forkNode = this.flowNodes.find(node => node.id === fork?.id)
     const decisionEndId = forkNode?.decisionEndTarget
     let targetId = this.isEdit ? (loopBackNode ? loopBackNode.id :
       (loopLastData?.loopBackTarget ? loopLastData.loopBackTarget : id))
@@ -1516,6 +1605,7 @@ export class AutoFlow {
       targets: [targetId],
       component: componentName
     }]
+    const connectorId = targetNode?.connector?.targetReference !== fork?.connector?.targetReference && targetNode?.connector?.targetReference
     if (!loopBackNode && !loopLastData) {
       if (this.isEdit) {
         recordCreates.push({
@@ -1523,7 +1613,7 @@ export class AutoFlow {
           type: 'forward',
           width: STAND_SIZE,
           height: STAND_SIZE,
-          targets: [targetNode?.connector?.targetReference || decisionEndId || this.flowEndId],
+          targets: [connectorId || decisionEndId || this.flowEndId],
           component: 'ExtendNode',
         })
       }

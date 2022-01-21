@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { FC, useState, useEffect, useCallback } from 'react';
+import React, { FC, useState, useEffect, useCallback, useMemo } from 'react';
 import { Modal } from 'antd';
 import { Input, FormItem, Select, FormLayout, FormGrid, PreviewText,
-  Space, ArrayItems, Switch, Radio, NumberPicker } from '@formily/antd'
+  Space, ArrayItems, Switch, Radio, NumberPicker, Checkbox } from '@formily/antd'
 import { createForm, onFieldValueChange } from '@formily/core'
 import { FormProvider, createSchemaField } from '@formily/react'
 import { observer } from '@formily/react'
@@ -10,7 +10,7 @@ import { IFieldOption, MetaValueType, ICompareOperation } from '@toy-box/meta-sc
 import {
   ArrowRightOutlined,
 } from '@ant-design/icons'
-import { clone } from '@toy-box/toybox-shared';
+import { clone, isBool } from '@toy-box/toybox-shared';
 import { IFlowResourceType, FlowMetaType, FlowMetaParam, ICriteriaCondition, opTypeEnum } from '../../../flow/types'
 import { ResourceSelect, FormilyFilter } from '../../formily/components/index'
 // import { uid } from '../../../utils';
@@ -18,6 +18,7 @@ import { TextWidget } from '../../widgets'
 import { useLocale } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { RepeatErrorMessage } from '../RepeatErrorMessage'
+import { apiReg } from '../interface'
 
 export interface RecordLookUpModelPorps {
   showModel: boolean
@@ -41,7 +42,6 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
   const [isModalVisible, setIsModalVisible] = useState(showModel);
   const filterName = useLocale('flow.form.recordLookUp.filter')
   const record = useLocale('flow.form.recordLookUp.record')
-  const repeatName = useLocale('flow.form.validator.repeatName')
 
   
   useEffect(() => {
@@ -88,7 +88,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       sortOrder: value.sortOrder,
       sortField: value.sortField,
       storeOutputAutomatically: value.storeOutputAutomatically,
-      getFirstRecordOnly: value.getFirstRecordOnly
+      getFirstRecordOnly: value.getFirstRecordOnly,
+      assignNullValuesIfNoRecordsFound: value.assignNullValuesIfNoRecordsFound
     }
     console.log(paramData);
     form.submit((resolve) => {
@@ -126,6 +127,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
       FormilyFilter,
       TextTemplate,
       ArrowRightOutlinedIcon,
+      Checkbox,
     },
   })
   
@@ -145,7 +147,23 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           form.setFieldState('sortField', (state) => {
             state.value = undefined
           })
-          form.setFieldState('storeOutputAutomatically', (state) => {
+        } else {
+          form.setFieldState('outputAssignments', (state) => {
+            state.value = undefined
+          })
+          form.setFieldState('outputReference', (state) => {
+            state.value = undefined
+          })
+          form.setFieldState('queriedFields', (state) => {
+            state.value = undefined
+          })
+        }
+      })
+      onFieldValueChange('getFirstRecordOnly', (field) => {
+        const registerId = field.query('registerId').get('value')
+        const automaticallyType = field.query('automaticallyType').get('value')
+        if (field.value && registerId && automaticallyType === false) {
+          form.setFieldState('address', (state) => {
             state.value = true
           })
         }
@@ -250,7 +268,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     }
   }, [form.values])
 
-  const reactionField = useCallback((field) => {
+  const reactionField = useCallback((type, field) => {
     const refObjectId = field.query('registerId').get('value')
     if (!refObjectId) return []
     const registers = flowGraph.registers
@@ -261,10 +279,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
           if (re.properties.hasOwnProperty(key)) {
             const obj = re.properties[key];
             const value = form.values;
-            const idx = value?.queriedFields?.findIndex((option: any) => option.field === obj.key)
+            const idx = value?.[type]?.findIndex((option: any) => option.field === obj.key)
             const option = {
               label: obj.name,
               value: obj.key,
+              type: obj.type,
               disabled: idx > -1,
             }
             registerOps.push(option)
@@ -283,6 +302,42 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     const outputReference = field.query('outputReference').get('value')
     field.display = (storeOutputAutomatically === false && automaticallyType !== false) || outputReference ? 'visible' : 'none'
   }, [form.values.automaticallyType])
+
+  const reactionOutputReference = useCallback((field) => {
+    const addressVal = field.query('address').get('value')
+    const getFirstRecordOnly = field.query('getFirstRecordOnly').get('value')
+    const storeOutputAutomatically = field.query('storeOutputAutomatically').get('value')
+    const automaticallyType = field.query('automaticallyType').get('value')
+    const registerId = field.query('registerId').get('value')
+    if (!isBool(addressVal)) {
+      form.setFieldState('address', (state) => {
+        state.value = true
+      })
+    }
+    const isVisible = storeOutputAutomatically === false && automaticallyType === false &&
+      ((isBool(addressVal) && addressVal) || getFirstRecordOnly === false)
+    field.display = isVisible ? 'visible' : 'none';
+    field.componentProps.refRegisterId = registerId
+    if (getFirstRecordOnly) {
+      field.title = <TextWidget>flow.form.recordLookUp.outputReference</TextWidget>
+      field.componentProps.flowJsonTypes = [{
+        value: IFlowResourceType.VARIABLE_RECORD
+      }]
+      field.componentProps.placeholder = <TextWidget>flow.form.placeholder.outputReference</TextWidget>
+    } else {
+      field.title = <TextWidget>flow.form.recordLookUp.outputReferenceArray</TextWidget>
+      field.componentProps.flowJsonTypes = [{
+        value: IFlowResourceType.VARIABLE_ARRAY_RECORD
+      }]
+      field.componentProps.placeholder = <TextWidget>flow.form.placeholder.outputReferenceArray</TextWidget>
+    }
+  }, [])
+
+  const reactionAddress = useCallback((field) => {
+    const automaticallyType = field.query('automaticallyType').get('value')
+    const getFirstRecordOnly = field.query('getFirstRecordOnly').get('value')
+    field.display = automaticallyType === false && getFirstRecordOnly !== false ? 'visible' : 'none';
+  }, [])
 
   const schema = {
     type: 'object',
@@ -317,8 +372,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
               triggerType: 'onBlur',
               validator: (value: string) => {
                 if (!value) return null
-                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, repeatName)
-                return message.errorMessage
+                const message = new RepeatErrorMessage(flowGraph, value, metaFlowData, apiReg)
+                return message.errorMessage && <TextWidget>{message.errorMessage}</TextWidget>
               }
             }],
             'x-decorator': 'FormItem',
@@ -542,14 +597,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             "x-decorator-props": {
               gridSpan: 2
             },
-            'x-reactions': {
-              dependencies: ['automaticallyType'],
-              fulfill: {
-                schema: {
-                  'x-display': "{{$deps == 'false' ? 'visible' : 'none'}}",
-                },
-              },
-            },
+            'x-reactions': reactionAddress
           },
           outputReference: {
             type: 'string',
@@ -564,35 +612,30 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-component-props': {
               mataSource: 'flowJson',
               placeholder: <TextWidget>flow.form.placeholder.outputReference</TextWidget>,
-              flowJsonTypes: [{ 
-                value: IFlowResourceType.VARIABLE_RECORD,
-                label: <TextWidget>flow.form.recordLookUp.outputReferenceLabel</TextWidget>,
-                children: [IFlowResourceType.VARIABLE_RECORD, IFlowResourceType.VARIABLE_ARRAY_RECORD]
+              flowJsonTypes:  [{
+                value: IFlowResourceType.VARIABLE_RECORD
               }],
               flowGraph,
+              style: { width: '420px' }
             },
-            'x-reactions': {
-              dependencies: ['address'],
-              fulfill: {
-                schema: {
-                  'x-display': "{{$deps == 'true' ? 'visible' : 'none'}}",
-                },
-              },
+            "x-decorator-props": {
+              gridSpan: 2
             },
+            'x-reactions': reactionOutputReference,
           },
-          web1: {
-            type: 'void',
-            title: '',
-            'x-decorator': 'FormItem',
-            'x-reactions': {
-              dependencies: ['address'],
-              fulfill: {
-                schema: {
-                  'x-display': "{{$deps == 'true' ? 'visible' : 'none'}}",
-                },
-              },
-            },
-          },
+          // web1: {
+          //   type: 'void',
+          //   title: '',
+          //   'x-decorator': 'FormItem',
+          //   'x-reactions': {
+          //     dependencies: ['address'],
+          //     fulfill: {
+          //       schema: {
+          //         'x-display': "{{$deps == 'true' ? 'visible' : 'none'}}",
+          //       },
+          //     },
+          //   },
+          // },
           queriedFields: {
             type: 'array',
             'x-component': 'ArrayItems',
@@ -615,7 +658,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                       title: '',
                       'x-decorator': 'FormItem',
                       'x-component': 'Select',
-                      'x-reactions': reactionField,
+                      'x-reactions': reactionField.bind(this, 'queriedFields'),
                       'x-component-props': {
                         style: {
                           width: 350,
@@ -645,6 +688,11 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             'x-component': 'ArrayItems',
             'x-decorator': 'FormItem',
             title: <TextWidget>flow.form.recordLookUp.outputAssignments</TextWidget>,
+            required: true,
+            'x-validator': {
+              required: true,
+              message: <TextWidget>flow.form.validator.outputAssignments</TextWidget>
+            },
             "x-decorator-props": {
               gridSpan: 2
             },
@@ -655,12 +703,12 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                   type: 'void',
                   'x-component': 'Space',
                   properties: {
-                    assignToReference: {
+                    field: {
                       type: 'string',
                       title: '',
                       'x-decorator': 'FormItem',
                       'x-component': 'Select',
-                      'x-reactions': reactionField,
+                      'x-reactions': reactionField.bind(this, 'outputAssignments'),
                       'x-component-props': {
                         style: {
                           width: 300,
@@ -673,7 +721,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                       // 'x-decorator': 'FormItem',
                       'x-component': 'ArrowRightOutlinedIcon',
                     },
-                    field: {
+                    assignToReference: {
                       type: 'string',
                       title: '',
                       'x-decorator': 'FormItem',
@@ -681,6 +729,18 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                       'x-component-props': {
                         isHiddenResourceBtn: true,
                         flowGraph,
+                        reactionKey: 'field',
+                        reactionObj: 'outputAssignments',
+                        placeholder: <TextWidget>flow.form.placeholder.assignRecordIdToReference</TextWidget>,
+                        flowJsonTypes: [{
+                          value: IFlowResourceType.VARIABLE
+                        }, {
+                          value: IFlowResourceType.VARIABLE_RECORD
+                        }, {
+                          value: IFlowResourceType.VARIABLE_ARRAY
+                        }, {
+                          value: IFlowResourceType.VARIABLE_ARRAY_RECORD
+                        }],
                         style: {
                           width: 300,
                         },
@@ -709,6 +769,29 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
             },
             'x-reactions': {
               dependencies: ['address'],
+              fulfill: {
+                schema: {
+                  'x-display': "{{$deps == 'false' ? 'visible' : 'none'}}",
+                },
+              },
+            },
+          },
+          assignNullValuesIfNoRecordsFound: {
+            type: 'boolean',
+            title: '',
+            enum: [
+              {
+                label: <TextWidget>flow.form.recordLookUp.assignNullValuesIfNoRecordsFound</TextWidget>,
+                value: true,
+              },
+            ],
+            'x-decorator': 'FormItem',
+            'x-component': 'Checkbox.Group',
+            "x-decorator-props": {
+              gridSpan: 2
+            },
+            'x-reactions': {
+              dependencies: ['automaticallyType'],
               fulfill: {
                 schema: {
                   'x-display': "{{$deps == 'false' ? 'visible' : 'none'}}",

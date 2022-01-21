@@ -7,7 +7,7 @@ import { usePrefix } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
 import { ResourceCreate } from '../../form-model/ResourceCreate'
 import { IFlowResourceType, FlowMetaParam, FlowMetaType, IFieldMetaFlow } from '../../../flow/types'
-import { RecordLookUpModel } from '../../form-model'
+import { RecordLookUpModel, RecordCreateModel } from '../../form-model'
 import { TextWidget } from '../TextWidget'
 import './index.less'
 
@@ -39,11 +39,58 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
     [flowGraph],
   )
 
-  const metaFlowData = useCallback(
+  const recordLookup = useCallback(
     (child) => {
       return flowGraph.recordLookups.find((data) => data.id === child.key)
     },
-    [],
+    [flowGraph.recordLookups],
+  )
+
+  const recordCreate = useCallback(
+    (child) => {
+      return flowGraph.recordCreates.find((data) => data.id === child.key)
+    },
+    [flowGraph.recordCreates],
+  )
+
+  const showNode = useCallback(
+    (child: IFieldMetaFlow, meta) => {
+      switch (child?.flowMetaType) {
+        case FlowMetaType.RECORD_LOOKUP:
+          return <div>
+            <span onClick={editBtn}>{child.name}</span>
+            {showModel && <RecordLookUpModel 
+              flowGraph={flowGraph} 
+              showModel={showModel} 
+              title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
+              metaFlowData={recordLookup(child)}
+              callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
+            }
+          </div>
+        case FlowMetaType.RECORD_CREATE:
+          return <div>
+            <span onClick={editBtn}>{child.name}</span>
+            {showModel && <RecordCreateModel 
+              flowGraph={flowGraph} 
+              showModel={showModel} 
+              title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
+              metaFlowData={recordCreate(child)}
+              callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
+            }
+          </div>
+        default:
+          return <ResourceCreate 
+          fieldMetas={flowGraph.fieldMetas as any[]}
+          flowGraph={flowGraph}
+          isOpBtn={false}
+          fieldType={meta.value}
+          opName={child.name}
+          value={child as any}
+          title="编辑资源"
+        />
+      }
+    },
+    [flowGraph, showModel],
   )
   
   return <div className={prefixCls}>
@@ -56,25 +103,7 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
           {meta.children && <ul className={`${prefixCls}-list`}>
             {
               meta.children.map((child: IFieldMetaFlow) => <li key={child.key}>
-                {child?.flowMetaType !== FlowMetaType.RECORD_LOOKUP ? <ResourceCreate 
-                  fieldMetas={flowGraph.fieldMetas as any[]}
-                  flowGraph={flowGraph}
-                  isOpBtn={false}
-                  fieldType={meta.value}
-                  opName={child.name}
-                  value={child as any}
-                  title="编辑资源"
-                />
-                : <div>
-                    <span onClick={editBtn}>{child.name}</span>
-                    <RecordLookUpModel 
-                      flowGraph={flowGraph} 
-                      showModel={showModel} 
-                      title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
-                      metaFlowData={metaFlowData(child)}
-                      callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
-                  </div>
-              }
+                { showNode(child, meta) }
               </li>)
             }
           </ul>}

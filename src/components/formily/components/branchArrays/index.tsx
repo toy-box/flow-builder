@@ -126,6 +126,9 @@ export const BranchArrays: FC = observer((props: any) => {
           conditions: [{}],
           logic: '$and'
         },
+        connector: {
+          targetReference: null
+        },
         description: '',
       }
       form.setFieldState(field?.path?.entire, (state) => {
