@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { Graph } from '@antv/x6';
 import { AntvCanvas as FlowCanvas } from '@toy-box/flow-graph';
 import { observer } from '@formily/reactive-react'
@@ -22,13 +22,14 @@ import { StartPanel } from './StartPanel';
 import { StartLabelPanel } from './StartLabelPanel';
 import { FlowMetaType } from '../../../flow/types';
 
+let graph: any = undefined
+
 export const AntvCanvas = observer(() => {
   const flowGraph = useFlowGraph();
   const flow = flowGraph.flowGraph;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const graph = new Graph({
+    graph = new Graph({
       container: document.getElementById('flow-canvas') || undefined,
       panning: true,
       grid: true,
@@ -38,27 +39,33 @@ export const AntvCanvas = observer(() => {
       frozen: true,
     });
     graph.positionContent('top')
-    flow.setCanvas(
-      new FlowCanvas({
-        flowGraph: flow.flowGraph,
-        canvas: graph,
-        components: {
-          StartNode: connect(StartNode, <StartPanel flowGraph={flowGraph} />, <StartLabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
-          ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} />),
-          LabelNode: connect(LabelNode, <LabelNodePanel flowGraph={flowGraph} />),
-          EndNode: connect(EndNode),
-          AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
-          DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.DECISION} />),
-          SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.WAIT} />),
-          LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.LOOP} />),
-          CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.SORT_COLLECTION_PROCESSOR} />),
-          RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_CREATE} />),
-          RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_DELETE} />),
-          RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_UPDATE} />),
-          RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_LOOKUP} />),
-        }
-      })
-    );
+  }, [])
+
+  useEffect(() => {
+    if (graph) {
+      graph.clearCells()
+      flow.setCanvas(
+        new FlowCanvas({
+          flowGraph: flow.flowGraph,
+          canvas: graph,
+          components: {
+            StartNode: connect(StartNode, <StartPanel flowGraph={flowGraph} />, <StartLabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
+            ExtendNode: connect(ExtendNode, <ExtendPanel flowGraph={flowGraph} />),
+            LabelNode: connect(LabelNode, <LabelNodePanel flowGraph={flowGraph} />),
+            EndNode: connect(EndNode),
+            AssignNode: connect(AssignNode, <AssignPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.ASSIGNMENT} />),
+            DecisionNode: connect(DecisionNode, <DecisionPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.DECISION} />),
+            SuspendNode: connect(ActionNode, <SuspendPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.WAIT} />),
+            LoopNode: connect(LoopNode, <LoopPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.LOOP} />),
+            CollectionSortNode: connect(CollectionSortNode, <CollectionSortPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.SORT_COLLECTION_PROCESSOR} />),
+            RecordCreateNode: connect(RecordCreateNode, <RecordCreatePanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_CREATE} />),
+            RecordDeletehNode: connect(RecordDeletehNode, <RecordDeletePanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_DELETE} />),
+            RecordEdithNode: connect(RecordEdithNode, <RecordEditPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_UPDATE} />),
+            RecordSearchNode: connect(RecordSearchNode, <RecordSearchPanel flowGraph={flowGraph} />, <LabelPanel flowGraph={flowGraph} flowNodeType={FlowMetaType.RECORD_LOOKUP} />),
+          }
+        })
+      );
+    }
   }, [flow]);
 
   useEffect(() => {
