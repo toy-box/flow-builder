@@ -67,7 +67,7 @@ export const StartModel:FC<StartModelPorps> = ({
       type: value.type || startData?.type,
       objectId: value.objectId || startData?.objectId,
       recordTriggerType: value.recordTriggerType || startData?.recordTriggerType,
-      schedule: value.schedule || startData?.schedule,
+      schedule: value?.schedule?.startDate ? value.schedule : startData?.schedule,
       triggerType: value.triggerType || startData?.triggerType,
     }
     console.log(paramData, 'paramData')
