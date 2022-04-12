@@ -16,7 +16,7 @@ import { FlowStart, FlowAssignment, FlowDecision, FlowLoop,
   RecordUpdate, RecordDelete, RecordLookup } from './index'
 import { useLocale } from '../../hooks'
 // import { runEffects } from '../shared/effectbox'
-import { History } from './History'
+import { History, OpearteTypeEnum, ConnectorKeyEnum } from './History'
 import { QuoteMetaOfUpdate } from './QuoteMetaOfUpdate'
 
 const STAND_SIZE = 56;
@@ -109,18 +109,20 @@ export class AutoFlow {
     this.history = new History(undefined, {
       onRedo: (item) => {
         this.flowGraph = new Flow()
-        this.mataFlowJson.flow = item.data
+        this.mataFlowJson.flow = item.flow
+        this.flowNodes = item.flowNodes
       },
       onUndo: (item) => {
         this.flowGraph = new Flow()
-        this.mataFlowJson.flow = item.data
+        this.mataFlowJson.flow = item.flow
+        this.flowNodes = item.flowNodes
       },
     })
     this.flowGraph = new Flow()
     this.flowEndId = uid()
     this.makeObservable()
     this.onInit()
-    this.history.push(this.mataFlowJson.flow)
+    // this.history.push(this.mataFlowJson.flow)
   }
 
   protected makeObservable() {
@@ -209,7 +211,16 @@ export class AutoFlow {
       component: 'EndNode',
     })
     this.flowGraph = new Flow()
-    this.history.push(this.mataFlowJson.flow)
+    const nodes = clone(this.flowNodes)
+    const obj = {
+      opearteId: nodeId,
+      opearteType: OpearteTypeEnum.UPDATE,
+      data: flowData,
+      type: metaType,
+      flow: clone(this.mataFlowJson.flow),
+      flowNodes: nodes,
+    }
+    this.history.push(obj)
   }
 
   removeFlowData = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam) => {
@@ -271,7 +282,16 @@ export class AutoFlow {
       height: STAND_SIZE,
       component: 'EndNode',
     })
-    this.history.push(this.mataFlowJson.flow)
+    const nodes = clone(this.flowNodes)
+    const obj = {
+      opearteId: nodeId,
+      opearteType: OpearteTypeEnum.REMOVE,
+      data: flowData,
+      type: metaType,
+      flow: clone(this.mataFlowJson.flow),
+      flowNodes: nodes,
+    }
+    this.history.push(obj)
   }
 
   removeFlowDataFunc = (nodeId: string, metaType: FlowMetaType, flowData: FlowMetaParam, flag?: boolean, fork?: FlowMetaParam) => {
@@ -327,13 +347,8 @@ export class AutoFlow {
     // console.log('111112323232', nodeId, metaType)
     const data = flowData
     const flowNode: NodeProps | undefined = this.flowNodes.find((node) => node.id === nodeId)
-    const time = new Date().getTime()
     this.updataFlowMetaData(flowNode, metaType, flowData)
     // this.flowNodes = []
-    // const time1 = new Date().getTime()
-    // this.setFlowData(this.metaFlowDatas)
-    // const time2 = new Date().getTime()
-    // console.log(time1 - time, 112323323232332323)
     // this.flowNodes.push({
     //   id: this.flowEndId,
     //   type: 'end',
@@ -375,7 +390,50 @@ export class AutoFlow {
     })
     if (flowMeta) this.initFlowNodes(metaType, flowMeta, flowNode, fork)
     this.flowGraph = new Flow()
-    // this.history.push(this.mataFlowJson.flow)
+    const loopBase = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
+    const decisionBase = this.flowNodes.find((node) => node.loopEndTarget === flowNode?.id)
+    const nodes = clone(this.flowNodes)
+    const obj = {
+      opearteType: OpearteTypeEnum.ADD,
+      data: flowData,
+      flow: clone(this.mataFlowJson.flow),
+      flowNodes: nodes,
+      type: metaType,
+    } as any
+    if (loopBase) { 
+      obj.opearteId = loopBase.id
+      obj.useConnectorKey = 'defaultConnector'
+    } else if (decisionBase) {
+      obj.opearteId = decisionBase.id
+      obj.useConnectorKey = 'connector'
+    } else {
+      const base = this.flowNodes.find((node) => {
+        return flowNode?.id && node.targets?.includes(flowNode?.id)
+      })
+      if (base?.component === 'LabelNode') {
+        const flowNode = this.flowNodes.find((node) => {
+          return node.targets?.includes(base?.id)
+        })
+        if (flowNode) {
+          const len = flowNode.targets?.length
+          if (len && len > 1) {
+            obj.opearteId = flowNode?.id
+            obj.useConnectorKey = 'connector'
+            obj.opearteRule = {
+              id: base?.id,
+              connector: flowData.id
+            }
+          } else {
+            obj.opearteId = flowNode?.id
+            obj.useConnectorKey = 'nextValueConnector'
+          }
+        }
+      } else {
+        obj.opearteId = base?.id
+        obj.useConnectorKey = 'connector'
+      }
+    }
+    this.history.push(obj)
     console.log(this.mataFlowJson.flow, 'this.mataFlowJson.flow')
   }
 
@@ -717,6 +775,11 @@ export class AutoFlow {
       height: STAND_SIZE,
       component: 'EndNode',
     })
+    const nodes = clone(this.flowNodes)
+    this.history.push({
+      flow: clone(this.initialMeta.flow),
+      flowNodes: nodes,
+    })
     console.log(this.flowNodes, this.metaFlowDatas, 'end')
   }
 
@@ -932,7 +995,7 @@ export class AutoFlow {
       default:
         break;
     }
-    this.history.push(this.mataFlowJson.flow)
+    // this.history.push(this.mataFlowJson.flow)
   }
 
   editFlowMeta = (metaType: IFlowResourceType, flowMeta: IFieldMeta, quoteId: string) => {
@@ -962,7 +1025,7 @@ export class AutoFlow {
         break;
     }
     if (flowMeta.key !== quoteId) QuoteMetaOfUpdate(this, flowMeta, quoteId)
-    this.history.push(this.mataFlowJson.flow)
+    // this.history.push(this.mataFlowJson.flow)
   }
 
   get fieldMetas() {

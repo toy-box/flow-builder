@@ -1,10 +1,33 @@
 import { define, observable, action } from '@formily/reactive'
-import { FlowMeta } from '../types'
+import { type } from 'os'
+import { FlowMeta, FlowMetaParam, FlowMetaType } from '../types'
+import { NodeProps } from './AutoFlow'
 
+export enum OpearteTypeEnum {
+  ADD = 'add',
+  REMOVE = 'remove',
+  UPDATE = 'update'
+}
+
+export enum ConnectorKeyEnum {
+  CONNECTOR = 'connector',
+  DEFAULT_CONNECTOR = 'defaultConnector',
+  NEXT_VALUE_CONNECTOR = 'nextValueConnector'
+}
 
 export interface HistoryItem {
-  data: FlowMeta
-  timestamp: number
+  opearteId?: string
+  opearteType?: OpearteTypeEnum
+  useConnectorKey?: ConnectorKeyEnum
+  opearteRule?: {
+    id: string
+    connector: string
+  }
+  type?: FlowMetaType
+  data?: FlowMetaParam
+  flow: FlowMeta
+  flowNodes: NodeProps[]
+  timestamp?: number
 }
 
 export interface IHistoryProps {
@@ -18,7 +41,7 @@ export class History {
   history: HistoryItem[] = []
   updateTimer = null
   maxSize: number = 100
-  constructor(context?: FlowMeta, props?: IHistoryProps) {
+  constructor(context?: HistoryItem, props?: IHistoryProps) {
     this.props = props
     if (context) {
       this.push(context)
@@ -42,13 +65,13 @@ export class History {
     return this.history
   }
 
-  push(context: FlowMeta) {
+  push(context: HistoryItem) {
     // if (this.current < this.history.length - 1) {
     //   this.history = this.history.slice(0, this.current + 1)
     // }
     this.current = this.history.length
     this.context = {
-      data: context,
+      ...context,
       timestamp: new Date().getTime()
     }
     this.history.push(this.context)

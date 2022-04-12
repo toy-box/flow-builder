@@ -13,7 +13,7 @@ $ npm i flow-builder
 ## 头部菜单
 
 ```tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   GlobalRegistry,
   Navbar, FlowEditor,
@@ -21,6 +21,7 @@ import {
   AutoFlow,
   flow, getMetaObjectData
 } from '@toy-box/flow-builder';
+import { Button } from 'antd';
 // import 'antd/dist/antd.css';
 // import 'codemirror/lib/codemirror.css';
 
@@ -36,9 +37,19 @@ export default () => {
   const serviceObj = {
     getMetaObjectData
   };
+  const back = useCallback(() => {
+    flowGraph.history.undo()
+  }, [])
+  const next = useCallback(() => {
+    flowGraph.history.redo()
+  }, [])
   return (
     <DesignerContext.Provider value={{ prefix: 'fd', GlobalRegistry, serviceObj }}>
       <Navbar />
+      <div>
+        <Button onClick={back}>回退</Button>
+        <Button onClick={next}>前进</Button>
+      </div>
       <FlowEditor flowGraph={flowGraph} />
     </DesignerContext.Provider>
   );
