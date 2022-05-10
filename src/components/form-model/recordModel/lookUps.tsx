@@ -197,7 +197,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
         })
         const automaticallyType = field.query('automaticallyType').get('value')
         const outputReference = field.query('outputReference').get('value')
-        const flag = (automaticallyType === true) || (!automaticallyType && outputReference)
+        const flag = (automaticallyType === true && outputReference) || (!automaticallyType && outputReference)
         form.setFieldState('queriedFields', (state) => {
           // state.value = []
           state.display = flag? 'visible' : 'none'
@@ -681,7 +681,8 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
                 'x-component': 'ArrayItems.Addition',
               },
             },
-            'x-reactions': reactionQueriedFields,
+            'x-visible': false,
+            // 'x-reactions': reactionQueriedFields,
           },
           outputAssignments: {
             type: 'array',

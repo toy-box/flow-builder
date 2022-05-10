@@ -1216,12 +1216,16 @@ export class AutoFlow {
         formulaMeta = this.getFormulaMap(formulaMeta, resourceData)
       }
     });
+    const register = this.registers.find((reg) => reg.key === 'user')
+    if (register) this.getFormulaMap(formulaMeta, register, '$User')
+    const metaNode = this.registers.find((reg) => reg.key === this.flowStart?.objectId)
+    if (metaNode) this.getFormulaMap(formulaMeta, metaNode, '$Record')
     return formulaMeta
   }
 
-  getFormulaMap = (formulaMeta: Record<string, IFieldMeta>, meta: IFieldMeta, isProperty?: boolean) => {
-    // const key = isProperty ? meta.key :`$${meta.key}`
-    const key = meta.key
+  getFormulaMap = (formulaMeta: Record<string, IFieldMeta>, meta: IFieldMeta, isGlobal?: string) => {
+    const key = isGlobal || meta.key
+    // const key = meta.key
     const obj = {
       [key]: {
         key: meta.key,
@@ -1234,14 +1238,14 @@ export class AutoFlow {
       for (const proKey in meta.properties) {
         if (meta.properties.hasOwnProperty(proKey)) {
           const p = meta.properties[proKey]
-          this.getFormulaMap(obj[key].properties, p, true)
+          this.getFormulaMap(obj[key].properties, p)
         }
       }
     } else if (isObj(meta?.items?.properties)) {
       for (const proKey in meta?.items?.properties) {
         if (meta?.items?.properties.hasOwnProperty(proKey)) {
           const p = meta?.items?.properties[proKey]
-          this.getFormulaMap(obj[key].properties, p, true)
+          this.getFormulaMap(obj[key].properties, p)
         }
       }
     }

@@ -1,5 +1,5 @@
 module.exports = {
-  apiRoot: 'http://gw.xhrm.airclass.top:5080/',
+  apiRoot: 'http://gateway.shashago.com/',
   secure: false,
   changeOrigin: true,
   publicPath: '/'
