@@ -10,7 +10,7 @@ GlobalRegistry.registerDesignerLocales({
       comm: {
         edit: '编辑元素',
         delete: '删除元素',
-        objectId: '选择对象',
+        objectId: '选择对象 (可选)',
       },
       flowType: {
         planTrigger: '计划触发流',

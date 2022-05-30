@@ -171,6 +171,7 @@ export const StartModel:FC<StartModelPorps> = ({
               required: true,
               message: <TextWidget>flow.form.validator.frequency</TextWidget>
             },
+            default: 'Once',
             'x-decorator': 'FormItem',
             'x-component': 'Select',
             enum: [
