@@ -32,8 +32,8 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }
   const [metaFlowData, setMetaFlowData] = useState<FlowMetaParam>()
 
   const assignmentCallBack = useCallback(
-    (data, type) => {
-      if (!isBool(data)) {
+    (data: any, type?: FlowMetaType) => {
+      if (!isBool(data) && type) {
         flowGraph.editFlowData(node.node.id, type, data)
       }
       setShowModel(false)
@@ -41,7 +41,7 @@ export const AssignPanel: FC<ExtendEditPanelProps> = ({ flowGraph, closeExtend }
     [flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
-    (type) => {
+    (type: OpartType) => {
       closeExtend && closeExtend()
       const flowAssignments = flowGraph.flowAssignments
       const nodeId = node.node.id;

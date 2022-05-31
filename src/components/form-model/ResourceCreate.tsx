@@ -4,7 +4,7 @@ import { createForm, onFieldReact, onFieldValueChange, FormPathPattern, Field } 
 import { FormProvider, createSchemaField } from '@formily/react'
 import { Button, Modal } from 'antd'
 import { action } from '@formily/reactive'
-import { MetaValueType, ICompareOperation } from '@toy-box/meta-schema';
+import { MetaValueType, ICompareOperation, IFieldMeta } from '@toy-box/meta-schema';
 import { clone } from '@formily/shared';
 import { RepeatErrorMessage } from './RepeatErrorMessage'
 // import update from 'immutability-helper'
@@ -404,7 +404,7 @@ export const ResourceCreate:FC<ResourceCreateProps> = ({
   };
 
   const submitResource = useCallback(
-    (resourceData, flowDataType) => {
+    (resourceData: IFieldMeta, flowDataType: IFlowResourceType) => {
       if (value) {
         flowGraph.editFlowMeta(flowDataType, resourceData, value.key)
       } else {

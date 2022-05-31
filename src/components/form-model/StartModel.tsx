@@ -122,7 +122,7 @@ export const StartModel:FC<StartModelPorps> = ({
     form.setValues(flowData)
   }
 
-  const isCriteria = useCallback((field) => {
+  const isCriteria = useCallback((field: { display: string; }) => {
     const val = form.values
     const objectId = val.objectId
     const isShow = objectId && flowGraph.flowType === FlowTypeCodeEnum.RECORD_TRIGGER

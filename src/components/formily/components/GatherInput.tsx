@@ -13,19 +13,19 @@ export const GatherInput: FC = observer((props: any) => {
   const form = useForm()
   const { TextArea } = antInput
 
-  const changeValue = useCallback((e) => {
+  const changeValue = useCallback((e: any) => {
     form.setFieldState('defaultValue', (state) => {
       state.value = e.target.value
     })
   }, [form])
 
-  const changeDate = useCallback((value) => {
+  const changeDate = useCallback((value: any) => {
     form.setFieldState('defaultValue', (state) => {
       state.value = value
     })
   }, [form])
 
-  const handleSelectOptions = useCallback((value) => {
+  const handleSelectOptions = useCallback((value: any) => {
     form.setFieldState('refObjectId', (state) => {
       state.value = value
     })

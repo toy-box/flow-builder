@@ -51,8 +51,8 @@ export const StartPanel: FC<IStartPanelProps> = ({ flowGraph, closeExtend }) => 
   }, [flowGraph.flowType, flowGraph.isEdit])
 
   const assignmentCallBack = useCallback(
-    (data, type) => {
-      if (!isBool(data)) {
+    (data: any, type?: FlowMetaType) => {
+      if (!isBool(data) && type) {
         flowGraph.editFlowData(node.node.id, type, data)
       }
       setShowModel(false)
@@ -60,7 +60,7 @@ export const StartPanel: FC<IStartPanelProps> = ({ flowGraph, closeExtend }) => 
     [flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
-    (type) => {
+    (type: string) => {
       closeExtend && closeExtend()
       const flowStart = flowGraph.flowStart
       if (type === 'objectId') {

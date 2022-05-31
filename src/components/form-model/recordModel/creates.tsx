@@ -128,7 +128,7 @@ export const RecordCreateModel: FC<RecordCreateModelPorps> = ({
     form.initialValues = flowData
   }
 
-  const myReaction = useCallback((field) => {
+  const myReaction = useCallback((field: any) => {
     const val = form.values
     const registerId = val.registerId
     field.display = registerId ? 'visible' : 'none';

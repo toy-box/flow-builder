@@ -229,14 +229,14 @@ export const SuspendModel: FC<SuspendModelPorps> = ({
     )
   }
 
-  const myReaction = useCallback((bool, field) => {
+  const myReaction = useCallback((bool: boolean | string, field: any) => {
     const val = form.values
     const idx = field?.path?.segments[1];
     const sourceTime = idx > -1 && val?.waitEvents[idx]?.sourceTime
     field.display = sourceTime === bool ? 'visible' : 'none';
   }, [form.values])
 
-  const selectValue = useCallback((select) => {
+  const selectValue = useCallback((select: any) => {
     selectData = select
   }, [])
 

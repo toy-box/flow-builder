@@ -12,8 +12,8 @@ export const FormilyFilter: FC = observer((props: any) => {
   const form = useForm()
   const formilyField = useField() as any
   const handleFilter = useCallback(
-    (value, index) => {
-      setIndex(index)
+    (value: any, index?: number) => {
+      if (index != undefined) setIndex(index)
       form.setFieldState(formilyField?.path?.entire, (state) => {
         state.value = value
         formilyField.validate()
@@ -113,7 +113,7 @@ export const FormilyFilter: FC = observer((props: any) => {
   }, [props.mataSource, props.flowGraph.fieldMetas, props.flowJsonTypes, props.reactionKey, props.operatType, form.values, props.flowGraph.registers])
 
   const changeFormaluValue = useCallback(
-    (value, index) => {
+    (value: any, index: string | number) => {
       formilyField.value[index].target = value
     },
     [formilyField.value],

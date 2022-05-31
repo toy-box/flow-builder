@@ -39,9 +39,9 @@ export interface IArrayBaseProps {
   onRemove?: (index: number) => void
 }
 
-type ComposedArrayBase = React.FC<IArrayBaseProps> &
+type ComposedArrayBase = React.FC<React.PropsWithChildren<IArrayBaseProps>> &
   ArrayBaseMixins & {
-    Item: React.FC<IArrayBaseItemProps>
+    Item: React.FC<React.PropsWithChildren<IArrayBaseItemProps>>
     mixin: <T extends JSXComponent>(
       target: T
     ) => T & ArrayBaseMixins

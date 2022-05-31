@@ -22,7 +22,7 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
   const [showModel, setShowModel] = useState(false)
   const prefixCls = usePrefix('-resource-widget')
   const fieldMetas = flowGraph.fieldMetas
-  const changeValue = useCallback((value) => {
+  const changeValue = useCallback((value: any) => {
 
   }, [])
   const editBtn = useCallback(() => {
@@ -30,7 +30,7 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
   }, [])
 
   const assignmentCallBack = useCallback(
-    (data, type, nodeId) => {
+    (data: any, type: FlowMetaType, nodeId: string) => {
       if (!isBool(data)) {
         flowGraph.editFlowData(nodeId, type, data)
       }
@@ -40,21 +40,21 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
   )
 
   const recordLookup = useCallback(
-    (child) => {
+    (child: any) => {
       return flowGraph.recordLookups.find((data) => data.id === child.key)
     },
     [flowGraph.recordLookups],
   )
 
   const recordCreate = useCallback(
-    (child) => {
+    (child: any) => {
       return flowGraph.recordCreates.find((data) => data.id === child.key)
     },
     [flowGraph.recordCreates],
   )
 
   const showNode = useCallback(
-    (child: IFieldMetaFlow, meta) => {
+    (child: IFieldMetaFlow, meta: any) => {
       switch (child?.flowMetaType) {
         case FlowMetaType.RECORD_LOOKUP:
           return <div>
@@ -64,7 +64,7 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
               showModel={showModel} 
               title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
               metaFlowData={recordLookup(child)}
-              callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
+              callbackFunc={(data: FlowMetaParam | boolean, type: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
             }
           </div>
         case FlowMetaType.RECORD_CREATE:
@@ -75,7 +75,7 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = observer(({flowGra
               showModel={showModel} 
               title={<TextWidget>flow.form.recordLookUp.editTitle</TextWidget>} 
               metaFlowData={recordCreate(child)}
-              callbackFunc={(data: FlowMetaParam | boolean, type?: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
+              callbackFunc={(data: FlowMetaParam | boolean, type: FlowMetaType) => assignmentCallBack(data, type, child.key)}/>
             }
           </div>
         default:

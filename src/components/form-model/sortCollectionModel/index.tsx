@@ -129,7 +129,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     })
   }
 
-  const isRecord = useCallback((flowType) => {
+  const isRecord = useCallback((flowType: any) => {
     const resourceFieldMetas = flowGraph.fieldMetas
     let refObjectId: string = ''
     resourceFieldMetas.some((metaData: any) => {
@@ -140,7 +140,7 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     return refObjectId
   }, [])
 
-  const myReaction = useCallback((field) => {
+  const myReaction = useCallback((field: any) => {
     const flowType = field.query('collectionReference').get('value')
     if (!flowType) return []
     const refObjectId = isRecord(flowType)
@@ -171,21 +171,21 @@ export const SortCollectionModel: FC<SortCollectionPorps> = ({
     field.dataSource = registerOps
   }, [form.values])
 
-  const removeReaction = useCallback((field) => {
+  const removeReaction = useCallback((field: any) => {
     const flowType = field.query('collectionReference').get('value')
     if (!flowType) return []
     const refObjectId = isRecord(flowType)
     field.display = refObjectId ? 'visible' : 'none'
   }, [])
 
-  const addBtnReaction = useCallback((field) => {
+  const addBtnReaction = useCallback((field: any) => {
     const flowType = field.query('collectionReference').get('value')
     if (!flowType) return []
     const refObjectId = isRecord(flowType)
     field.display = refObjectId ? 'visible' : 'none'
   }, [])
 
-  const limitReaction = useCallback((field) => {
+  const limitReaction = useCallback((field: any) => {
     const flowType = field.query('limitFlag').get('value')
     field.display = flowType === 'all' ? 'none' : 'visible'
   }, [])

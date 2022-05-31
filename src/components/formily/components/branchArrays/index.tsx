@@ -83,7 +83,7 @@ export const BranchArrays: FC = observer((props: any) => {
   )
 
   const selectValue = useCallback(
-    (value) => {
+    (value: React.SetStateAction<number>) => {
       setSelectIndex(value)
     },
     [],

@@ -203,7 +203,7 @@ export const ResourceSelect: FC = observer((props: any) => {
   }, [metaTypeOps])
 
   const onChange = useCallback(
-    (value) => {
+    (value: string) => {
       metaTypeOps.forEach((op: IOptionProp) => {
         if (op.children) {
           const cld = op.children.find(child => child.value === value)

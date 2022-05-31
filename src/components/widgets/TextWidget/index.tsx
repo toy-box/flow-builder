@@ -7,7 +7,7 @@ export interface ITextWidgetProps {
   token?: string;
 }
 
-export const TextWidget: React.FC<ITextWidgetProps> = observer((props) => {
+export const TextWidget: React.FC<React.PropsWithChildren<ITextWidgetProps>> = observer((props) => {
   const registry = useRegistry()
   const token = props.token
     ? props.token

@@ -67,8 +67,8 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
   }, [flowGraph.flowType, MetaTypes])
 
   const assignmentCallBack = useCallback(
-    (data, type) => {
-      if (!isBool(data)) {
+    (data: any, type?: FlowMetaType) => {
+      if (!isBool(data) && type) {
         flowGraph.updateInitialMeta(node.node.id, type, data)
       }
       setShowModel(false)
@@ -76,7 +76,7 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
     [flowGraph, node.node.id],
   )
   const onSubmit = useCallback(
-    (type) => {
+    (type: React.SetStateAction<FlowMetaType | undefined>) => {
       closeExtend && closeExtend()
       setFlowMetaType(type)
       setShowModel(true)

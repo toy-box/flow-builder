@@ -5,7 +5,7 @@ import { DesignerContext } from '../../designer'
 import { flow, getMetaObjectData } from './data'
 // import { Button, notification } from 'antd';
 import './style.less'
-import { AutoFlow } from '../../flow/models/AutoFlow'
+import { AutoFlow, FlowModeEnum } from '../../flow/models/AutoFlow'
 
 GlobalRegistry.registerDesignerLocales({
   'zh-CN': {
@@ -301,7 +301,7 @@ export const FlowDesigner = () => {
     name: 'flow',
     flow: flow,
   })
-  const flowGraph = new AutoFlow(flowMeta)
+  const flowGraph = new AutoFlow(flowMeta, 'PLAN_TRIGGER', FlowModeEnum.EDIT)
   const serviceObj = {
     getMetaObjectData
   };

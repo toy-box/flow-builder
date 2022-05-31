@@ -258,7 +258,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     form.initialValues = flowData
   }
 
-  const myReaction = useCallback((type, field) => {
+  const myReaction = useCallback((type: string, field: any) => {
     const val = form.values
     const sortOrder = val.sortOrder
     if (type === 'sortOrderIsEmpty') {
@@ -268,7 +268,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     }
   }, [form.values])
 
-  const reactionField = useCallback((type, field) => {
+  const reactionField = useCallback((type: string | number, field: any) => {
     const refObjectId = field.query('registerId').get('value')
     if (!refObjectId) return []
     const registers = flowGraph.registers
@@ -296,14 +296,14 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     field.dataSource = registerOps
   }, [form.values])
 
-  const reactionQueriedFields = useCallback((field) => {
+  const reactionQueriedFields = useCallback((field: any) => {
     const automaticallyType = form.values.automaticallyType
     const storeOutputAutomatically = field.query('storeOutputAutomatically').get('value')
     const outputReference = field.query('outputReference').get('value')
     field.display = (storeOutputAutomatically === false && automaticallyType !== false) || outputReference ? 'visible' : 'none'
   }, [form.values.automaticallyType])
 
-  const reactionOutputReference = useCallback((field) => {
+  const reactionOutputReference = useCallback((field: any) => {
     const addressVal = field.query('address').get('value')
     const getFirstRecordOnly = field.query('getFirstRecordOnly').get('value')
     const storeOutputAutomatically = field.query('storeOutputAutomatically').get('value')
@@ -333,7 +333,7 @@ export const RecordLookUpModel: FC<RecordLookUpModelPorps> = ({
     }
   }, [])
 
-  const reactionAddress = useCallback((field) => {
+  const reactionAddress = useCallback((field: any) => {
     const automaticallyType = field.query('automaticallyType').get('value')
     const getFirstRecordOnly = field.query('getFirstRecordOnly').get('value')
     field.display = automaticallyType === false && getFirstRecordOnly !== false ? 'visible' : 'none';

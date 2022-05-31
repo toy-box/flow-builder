@@ -5,7 +5,7 @@ import { FormulaModel } from '../../../form-model'
 export const FormulaEdit: FC = observer((props: any) => {
   const form = useForm()
   const onChange = useCallback(
-    (value) => {
+    (value: any) => {
       form.setFieldState('formula', (state) => {
         state.value = value
       })
