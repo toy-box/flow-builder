@@ -25,8 +25,8 @@ const parseItems = (
   return items
 }
 
-export const CompositePanel: React.FC & {
-  Item: React.FC<ICompositePanelItemProps>
+export const CompositePanel: React.FC<React.PropsWithChildren<ICompositePanelItemProps>> & {
+  Item: React.FC<React.PropsWithChildren<ICompositePanelItemProps>>
 } = (props) => {
   const prefix = usePrefix('-composite-panel')
   const [activeKey, setActiveKey] = useState(0)
