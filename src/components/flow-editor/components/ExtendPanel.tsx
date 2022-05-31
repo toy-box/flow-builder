@@ -4,7 +4,7 @@ import { isBool } from '@toy-box/toybox-shared'
 import { AssignmentModel, DecisionModel, SuspendModel, LoopModel,
   SortCollectionModel, RecordCreateModel, RecordUpdateModel,
   RecordRemoveModel, RecordLookUpModel } from '../../form-model'
-import { FlowMetaType, FlowMetaParam, FlowType } from '../../../flow/types'
+import { FlowMetaType, FlowMetaParam, TriggerTypeEnum } from '../../../flow/types'
 import { TextWidget } from '../../widgets'
 import { usePrefix } from '../../../hooks'
 import { AutoFlow } from '../../../flow/models/AutoFlow'
@@ -62,8 +62,12 @@ export const ExtendPanel: FC<ExtendPanelProps> = ({ flowGraph, closeExtend }) =>
   const [flowMetaType, setFlowMetaType] = useState<FlowMetaType>()
 
   const metaDatas = useMemo(() => {
-    return MetaTypes.filter((meta) =>
-      !(meta.value === FlowMetaType.WAIT && flowGraph.flowType === 'RECORD_TRIGGER'))
+    const isTrue = flowGraph.flowStart.triggerType === TriggerTypeEnum.RECORD_BEFORE_SAVE
+    if (isTrue) return MetaTypes.filter((meta) =>
+      !(meta.value === FlowMetaType.WAIT
+      || meta.value === FlowMetaType.RECORD_DELETE
+      || meta.value === FlowMetaType.RECORD_CREATE))
+    return MetaTypes
   }, [flowGraph.flowType, MetaTypes])
 
   const assignmentCallBack = useCallback(
